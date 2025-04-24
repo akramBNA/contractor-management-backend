@@ -1,0 +1,8 @@
+const usersDao = require("../dao/users.dao.js");
+const users_instance = new usersDao();
+
+module.exports = {
+  getAllUsers: function (req, res, next) {
+    users_instance.getAllUsers(req, res, next);
+  },
+};
