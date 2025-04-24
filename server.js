@@ -5,9 +5,9 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const Routes = require('./routes/routes.js');
+const { sequelize } = require('./database/database.js');
 
 app.use(cors());
-
 app.use(express.json());
 
 app.get('/', (req, res) => {
@@ -16,6 +16,12 @@ app.get('/', (req, res) => {
 
 app.use('/api', Routes);
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+sequelize.authenticate()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is running on http://localhost:${port}`);
+    });
+  })
+  .catch(err => {
+    console.error('Unable to connect to the DB:', err);
+  });
