@@ -19,6 +19,21 @@ const employees = sequelize.define(
         allowNull: false,
         unique: true,
       },
+      employee_gender: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
+      },
+      employee_birth_date: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        unique: true,
+      },
+      employee_national_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        unique: true,
+      },
       employee_phone_number: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -34,8 +49,13 @@ const employees = sequelize.define(
         allowNull: true,
         unique: true,
       },
-      employee_national_number: {
-        type: DataTypes.INTEGER,
+      employee_job_title: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
+      },
+      employee_joining_date: {
+        type: DataTypes.DATE,
         allowNull: true,
         unique: true,
       },
@@ -46,6 +66,11 @@ const employees = sequelize.define(
       },
       employee_bank_details_id: {
         type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
+      },
+      employee_contract_id: {
+        type: DataTypes.INTEGER,
         allowNull: true,
         unique: true,
       },
