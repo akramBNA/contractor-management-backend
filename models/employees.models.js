@@ -19,6 +19,11 @@ const employees = sequelize.define(
         allowNull: false,
         unique: true,
       },
+      employee_matricule: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        unique: true,
+      },
       employee_gender: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -31,7 +36,7 @@ const employees = sequelize.define(
       },
       employee_national_id: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
         unique: true,
       },
       employee_phone_number: {
