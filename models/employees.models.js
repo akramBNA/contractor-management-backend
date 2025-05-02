@@ -12,72 +12,71 @@ const employees = sequelize.define(
     employee_name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     employee_lastname: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+
       },
       employee_matricule: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        unique: true,
+
       },
       employee_gender: {
         type: DataTypes.STRING,
         allowNull: true,
-        unique: true,
+
       },
       employee_birth_date: {
         type: DataTypes.DATE,
         allowNull: true,
-        unique: true,
+
       },
       employee_national_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
+
       },
       employee_phone_number: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
+
       },
       employee_email: {
         type: DataTypes.STRING,
         allowNull: true,
-        unique: true,
+
       },
       employee_adress: {
         type: DataTypes.STRING,
         allowNull: true,
-        unique: true,
+
       },
       employee_job_title: {
         type: DataTypes.STRING,
         allowNull: true,
-        unique: true,
+
       },
       employee_joining_date: {
         type: DataTypes.DATE,
         allowNull: true,
-        unique: true,
+
       },
       employee_image_id: {
         type: DataTypes.STRING,
         allowNull: true,
-        unique: true,
+
       },
       employee_bank_details_id: {
         type: DataTypes.STRING,
         allowNull: true,
-        unique: true,
+
       },
       employee_contract_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        unique: true,
+
       },
     active: {
       type: DataTypes.STRING,

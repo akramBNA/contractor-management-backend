@@ -17,6 +17,7 @@ router.get("/roles/getAllRoles/", roles_controller.getAllRoles);
 
 // EMPLOYEES ROUTES
 router.get("/employees/getAllEmployees/", employees_controller.getAllemployees);
+router.post("/employees/addOneEmployee/", employees_controller.addOneEmployee);
 
 // CONTRACTS ROUTES
 router.get("/contracts/getAllContracts/", contracts_controlers.getAllContracts);
