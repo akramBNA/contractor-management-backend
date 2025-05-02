@@ -12,12 +12,10 @@ const contracts_types = sequelize.define(
     contract_name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     leaves_credit: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
       defaultValue: 0,
 
     },

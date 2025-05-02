@@ -12,12 +12,10 @@ const contracts = sequelize.define(
     contract_type_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
     },
     salary: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      unique: true,
     },
     active: {
       type: DataTypes.STRING,
