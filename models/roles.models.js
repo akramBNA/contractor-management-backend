@@ -12,7 +12,6 @@ const roles = sequelize.define(
     role_type: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     active: {
       type: DataTypes.STRING,

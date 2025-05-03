@@ -6,7 +6,7 @@ const { roles } = require("../models/roles.models.js");
 const users = sequelize.define(
   "users",
   {
-    users_id: {
+    user_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -22,7 +22,6 @@ const users = sequelize.define(
     user_email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     user_password: {
       type: DataTypes.STRING,
