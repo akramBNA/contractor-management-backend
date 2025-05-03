@@ -1,4 +1,6 @@
-const  {users}  = require("../models/users.models.js");
+const { users } = require("../models/users.models.js");
+const bcrypt = require("bcryptjs");
+
 
 class usersDao {
   async getAllUsers(req, res, next) {
@@ -8,7 +10,7 @@ class usersDao {
 
       const get_all_users_query = `
           SELECT users.user_id, users.user_name,
-                 users.user_lastname, users.user_email, roles.role_type
+                 users.user_lastname, users.user_email, roles.role_type, users.createdAt, users.updatedAt
           FROM users 
           LEFT JOIN roles ON roles.role_id = users.user_role_id
           WHERE users.active = 'Y' AND roles.active = 'Y'
@@ -36,6 +38,65 @@ class usersDao {
         message: "Retrieved successfully",
       });
     } catch (error) {
+      return next(error);
+    }
+  }
+
+  async addUser(req, res, next) {
+    try {
+      const {
+        user_name,
+        user_lastname,
+        user_email,
+        user_password,
+        user_role_id,
+      } = req.body;
+
+      // Check if user already exists
+      const existingUser = await users.findOne({
+        where: { user_email },
+      });
+
+      if (existingUser) {
+        return res.status(400).json({
+          status: false,
+          message: "User with this email already exists",
+        });
+      }
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(user_password, 10);
+
+      // Create the new user
+      console.log("data", {
+        user_name,
+        user_lastname,
+        user_email,
+        user_password: hashedPassword,
+        user_role_id,
+      });
+      
+      const newUser = await users.create({
+        user_name,
+        user_lastname,
+        user_email,
+        user_password: hashedPassword,
+        user_role_id,
+      });
+
+      res.status(201).json({
+        status: true,
+        message: "User created successfully",
+        data: {
+          user_id: newUser.user_id,
+          user_name: newUser.user_name,
+          user_lastname: newUser.user_lastname,
+          user_email: newUser.user_email,
+          user_role_id: newUser.user_role_id,
+        },
+      });
+    } catch (error) {
+      console.error("Error in addUser:", error);
       return next(error);
     }
   }

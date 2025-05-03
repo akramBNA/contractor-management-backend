@@ -5,4 +5,7 @@ module.exports = {
   getAllUsers: function (req, res, next) {
     users_instance.getAllUsers(req, res, next);
   },
+  addUser: function (req, res, next) {
+    users_instance.addUser(req, res, next);
+  },
 };
