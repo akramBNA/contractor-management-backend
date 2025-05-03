@@ -12,6 +12,7 @@ const employee_bank_details_controller = require("../controllers/employee_bank_d
 // USERS ROUTES.
 router.get("/users/getAllUsers/", users_controller.getAllUsers);
 router.post("/users/addUser/", users_controller.addUser);
+router.post("/users/UserLogin/", users_controller.UserLogin);
 
 // ROLES ROUTES
 router.get("/roles/getAllRoles/", roles_controller.getAllRoles);

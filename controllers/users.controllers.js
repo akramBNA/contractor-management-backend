@@ -8,4 +8,7 @@ module.exports = {
   addUser: function (req, res, next) {
     users_instance.addUser(req, res, next);
   },
+ UserLogin: function (req, res, next) {
+    users_instance.UserLogin(req, res, next);
+  },
 };

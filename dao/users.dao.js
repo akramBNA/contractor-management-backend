@@ -1,5 +1,7 @@
 const { users } = require("../models/users.models.js");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const SECRET_KEY = process.env.AUTH_SECRET_KEY || ""
 
 
 class usersDao {
@@ -39,7 +41,7 @@ class usersDao {
       });
     } catch (error) {
       console.log("Error in getAllUsers:", error);
-      
+
       return next(error);
     }
   }
@@ -74,7 +76,7 @@ class usersDao {
         user_password: hashedPassword,
         user_role_id,
       });
-      
+
       const newUser = await users.create({
         user_name,
         user_lastname,
@@ -96,6 +98,61 @@ class usersDao {
       });
     } catch (error) {
       console.error("Error in addUser:", error);
+      return next(error);
+    }
+  }
+
+  async UserLogin(req, res, next) {
+    try {
+      const { user_email, user_password } = req.body;
+
+      const user = await users.findOne({
+        where: { user_email, active: "Y" },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          status: false,
+          message: "User not found",
+        });
+      }
+
+      const isPasswordValid = await bcrypt.compare(
+        user_password,
+        user.user_password
+      );
+
+      if (!isPasswordValid) {
+        return res.status(401).json({
+          status: false,
+          message: "Invalid credentials",
+        });
+      }
+
+      const token = jwt.sign(
+        {
+          user_id: user.user_id,
+          email: user.user_email,
+          role: user.user_role_id,
+        },
+        SECRET_KEY,
+        { expiresIn: "2h" }
+      );
+
+      return res.status(200).json({
+        status: true,
+        message: "Login successful",
+        data: {
+          user_id: user.user_id,
+          user_name: user.user_name,
+          user_lastname: user.user_lastname,
+          user_email: user.user_email,
+          user_role_id: user.user_role_id,
+        },
+        token,
+      });
+    } catch (error) {
+      console.error("Error in login:", error);
       return next(error);
     }
   }
