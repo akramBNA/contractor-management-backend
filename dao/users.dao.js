@@ -1,8 +1,7 @@
 const { users } = require("../models/users.models.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const SECRET_KEY = process.env.AUTH_SECRET_KEY || ""
-
+const SECRET_KEY = process.env.AUTH_SECRET_KEY || "";
 
 class usersDao {
   async getAllUsers(req, res, next) {
@@ -136,7 +135,7 @@ class usersDao {
           role: user.user_role_id,
         },
         SECRET_KEY,
-        { expiresIn: "2h" }
+        { expiresIn: "24h" }
       );
 
       return res.status(200).json({
