@@ -10,7 +10,7 @@ class usersDao {
 
       const get_all_users_query = `
           SELECT users.user_id, users.user_name,
-                 users.user_lastname, users.user_email, roles.role_type, users.createdAt, users.updatedAt
+                 users.user_lastname, users.user_email, roles.role_type
           FROM users 
           LEFT JOIN roles ON roles.role_id = users.user_role_id
           WHERE users.active = 'Y' AND roles.active = 'Y'
@@ -38,6 +38,8 @@ class usersDao {
         message: "Retrieved successfully",
       });
     } catch (error) {
+      console.log("Error in getAllUsers:", error);
+      
       return next(error);
     }
   }
@@ -52,7 +54,6 @@ class usersDao {
         user_role_id,
       } = req.body;
 
-      // Check if user already exists
       const existingUser = await users.findOne({
         where: { user_email },
       });
@@ -64,10 +65,8 @@ class usersDao {
         });
       }
 
-      // Hash the password
       const hashedPassword = await bcrypt.hash(user_password, 10);
 
-      // Create the new user
       console.log("data", {
         user_name,
         user_lastname,
