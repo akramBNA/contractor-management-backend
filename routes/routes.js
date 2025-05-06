@@ -18,7 +18,7 @@ router.post("/users/UserLogin/", users_controller.UserLogin);
 router.get("/roles/getAllRoles/", roles_controller.getAllRoles);
 
 // EMPLOYEES ROUTES
-router.get("/employees/getAllEmployees/", employees_controller.getAllemployees);
+router.get("/employees/getAllEmployees/", employees_controller.getAllEmployees);
 router.post("/employees/addOneEmployee/", employees_controller.addOneEmployee);
 
 // CONTRACTS ROUTES

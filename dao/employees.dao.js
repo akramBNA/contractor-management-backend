@@ -1,31 +1,95 @@
-const { employees, sequelize: employeesSequelize } = require("../models/employees.models");
-const { contracts, sequelize: contractsSequelize } = require("../models/contracts.models");
-const { employee_bank_details, sequelize: bankDetailsSequelize } = require("../models/employee_bank_details.models");
+const {
+  employees,
+  sequelize: employeesSequelize,
+} = require("../models/employees.models");
+const {
+  contracts,
+  sequelize: contractsSequelize,
+} = require("../models/contracts.models");
+const {
+  employee_bank_details,
+  sequelize: bankDetailsSequelize,
+} = require("../models/employee_bank_details.models");
+const { Op, Sequelize } = require("sequelize");
 
 class employeesDao {
-  async getAllemployees(req, res, next) {
+
+  async getAllEmployees(req, res, next) {
     try {
-      const get_all_employees_query =
-        "SELECT * FROM employees ORDER BY employee_id ASC";
-      const get_all_employees_data = await employees.sequelize.query(
-        get_all_employees_query,
-        {
-          type: employees.sequelize.QueryTypes.SELECT,
-        }
-      );
-      if (get_all_employees_data) {
-        res.status(200).json({
-          status: true,
-          Data: get_all_employees_data,
-          message: "Retrieved successfully",
-        });
-      } else {
-        res.json({
+      const { limit = 10, offset = 0, keyword = "" } = req.query;
+      console.log("params", req.query);
+      
+      const activeCount = await employees.count({ where: { active: "Y" } });
+      if (activeCount === 0) {
+        return res.status(404).json({
           status: false,
-          Data: [],
-          message: "Failed to retrieve data",
+          data: [],
+          message: "No employees found",
         });
       }
+
+      const searchCondition = keyword
+        ? {
+            [Op.or]: [
+              { employee_name: { [Op.iLike]: `%${keyword}%` } },
+              { employee_lastname: { [Op.iLike]: `%${keyword}%` } },
+              { employee_email: { [Op.iLike]: `%${keyword}%` } },
+            ],
+          }
+        : {};
+
+      const whereCondition = {
+        active: "Y",
+        ...searchCondition,
+      };
+
+      const employeesData = await employees.findAll({
+        attributes: [
+          "employee_matricule",
+          "employee_name",
+          "employee_lastname",
+          "employee_birth_date",
+          "employee_email",
+          "employee_adress",
+          "employee_job_title",
+        ],
+        where: whereCondition,
+        order: [["employee_id", "ASC"]],
+        limit: parseInt(limit),
+        offset: parseInt(offset),
+      });
+      console.log("employeesData", employeesData);
+
+      const [totalCount, maleCount, femaleCount, newEmployeesCount] =
+        await Promise.all([
+          employees.count({ where: { active: "Y" } }),
+          employees.count({ where: { active: "Y", employee_gender: "Male" } }),
+          employees.count({
+            where: { active: "Y", employee_gender: "Female" },
+          }),
+          employees.count({
+            where: {
+              active: "Y",
+              employee_joining_date: {
+                [Op.gte]: Sequelize.literal(
+                  "CURRENT_DATE - INTERVAL '1 MONTH'"
+                ),
+              },
+            },
+          }),
+        ]);
+
+      return res.status(200).json({
+        status: true,
+        data: employeesData,
+        statistics: {
+          total: totalCount,
+          male: maleCount,
+          female: femaleCount,
+          newEmployees: newEmployeesCount,
+        },
+        message: "Retrieved successfully",
+      });
     } catch (error) {
       return next(error);
     }
@@ -50,7 +114,6 @@ class employeesDao {
       );
       const contract_id = contractResult[0].contract_id;
       console.log("Contract ID:", contract_id);
-      
 
       const {
         account_holder_name = null,
@@ -84,7 +147,6 @@ class employeesDao {
       );
       const bank_details_id = bankResult[0].bank_details_id;
       console.log("Bank Details ID:", bank_details_id);
-      
 
       const {
         employee_name = null,
@@ -143,7 +205,7 @@ class employeesDao {
     } catch (error) {
       await t.rollback();
       console.error("Error in addOneEmployee:", error);
-      
+
       return next(error);
     }
   }
