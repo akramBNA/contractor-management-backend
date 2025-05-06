@@ -6,6 +6,9 @@ module.exports = {
   getAllEmployees: function (req, res, next) {
     employees_instance.getAllEmployees(req, res, next);
   },
+  getEmployeeById: function (req, res, next) {
+    employees_instance.getEmployeeById(req, res, next);
+  },
   addOneEmployee: function (req, res, next) {
     employees_instance.addOneEmployee(req, res, next);
   },

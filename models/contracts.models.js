@@ -24,7 +24,7 @@ const contracts = sequelize.define(
     },
   },
   {
-    timestamps: true,
+    timestamps: false,
   }
 );
 

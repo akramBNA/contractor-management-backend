@@ -36,7 +36,7 @@ const employee_bank_details = sequelize.define(
     },
   },
   {
-    timestamps: true,
+    timestamps: false,
   }
 );
 
