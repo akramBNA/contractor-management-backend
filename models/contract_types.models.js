@@ -1,8 +1,8 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const { sequelize } = require("../database/database.js");
 
-const contracts_types = sequelize.define(
-  "contracts_types",
+const contract_types = sequelize.define(
+  "contract_types",
   {
     contract_type_id: {
       type: DataTypes.INTEGER,
@@ -26,11 +26,11 @@ const contracts_types = sequelize.define(
     },
   },
   {
-    timestamps: true,
+    timestamps: false,
   }
 );
 
 module.exports = {
-  contracts_types,
+  contract_types,
   sequelize,
 };

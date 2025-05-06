@@ -10,6 +10,7 @@ const {
   employee_bank_details,
   sequelize: bankDetailsSequelize,
 } = require("../models/employee_bank_details.models");
+const {contract_types, sequelize: contractTypesSequelize} = require("../models/contract_types.models");
 const { Op, Sequelize } = require("sequelize");
 
 class employeesDao {
@@ -89,6 +90,70 @@ class employeesDao {
           newEmployees: newEmployeesCount,
         },
         message: "Retrieved successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getEmployeeById(req, res, next) {
+    try {
+      const  id  = parseInt(req.params.id,10);
+      
+      const employee = await employees.findOne({
+        where: {
+          employee_id: id,
+          active: "Y",
+        },
+      });
+  
+      if (!employee) {
+        return res.status(404).json({
+          status: false,
+          data: null,
+          message: "Employee not found or inactive",
+        });
+      }
+  
+      let contract = null;
+      let contractType = null;
+      if (employee.employee_contract_id) {
+        contract = await contracts.findOne({
+          where: {
+            contract_id: employee.employee_contract_id,
+            active: "Y",
+          },
+        });
+  
+        if (contract && contract.contract_type_id) {
+          contractType = await contract_types.findOne({
+            where: {
+              contract_type_id: contract.contract_type_id,
+              active: "Y",
+            },
+          });
+        }
+      }
+  
+      let bankDetails = null;
+      if (employee.employee_bank_details_id) {
+        bankDetails = await employee_bank_details.findOne({
+          where: {
+            bank_details_id: employee.employee_bank_details_id,
+            active: "Y",
+          },
+        });
+      }
+  
+      return res.status(200).json({
+        status: true,
+        data: {
+          employee,
+          contract,
+          contractType,
+          bankDetails,
+        },
+        message: "Employee data retrieved successfully",
       });
     } catch (error) {
       return next(error);

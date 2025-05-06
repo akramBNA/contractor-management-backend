@@ -85,7 +85,7 @@ const employees = sequelize.define(
     },
   },
   {
-    timestamps: true,
+    timestamps: false,
   }
 );
 
