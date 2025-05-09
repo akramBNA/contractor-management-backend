@@ -17,8 +17,7 @@ class employeesDao {
 
   async getAllEmployees(req, res, next) {
     try {
-      const { limit = 10, offset = 0, keyword = "" } = req.query;
-      console.log("params", req.query);
+      const { limit = 20, offset = 0, keyword = "" } = req.query;
       
       const activeCount = await employees.count({ where: { active: "Y" } });
       if (activeCount === 0) {
@@ -59,7 +58,6 @@ class employeesDao {
         limit: parseInt(limit),
         offset: parseInt(offset),
       });
-      console.log("employeesData", employeesData);
 
       const [totalCount, maleCount, femaleCount, newEmployeesCount] =
         await Promise.all([
