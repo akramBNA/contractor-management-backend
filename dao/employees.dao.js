@@ -10,15 +10,17 @@ const {
   employee_bank_details,
   sequelize: bankDetailsSequelize,
 } = require("../models/employee_bank_details.models");
-const {contract_types, sequelize: contractTypesSequelize} = require("../models/contract_types.models");
+const {
+  contract_types,
+  sequelize: contractTypesSequelize,
+} = require("../models/contract_types.models");
 const { Op, Sequelize } = require("sequelize");
 
 class employeesDao {
-
   async getAllEmployees(req, res, next) {
     try {
       const { limit = 20, offset = 0, keyword = "" } = req.query;
-      
+
       const activeCount = await employees.count({ where: { active: "Y" } });
       if (activeCount === 0) {
         return res.status(404).json({
@@ -50,7 +52,7 @@ class employeesDao {
           "employee_lastname",
           "employee_birth_date",
           "employee_email",
-          "employee_adress",
+          "employee_address",
           "employee_job_title",
         ],
         where: whereCondition,
@@ -96,15 +98,15 @@ class employeesDao {
 
   async getEmployeeById(req, res, next) {
     try {
-      const  id  = parseInt(req.params.id,10);
-      
+      const id = parseInt(req.params.id, 10);
+
       const employee = await employees.findOne({
         where: {
           employee_id: id,
           active: "Y",
         },
       });
-  
+
       if (!employee) {
         return res.status(404).json({
           status: false,
@@ -112,7 +114,7 @@ class employeesDao {
           message: "Employee not found or inactive",
         });
       }
-  
+
       let contract = null;
       let contractType = null;
       if (employee.employee_contract_id) {
@@ -122,7 +124,7 @@ class employeesDao {
             active: "Y",
           },
         });
-  
+
         if (contract && contract.contract_type_id) {
           contractType = await contract_types.findOne({
             where: {
@@ -132,7 +134,7 @@ class employeesDao {
           });
         }
       }
-  
+
       let bankDetails = null;
       if (employee.employee_bank_details_id) {
         bankDetails = await employee_bank_details.findOne({
@@ -142,7 +144,7 @@ class employeesDao {
           },
         });
       }
-  
+
       return res.status(200).json({
         status: true,
         data: {
@@ -216,7 +218,7 @@ class employeesDao {
         employee_lastname = null,
         employee_phone_number = null,
         employee_email = null,
-        employee_adress = null,
+        employee_address = null,
         employee_national_id = null,
         employee_gender = null,
         employee_birth_date = null,
@@ -228,7 +230,7 @@ class employeesDao {
       await employeesSequelize.query(
         `INSERT INTO employees (
           employee_name, employee_lastname, employee_phone_number,
-          employee_email, employee_adress, employee_national_id,
+          employee_email, employee_address, employee_national_id,
           employee_image_id, employee_bank_details_id,
           employee_contract_id, employee_gender,
           employee_birth_date, employee_job_title,
@@ -236,7 +238,7 @@ class employeesDao {
         )
         VALUES (
           :employee_name, :employee_lastname, :employee_phone_number,
-          :employee_email, :employee_adress, :employee_national_id,
+          :employee_email, :employee_address, :employee_national_id,
           NULL, :bank_details_id,
           :contract_id, :employee_gender,
           :employee_birth_date, :employee_job_title,
@@ -248,7 +250,7 @@ class employeesDao {
             employee_lastname,
             employee_phone_number,
             employee_email,
-            employee_adress,
+            employee_address,
             employee_national_id,
             bank_details_id,
             contract_id,
@@ -264,7 +266,11 @@ class employeesDao {
       );
 
       await t.commit();
-      return res.status(201).json({ message: "Employee added successfully!" });
+      return res.status(201).json({
+          status: true,
+          data: [],
+          message: "Employee added successfully!",
+        });
     } catch (error) {
       await t.rollback();
       console.error("Error in addOneEmployee:", error);

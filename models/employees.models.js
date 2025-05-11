@@ -48,7 +48,7 @@ const employees = sequelize.define(
         allowNull: true,
 
       },
-      employee_adress: {
+      employee_address: {
         type: DataTypes.STRING,
         allowNull: true,
 
