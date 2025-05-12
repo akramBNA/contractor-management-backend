@@ -47,13 +47,14 @@ class employeesDao {
 
       const employeesData = await employees.findAll({
         attributes: [
+          "employee_id",
           "employee_matricule",
           "employee_name",
           "employee_lastname",
-          "employee_birth_date",
           "employee_email",
           "employee_address",
           "employee_job_title",
+          "employee_phone_number"
         ],
         where: whereCondition,
         order: [["employee_id", "ASC"]],
@@ -275,6 +276,82 @@ class employeesDao {
       await t.rollback();
       console.error("Error in addOneEmployee:", error);
 
+      return next(error);
+    }
+  }
+
+  async getEmployeeById(req, res, next) {
+    try {
+      const id = parseInt(req.params.id, 10);
+
+      const employee_data = await employees.findOne({
+        where: {
+          employee_id: id,
+          active: "Y",
+        },
+      });
+
+      if (!employee_data) {
+        return res.status(404).json({
+          status: false,
+          data: null,
+          message: "Employee not found or inactive",
+        });
+      }
+
+      const contracts_query = `SELECT 
+                employees.employee_id,
+                employees.employee_name,
+                employees.employee_lastname,
+                employees.employee_phone_number,
+                employees.employee_email,
+                employees.employee_address,
+                employees.employee_national_id  ,
+                employees.employee_gender,
+                employees.employee_birth_date,
+                employees.employee_job_title,
+                employees.employee_matricule,
+                employees.employee_joining_date,
+                employees.employee_bank_details_id,
+                employees.employee_contract_id,
+                
+                contracts.salary,
+                
+                contract_types.contract_type_id,
+                contract_types.contract_name,
+                
+                employee_bank_details.account_holder_name,
+                employee_bank_details.account_number,
+                employee_bank_details.bank_name,
+                employee_bank_details.branch_location,
+                employee_bank_details.tax_payer_id
+                
+              FROM employees
+              JOIN contracts 
+                ON contracts.contract_id = employees.employee_contract_id
+              LEFT JOIN contract_types 
+                ON contracts.contract_type_id = contract_types.contract_type_id
+              LEFT JOIN employee_bank_details 
+                ON employee_bank_details.bank_details_id = employees.employee_bank_details_id
+              WHERE
+                employees.employee_id = :id
+                AND contracts.active = 'Y' 
+                AND contract_types.active = 'Y';
+            `;
+
+      const employee_data_2 = await employeesSequelize.query(contracts_query, {
+        replacements: { id },
+        type: employeesSequelize.QueryTypes.SELECT,
+      });
+
+      
+     return res.status(200).json({
+        status: true,
+        data: employee_data_2,
+        message: "Employee data retrieved successfully",
+      });
+
+    } catch (error) {
       return next(error);
     }
   }
