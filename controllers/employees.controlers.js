@@ -12,4 +12,7 @@ module.exports = {
   addOneEmployee: function (req, res, next) {
     employees_instance.addOneEmployee(req, res, next);
   },
+  getEmployeeById: function (req, res, next) {
+    employees_instance.getEmployeeById(req, res, next);
+  },
 };
