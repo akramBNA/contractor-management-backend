@@ -15,4 +15,7 @@ module.exports = {
   getEmployeeById: function (req, res, next) {
     employees_instance.getEmployeeById(req, res, next);
   },
+  getJobsAndContractTypes: function (req, res, next) {
+    employees_instance.getJobsAndContractTypes(req, res, next);
+  }
 };

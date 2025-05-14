@@ -12,13 +12,13 @@ class contractsDao {
       );
       if (get_all_contracts_data) {
         res.status(200).json({
-          status: true,
+          success: true,
           Data: get_all_contracts_data,
           message: "Retrieved successfully",
         });
       } else {
         res.json({
-          status: false,
+          success: false,
           Data: [],
           message: "Failed to retrieve data",
         });
