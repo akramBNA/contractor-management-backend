@@ -24,7 +24,7 @@ class employeesDao {
       const activeCount = await employees.count({ where: { active: "Y" } });
       if (activeCount === 0) {
         return res.status(404).json({
-          status: false,
+          success: false,
           data: [],
           message: "No employees found",
         });
@@ -82,7 +82,7 @@ class employeesDao {
         ]);
 
       return res.status(200).json({
-        status: true,
+        success: true,
         data: employeesData,
         statistics: {
           total: totalCount,
@@ -110,7 +110,7 @@ class employeesDao {
 
       if (!employee) {
         return res.status(404).json({
-          status: false,
+          success: false,
           data: null,
           message: "Employee not found or inactive",
         });
@@ -147,7 +147,7 @@ class employeesDao {
       }
 
       return res.status(200).json({
-        status: true,
+        success: true,
         data: {
           employee,
           contract,
@@ -268,7 +268,7 @@ class employeesDao {
 
       await t.commit();
       return res.status(201).json({
-          status: true,
+          success: true,
           data: [],
           message: "Employee added successfully!",
         });
@@ -293,7 +293,7 @@ class employeesDao {
 
       if (!employee_data) {
         return res.status(404).json({
-          status: false,
+          success: false,
           data: null,
           message: "Employee not found or inactive",
         });
@@ -346,11 +346,36 @@ class employeesDao {
 
       
      return res.status(200).json({
-        status: true,
+        success: true,
         data: employee_data_2[0],
         message: "Employee data retrieved successfully",
       });
 
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getJobsAndContractTypes(req, res, next) {
+    try {
+      const jobs_query = "SELECT * FROM jobs WHERE active='Y' ORDER BY job_id ASC";
+      const contract_types_query ="SELECT * FROM contract_types WHERE active='Y' ORDER BY contract_type_id ASC";
+
+      const [jobs, contract_types] = await Promise.all([
+        employeesSequelize.query(jobs_query, {
+          type: employeesSequelize.QueryTypes.SELECT,
+        }),
+        employeesSequelize.query(contract_types_query, {
+          type: employeesSequelize.QueryTypes.SELECT,
+        }),
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        data_jobs: jobs,
+        data_contract_types: contract_types,
+        message: "Retrieved successfully",
+      });
     } catch (error) {
       return next(error);
     }
