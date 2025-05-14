@@ -347,7 +347,7 @@ class employeesDao {
       
      return res.status(200).json({
         status: true,
-        data: employee_data_2,
+        data: employee_data_2[0],
         message: "Employee data retrieved successfully",
       });
 
