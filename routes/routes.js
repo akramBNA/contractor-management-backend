@@ -7,6 +7,7 @@ const employees_controller = require("../controllers/employees.controlers");
 const contracts_controlers = require("../controllers/contracts.controlers");
 const contract_types_controller = require("../controllers/contract_types.controllers");
 const employee_bank_details_controller = require("../controllers/employee_bank_details.controllers");
+const jobs_controller = require("../controllers/jobs.controllers");
 
 
 // USERS ROUTES.
@@ -31,6 +32,9 @@ router.get("/contract_types/getAllContractTypes/", contract_types_controller.get
 
 // EMPLOYEE BANK DETAILS ROUTES
 router.get("/employee_bank_details/getAllEmployeeBankDetails/", employee_bank_details_controller.getAllEmployeeBankDetails);
+
+// JOBS ROUTES
+router.get("/jobs/getAllJobs/", jobs_controller.getAllJobs);
 
 
 module.exports = router;
