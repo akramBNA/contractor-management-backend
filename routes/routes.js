@@ -40,6 +40,7 @@ router.get("/jobs/getAllJobs/", jobs_controller.getAllJobs);
 
 // PROJECTS ROUTES
 router.get("/projects/getAllProjects/", projects_controller.getAllProjects);
+router.post("/projects/addProject/", projects_controller.addProject);
 
 
 module.exports = router;

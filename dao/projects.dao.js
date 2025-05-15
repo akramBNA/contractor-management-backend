@@ -31,6 +31,41 @@ class projectsDao {
     }
   }
 
+  async addProject(req, res, next) {
+  try {
+    const {
+      project_name,
+      description,
+      assigned_to,
+      start_date,
+      end_date,
+      duration,
+      priority,
+      status,
+    } = req.body;
+
+    const newProject = await projects.create({
+      project_name,
+      description,
+      assigned_to,
+      start_date,
+      end_date,
+      duration,
+      priority,
+      status,
+      active: 'Y'
+    });
+
+    res.status(200).json({
+      success: true,
+      data: newProject,
+      message: "Project created successfully",
+    });
+
+  } catch (error) {
+    next(error);
+  }
+ }
 }
 
 module.exports = projectsDao;

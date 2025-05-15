@@ -6,4 +6,7 @@ module.exports = {
   getAllProjects: function (req, res, next) {
     projects_instance.getAllProjects(req, res, next);
   },
+  addProject: function (req, res, next) {
+    projects_instance.addProject(req, res, next);
+  },
 };
