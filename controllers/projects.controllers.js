@@ -9,4 +9,7 @@ module.exports = {
   addProject: function (req, res, next) {
     projects_instance.addProject(req, res, next);
   },
+  getProjectById: function (req, res, next) {
+    projects_instance.getProjectById(req, res, next);
+  }
 };
