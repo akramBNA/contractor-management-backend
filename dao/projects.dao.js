@@ -30,67 +30,6 @@ class projectsDao {
     } catch (error) {
       return next(error);
     }
-  }
-
-  async addProject(req, res, next) {
-    try {
-        const {
-        project_name,
-        description,
-        assigned_to,
-        start_date,
-        end_date,
-        priority,
-        status,
-        } = req.body;
-
-        if (!project_name || !start_date || !end_date || !priority || !status) {
-        return res.status(400).json({
-            success: false,
-            message: "Missing required fields: project_name, start_date, end_date, priority, status",
-        });
-        }
-
-        const start = parseISO(start_date);
-        const end = parseISO(end_date);
-
-        if (!isValid(start) || !isValid(end)) {
-        return res.status(400).json({
-            success: false,
-            message: "Invalid date format. Use 'YYYY-MM-DD'",
-        });
-        }
-
-        if (!isBefore(start, end) && start_date !== end_date) {
-        return res.status(400).json({
-            success: false,
-            message: "start_date must be before or equal to end_date",
-        });
-        }
-
-        const duration = differenceInDays(end, start) + 1;
-
-        const newProject = await projects.create({
-            project_name,
-            description,
-            assigned_to,
-            start_date,
-            end_date,
-            duration,
-            priority,
-            status,
-            active: 'Y'
-        });
-
-        res.status(200).json({
-            success: true,
-            data: newProject,
-            message: "Project created successfully",
-        });
-
-    } catch (error) {
-        next(error);
-    }
  }
 
  async getProjectById(req, res, next) {
@@ -171,6 +110,67 @@ class projectsDao {
   } catch (error) {
     next(error);
   }
+ }
+
+ async addProject(req, res, next) {
+    try {
+        const {
+        project_name,
+        description,
+        assigned_to,
+        start_date,
+        end_date,
+        priority,
+        status,
+        } = req.body;
+
+        if (!project_name || !start_date || !end_date || !priority || !status) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing required fields: project_name, start_date, end_date, priority, status",
+        });
+        }
+
+        const start = parseISO(start_date);
+        const end = parseISO(end_date);
+
+        if (!isValid(start) || !isValid(end)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid date format. Use 'YYYY-MM-DD'",
+        });
+        }
+
+        if (!isBefore(start, end) && start_date !== end_date) {
+        return res.status(400).json({
+            success: false,
+            message: "start_date must be before or equal to end_date",
+        });
+        }
+
+        const duration = differenceInDays(end, start) + 1;
+
+        const newProject = await projects.create({
+            project_name,
+            description,
+            assigned_to,
+            start_date,
+            end_date,
+            duration,
+            priority,
+            status,
+            active: 'Y'
+        });
+
+        res.status(200).json({
+            success: true,
+            data: newProject,
+            message: "Project created successfully",
+        });
+
+    } catch (error) {
+        next(error);
+    }
  }
 
 }

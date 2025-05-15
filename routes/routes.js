@@ -9,6 +9,7 @@ const contract_types_controller = require("../controllers/contract_types.control
 const employee_bank_details_controller = require("../controllers/employee_bank_details.controllers");
 const jobs_controller = require("../controllers/jobs.controllers");
 const projects_controller = require("../controllers/projects.controllers");
+const tasks_controller = require("../controllers/tasks.controllers");
 
 
 // USERS ROUTES.
@@ -42,6 +43,9 @@ router.get("/jobs/getAllJobs/", jobs_controller.getAllJobs);
 router.get("/projects/getAllProjects/", projects_controller.getAllProjects);
 router.post("/projects/addProject/", projects_controller.addProject);
 router.get("/projects/getProjectById/:project_id", projects_controller.getProjectById);
+
+// TASKS ROUTES
+router.post("/tasks/getAllTasks/:project_id", tasks_controller.addTask);
 
 
 module.exports = router;
