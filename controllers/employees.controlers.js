@@ -21,4 +21,7 @@ module.exports = {
   editEmployee: function (req, res, next) {
     employees_instance.editEmployee(req, res, next);
   },
+  deleteEmployee: function (req, res, next) {
+    employees_instance.deleteEmployee(req, res, next);
+  }
 };
