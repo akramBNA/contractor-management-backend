@@ -27,7 +27,7 @@ router.post("/employees/addOneEmployee/", employees_controller.addOneEmployee);
 router.get("/employees/getEmployeeById/:id", employees_controller.getEmployeeById);
 router.get("/employees/getJobsAndContractTypes/", employees_controller.getJobsAndContractTypes);
 router.put("/employees/editEmployee/:id", employees_controller.editEmployee);
-router.put("/employees/deleteEmployee/:id", employees_controller.deleteEmployee);
+router.delete("/employees/deleteEmployee/:id", employees_controller.deleteEmployee);
 
 // CONTRACTS ROUTES
 router.get("/contracts/getAllContracts/", contracts_controlers.getAllContracts);
