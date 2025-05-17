@@ -17,5 +17,8 @@ module.exports = {
   },
   getJobsAndContractTypes: function (req, res, next) {
     employees_instance.getJobsAndContractTypes(req, res, next);
-  }
+  },
+  editEmployee: function (req, res, next) {
+    employees_instance.editEmployee(req, res, next);
+  },
 };

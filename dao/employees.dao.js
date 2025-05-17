@@ -54,7 +54,7 @@ class employeesDao {
           "employee_email",
           "employee_address",
           "employee_job_title",
-          "employee_phone_number"
+          "employee_phone_number",
         ],
         where: whereCondition,
         order: [["employee_id", "ASC"]],
@@ -97,69 +97,69 @@ class employeesDao {
     }
   }
 
-  async getEmployeeById(req, res, next) {
-    try {
-      const id = parseInt(req.params.id, 10);
+  // async getEmployeeById(req, res, next) {
+  //   try {
+  //     const id = parseInt(req.params.id, 10);
 
-      const employee = await employees.findOne({
-        where: {
-          employee_id: id,
-          active: "Y",
-        },
-      });
+  //     const employee = await employees.findOne({
+  //       where: {
+  //         employee_id: id,
+  //         active: "Y",
+  //       },
+  //     });
 
-      if (!employee) {
-        return res.status(404).json({
-          success: false,
-          data: null,
-          message: "Employee not found or inactive",
-        });
-      }
+  //     if (!employee) {
+  //       return res.status(404).json({
+  //         success: false,
+  //         data: null,
+  //         message: "Employee not found or inactive",
+  //       });
+  //     }
 
-      let contract = null;
-      let contractType = null;
-      if (employee.employee_contract_id) {
-        contract = await contracts.findOne({
-          where: {
-            contract_id: employee.employee_contract_id,
-            active: "Y",
-          },
-        });
+  //     let contract = null;
+  //     let contractType = null;
+  //     if (employee.employee_contract_id) {
+  //       contract = await contracts.findOne({
+  //         where: {
+  //           contract_id: employee.employee_contract_id,
+  //           active: "Y",
+  //         },
+  //       });
 
-        if (contract && contract.contract_type_id) {
-          contractType = await contract_types.findOne({
-            where: {
-              contract_type_id: contract.contract_type_id,
-              active: "Y",
-            },
-          });
-        }
-      }
+  //       if (contract && contract.contract_type_id) {
+  //         contractType = await contract_types.findOne({
+  //           where: {
+  //             contract_type_id: contract.contract_type_id,
+  //             active: "Y",
+  //           },
+  //         });
+  //       }
+  //     }
 
-      let bankDetails = null;
-      if (employee.employee_bank_details_id) {
-        bankDetails = await employee_bank_details.findOne({
-          where: {
-            bank_details_id: employee.employee_bank_details_id,
-            active: "Y",
-          },
-        });
-      }
+  //     let bankDetails = null;
+  //     if (employee.employee_bank_details_id) {
+  //       bankDetails = await employee_bank_details.findOne({
+  //         where: {
+  //           bank_details_id: employee.employee_bank_details_id,
+  //           active: "Y",
+  //         },
+  //       });
+  //     }
 
-      return res.status(200).json({
-        success: true,
-        data: {
-          employee,
-          contract,
-          contractType,
-          bankDetails,
-        },
-        message: "Employee data retrieved successfully",
-      });
-    } catch (error) {
-      return next(error);
-    }
-  }
+  //     return res.status(200).json({
+  //       success: true,
+  //       data: {
+  //         employee,
+  //         contract,
+  //         contractType,
+  //         bankDetails,
+  //       },
+  //       message: "Employee data retrieved successfully",
+  //     });
+  //   } catch (error) {
+  //     return next(error);
+  //   }
+  // }
 
   async addOneEmployee(req, res, next) {
     const t = await employeesSequelize.transaction();
@@ -268,10 +268,10 @@ class employeesDao {
 
       await t.commit();
       return res.status(201).json({
-          success: true,
-          data: [],
-          message: "Employee added successfully!",
-        });
+        success: true,
+        data: [],
+        message: "Employee added successfully!",
+      });
     } catch (error) {
       await t.rollback();
       console.error("Error in addOneEmployee:", error);
@@ -344,13 +344,11 @@ class employeesDao {
         type: employeesSequelize.QueryTypes.SELECT,
       });
 
-      
-     return res.status(200).json({
+      return res.status(200).json({
         success: true,
         data: employee_data_2[0],
         message: "Employee data retrieved successfully",
       });
-
     } catch (error) {
       return next(error);
     }
@@ -358,8 +356,10 @@ class employeesDao {
 
   async getJobsAndContractTypes(req, res, next) {
     try {
-      const jobs_query = "SELECT * FROM jobs WHERE active='Y' ORDER BY job_id ASC";
-      const contract_types_query ="SELECT * FROM contract_types WHERE active='Y' ORDER BY contract_type_id ASC";
+      const jobs_query =
+        "SELECT * FROM jobs WHERE active='Y' ORDER BY job_id ASC";
+      const contract_types_query =
+        "SELECT * FROM contract_types WHERE active='Y' ORDER BY contract_type_id ASC";
 
       const [jobs, contract_types] = await Promise.all([
         employeesSequelize.query(jobs_query, {
@@ -377,6 +377,122 @@ class employeesDao {
         message: "Retrieved successfully",
       });
     } catch (error) {
+      return next(error);
+    }
+  }
+
+  async editEmployee(req, res, next) {
+    const t = await employeesSequelize.transaction();
+
+    try {
+      const employee_id = req.params.id || req.body.employee_id;
+      if (!employee_id) throw new Error("Employee ID is required");
+
+      const [employeeData] = await employeesSequelize.query(
+        `SELECT employee_contract_id AS contract_id,
+              employee_bank_details_id AS bank_details_id
+       FROM employees
+       WHERE employee_id = :employee_id AND active = 'Y';`,
+        {
+          replacements: { employee_id },
+          type: employeesSequelize.QueryTypes.SELECT,
+          transaction: t,
+        }
+      );
+
+      if (!employeeData) {
+        throw new Error("Employee not found or inactive");
+      }
+
+      const { contract_id, bank_details_id } = employeeData;
+
+      const contractUpdates = {};
+      if (req.body.contract_type_id !== undefined)
+        contractUpdates.contract_type_id = req.body.contract_type_id;
+      if (req.body.salary !== undefined)
+        contractUpdates.salary = req.body.salary;
+
+      if (Object.keys(contractUpdates).length > 0) {
+        const contractFields = Object.keys(contractUpdates)
+          .map((key) => `${key} = :${key}`)
+          .join(", ");
+
+        await contractsSequelize.query(
+          `UPDATE contracts SET ${contractFields} WHERE contract_id = :contract_id`,
+          {
+            replacements: { ...contractUpdates, contract_id },
+            type: contractsSequelize.QueryTypes.UPDATE,
+            transaction: t,
+          }
+        );
+      }
+
+      const bankUpdates = {};
+      [
+        "account_holder_name",
+        "account_number",
+        "bank_name",
+        "branch_location",
+        "tax_payer_id",
+      ].forEach((key) => {
+        if (req.body[key] !== undefined) bankUpdates[key] = req.body[key];
+      });
+
+      if (Object.keys(bankUpdates).length > 0) {
+        const bankFields = Object.keys(bankUpdates)
+          .map((key) => `${key} = :${key}`)
+          .join(", ");
+
+        await bankDetailsSequelize.query(
+          `UPDATE employee_bank_details SET ${bankFields} WHERE bank_details_id = :bank_details_id`,
+          {
+            replacements: { ...bankUpdates, bank_details_id },
+            type: bankDetailsSequelize.QueryTypes.UPDATE,
+            transaction: t,
+          }
+        );
+      }
+
+      const employeeUpdates = {};
+      [
+        "employee_name",
+        "employee_lastname",
+        "employee_phone_number",
+        "employee_email",
+        "employee_address",
+        "employee_national_id",
+        "employee_gender",
+        "employee_birth_date",
+        "employee_job_title",
+        "employee_joining_date",
+        "employee_matricule",
+      ].forEach((key) => {
+        if (req.body[key] !== undefined) employeeUpdates[key] = req.body[key];
+      });
+
+      if (Object.keys(employeeUpdates).length > 0) {
+        const empFields = Object.keys(employeeUpdates)
+          .map((key) => `${key} = :${key}`)
+          .join(", ");
+
+        await employeesSequelize.query(
+          `UPDATE employees SET ${empFields} WHERE employee_id = :employee_id`,
+          {
+            replacements: { ...employeeUpdates, employee_id },
+            type: employeesSequelize.QueryTypes.UPDATE,
+            transaction: t,
+          }
+        );
+      }
+
+      await t.commit();
+      return res.status(200).json({
+        success: true,
+        message: "Employee updated successfully!",
+      });
+    } catch (error) {
+      await t.rollback();
+      console.error("Error in editEmployee:", error);
       return next(error);
     }
   }
