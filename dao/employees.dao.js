@@ -496,6 +496,64 @@ class employeesDao {
       return next(error);
     }
   }
+
+  async deleteEmployee(req, res, next) {
+    try {
+      const employee_id = req.params.id;
+
+      const employee_data_query = `SELECT employees.employee_id, contracts.contract_id, employee_bank_details.bank_details_id 
+      FROM employees LEFT JOIN contracts on employees.employee_contract_id = contracts.contract_id 
+      LEFT JOIN employee_bank_details on employees.employee_bank_details_id = employee_bank_details.bank_details_id 
+      WHERE employees.employee_id = :employee_id AND employees.active = 'Y';`;
+
+      const employee_data = await employeesSequelize.query(
+        employee_data_query,
+        {
+          replacements: { employee_id },
+          type: employeesSequelize.QueryTypes.SELECT,
+        }
+      );
+
+      if (employee_data.length) {
+        const contract_id = employee_data[0].contract_id;
+        const bank_details_id = employee_data[0].bank_details_id;
+
+        const delete_contract_query = `UPDATE contracts SET active = 'N' WHERE contract_id = :contract_id;`;
+        const delete_bank_details_query = `UPDATE employee_bank_details SET active = 'N' WHERE bank_details_id = :bank_details_id;`;
+        const delete_employee_query = `UPDATE employees SET active = 'N' WHERE employee_id = :employee_id;`;
+
+        if (contract_id) {
+          await employeesSequelize.query(delete_contract_query, {
+            replacements: { contract_id },
+            type: employeesSequelize.QueryTypes.UPDATE,
+          });
+        }
+        if (bank_details_id) {
+          await employeesSequelize.query(delete_bank_details_query, {
+            replacements: { bank_details_id },
+            type: employeesSequelize.QueryTypes.UPDATE,
+          });
+        }
+        await employeesSequelize.query(delete_employee_query, {
+          replacements: { employee_id },
+          type: employeesSequelize.QueryTypes.UPDATE,
+        });
+
+        return res.status(200).json({
+          success: true,
+          data: [],
+          message: "Employee deleted successfully!",
+        });
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: "Employee not found or inactive",
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+  }
 }
 
 module.exports = employeesDao;
