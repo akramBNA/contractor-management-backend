@@ -63,6 +63,11 @@ const employees = sequelize.define(
         allowNull: true,
 
       },
+      employee_end_date: {
+        type: DataTypes.DATE,
+        allowNull: true,
+
+      },
       employee_image_id: {
         type: DataTypes.STRING,
         allowNull: true,
