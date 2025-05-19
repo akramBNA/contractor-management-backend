@@ -97,70 +97,6 @@ class employeesDao {
     }
   }
 
-  // async getEmployeeById(req, res, next) {
-  //   try {
-  //     const id = parseInt(req.params.id, 10);
-
-  //     const employee = await employees.findOne({
-  //       where: {
-  //         employee_id: id,
-  //         active: "Y",
-  //       },
-  //     });
-
-  //     if (!employee) {
-  //       return res.status(404).json({
-  //         success: false,
-  //         data: null,
-  //         message: "Employee not found or inactive",
-  //       });
-  //     }
-
-  //     let contract = null;
-  //     let contractType = null;
-  //     if (employee.employee_contract_id) {
-  //       contract = await contracts.findOne({
-  //         where: {
-  //           contract_id: employee.employee_contract_id,
-  //           active: "Y",
-  //         },
-  //       });
-
-  //       if (contract && contract.contract_type_id) {
-  //         contractType = await contract_types.findOne({
-  //           where: {
-  //             contract_type_id: contract.contract_type_id,
-  //             active: "Y",
-  //           },
-  //         });
-  //       }
-  //     }
-
-  //     let bankDetails = null;
-  //     if (employee.employee_bank_details_id) {
-  //       bankDetails = await employee_bank_details.findOne({
-  //         where: {
-  //           bank_details_id: employee.employee_bank_details_id,
-  //           active: "Y",
-  //         },
-  //       });
-  //     }
-
-  //     return res.status(200).json({
-  //       success: true,
-  //       data: {
-  //         employee,
-  //         contract,
-  //         contractType,
-  //         bankDetails,
-  //       },
-  //       message: "Employee data retrieved successfully",
-  //     });
-  //   } catch (error) {
-  //     return next(error);
-  //   }
-  // }
-
   async addOneEmployee(req, res, next) {
     const t = await employeesSequelize.transaction();
 
@@ -225,6 +161,7 @@ class employeesDao {
         employee_birth_date = null,
         employee_job_title = null,
         employee_joining_date = null,
+        employee_end_date = null,
         employee_matricule = null,
       } = req.body;
 
@@ -235,7 +172,7 @@ class employeesDao {
           employee_image_id, employee_bank_details_id,
           employee_contract_id, employee_gender,
           employee_birth_date, employee_job_title,
-          employee_joining_date, employee_matricule
+          employee_joining_date, employee_end_date, employee_matricule
         )
         VALUES (
           :employee_name, :employee_lastname, :employee_phone_number,
@@ -243,7 +180,7 @@ class employeesDao {
           NULL, :bank_details_id,
           :contract_id, :employee_gender,
           :employee_birth_date, :employee_job_title,
-          :employee_joining_date, :employee_matricule
+          :employee_joining_date, :employee_end_date, :employee_matricule
         );`,
         {
           replacements: {
@@ -259,6 +196,7 @@ class employeesDao {
             employee_birth_date,
             employee_job_title,
             employee_joining_date,
+            employee_end_date,
             employee_matricule,
           },
           type: employeesSequelize.QueryTypes.INSERT,
@@ -312,6 +250,7 @@ class employeesDao {
                 employees.employee_job_title,
                 employees.employee_matricule,
                 employees.employee_joining_date,
+                employees.employee_end_date,
                 employees.employee_bank_details_id,
                 employees.employee_contract_id,
                 
@@ -465,6 +404,7 @@ class employeesDao {
         "employee_birth_date",
         "employee_job_title",
         "employee_joining_date",
+        "employee_end_date",
         "employee_matricule",
       ].forEach((key) => {
         if (req.body[key] !== undefined) employeeUpdates[key] = req.body[key];
