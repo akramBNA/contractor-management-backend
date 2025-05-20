@@ -10,6 +10,7 @@ const employee_bank_details_controller = require("../controllers/employee_bank_d
 const jobs_controller = require("../controllers/jobs.controllers");
 const projects_controller = require("../controllers/projects.controllers");
 const tasks_controller = require("../controllers/tasks.controllers");
+const company_controller = require("../controllers/company.controllers");
 
 
 // USERS ROUTES.
