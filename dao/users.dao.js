@@ -33,7 +33,7 @@ class usersDao {
       const total = totalCountResult[0]?.total || 0;
 
       res.status(200).json({
-        status: true,
+        success: true,
         data: get_all_users_data,
         total: total,
         message: "Retrieved successfully",
@@ -61,7 +61,7 @@ class usersDao {
 
       if (existingUser) {
         return res.status(400).json({
-          status: false,
+          success: false,
           message: "User with this email already exists",
         });
       }
@@ -85,7 +85,7 @@ class usersDao {
       });
 
       res.status(201).json({
-        status: true,
+        success: true,
         message: "User created successfully",
         data: {
           user_id: newUser.user_id,
