@@ -1,4 +1,5 @@
 const { users } = require("../models/users.models.js");
+const { roles } = require("../models/roles.models.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const SECRET_KEY = process.env.AUTH_SECRET_KEY || "";
@@ -106,7 +107,19 @@ class usersDao {
       const { user_email, user_password } = req.body;
 
       const user = await users.findOne({
-        where: { user_email, active: "Y" },
+        where: {
+          user_email,
+          active: "Y",
+        },
+        include: [
+          {
+            model: roles,
+            as: "roles",
+            attributes: ["role_type"],
+            where: { active: "Y" },
+            required: false,
+          },
+        ],
       });
 
       if (!user) {
@@ -142,16 +155,84 @@ class usersDao {
         status: true,
         message: "Login successful",
         data: {
-          user_id: user.user_id,
           user_name: user.user_name,
           user_lastname: user.user_lastname,
-          user_email: user.user_email,
-          user_role_id: user.user_role_id,
+          user_role_type: user.roles.role_type,
         },
         token,
       });
     } catch (error) {
       console.error("Error in login:", error);
+      return next(error);
+    }
+  }
+
+  async getAllUsersById(req, res, next) {
+    const userId = req.params.user_id;
+    try {
+      const get_user_by_id_query = `select users.user_name, 
+                                    users.user_lastname,
+                                    users.user_email,
+                                    users.user_password,
+                                    roles.role_type
+                                FROM users
+                                LEFT JOIN roles
+                                ON users.user_role_id = roles.role_id
+                                WHERE users.user_id = ${userId} users.active='Y' AND roles.active='Y'`;
+      const get_user_by_id_data = await users.sequelize.query(
+        get_user_by_id_query,
+        {
+          type: users.sequelize.QueryTypes.SELECT,
+        }
+      );
+      if (get_user_by_id_data.length === 0) {
+        res.json({
+          success: false,
+          data: null,
+          message: "User not found",
+        });
+      }
+      res.status(200).json({
+        success: true,
+        data: get_user_by_id_data,
+        message: "Retrieved successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getAllUsersByIdAfterLogin(req, res, next) {
+    const userId = req.params.id;
+
+    try {
+      const get_user_by_id_query = `select 
+                                    users.user_name, 
+                                    users.user_lastname,
+                                    roles.role_type
+                                FROM users
+                                LEFT JOIN roles
+                                ON users.user_role_id = roles.role_id
+                                WHERE users.user_id = ${userId} AND users.active='Y' AND roles.active='Y'`;
+      const get_user_by_id_data = await users.sequelize.query(
+        get_user_by_id_query,
+        {
+          type: users.sequelize.QueryTypes.SELECT,
+        }
+      );
+      if (get_user_by_id_data.length === 0) {
+        res.json({
+          success: false,
+          data: null,
+          message: "User not found",
+        });
+      }
+      res.status(200).json({
+        success: true,
+        data: get_user_by_id_data,
+        message: "Retrieved successfully",
+      });
+    } catch (error) {
       return next(error);
     }
   }
