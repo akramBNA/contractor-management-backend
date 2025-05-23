@@ -1,4 +1,5 @@
 const { users } = require("../models/users.models.js");
+const { roles } = require("../models/roles.models.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const SECRET_KEY = process.env.AUTH_SECRET_KEY || "";
@@ -106,7 +107,19 @@ class usersDao {
       const { user_email, user_password } = req.body;
 
       const user = await users.findOne({
-        where: { user_email, active: "Y" },
+        where: {
+          user_email,
+          active: "Y",
+        },
+        include: [
+          {
+            model: roles,
+            as: "roles",
+            attributes: ["role_type"],
+            where: { active: "Y" },
+            required: false,
+          },
+        ],
       });
 
       if (!user) {
@@ -142,11 +155,9 @@ class usersDao {
         status: true,
         message: "Login successful",
         data: {
-          user_id: user.user_id,
           user_name: user.user_name,
           user_lastname: user.user_lastname,
-          user_email: user.user_email,
-          user_role_id: user.user_role_id,
+          user_role_type: user.roles.role_type,
         },
         token,
       });
