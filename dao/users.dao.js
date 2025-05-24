@@ -167,7 +167,7 @@ class usersDao {
     }
   }
 
-  async getAllUsersById(req, res, next) {
+  async getUserById(req, res, next) {
     const userId = req.params.user_id;
     try {
       const get_user_by_id_query = `select users.user_name, 
@@ -202,7 +202,7 @@ class usersDao {
     }
   }
 
-  async getAllUsersByIdAfterLogin(req, res, next) {
+  async getUserDataByIdAfterLogin(req, res, next) {
     const userId = req.params.id;
 
     try {
