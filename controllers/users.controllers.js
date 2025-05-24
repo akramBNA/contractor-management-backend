@@ -14,4 +14,7 @@ module.exports = {
   getAllUsersByIdAfterLogin: function (req, res, next) {
     users_instance.getAllUsersByIdAfterLogin(req, res, next);
   },
+  getUserById: function (req, res, next) {
+    users_instance.getUserById(req, res, next);
+  },
 };

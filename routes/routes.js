@@ -18,6 +18,7 @@ router.get("/users/getAllUsers/", users_controller.getAllUsers);
 router.post("/users/addUser/", users_controller.addUser);
 router.post("/users/UserLogin/", users_controller.UserLogin);
 router.get("/users/getAllUsersByIdAfterLogin/:id", users_controller.getAllUsersByIdAfterLogin);
+router.get("/users/getUserById/:id", users_controller.getUserById)
 
 // ROLES ROUTES
 router.get("/roles/getAllRoles/", roles_controller.getAllRoles);
