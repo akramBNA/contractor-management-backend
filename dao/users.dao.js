@@ -202,7 +202,7 @@ class usersDao {
     }
   }
 
-  async getAllUsersByIdAfterLogin(req, res, next) {
+  async getUserDataByIdAfterLogin(req, res, next) {
     const userId = req.params.id;
 
     try {

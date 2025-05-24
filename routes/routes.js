@@ -17,7 +17,7 @@ const company_controller = require("../controllers/company.controllers");
 router.get("/users/getAllUsers/", users_controller.getAllUsers);
 router.post("/users/addUser/", users_controller.addUser);
 router.post("/users/UserLogin/", users_controller.UserLogin);
-router.get("/users/getAllUsersByIdAfterLogin/:id", users_controller.getAllUsersByIdAfterLogin);
+router.get("/users/getUserDataByIdAfterLogin/:id", users_controller.getUserDataByIdAfterLogin);
 router.get("/users/getUserById/:id", users_controller.getUserById)
 
 // ROLES ROUTES
