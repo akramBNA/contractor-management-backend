@@ -26,11 +26,17 @@ class usersDao {
         }
       );
 
+      const get_all_roles_query = `SELECT * FROM roles WHERE active='Y' ORDER BY role_id ASC`;
+      const get_all_roles_data =await roles.sequelize.query(get_all_roles_query, {
+        type: roles.sequelize.QueryTypes.SELECT,
+      })
+
       if (get_all_users_data.length ) {
         res.status(200).json({
           success: true,
           data: get_all_users_data,
           total: get_all_users_data.length,
+          roles: get_all_roles_data,
           message: "Retrieved successfully",
         });
       } else {
