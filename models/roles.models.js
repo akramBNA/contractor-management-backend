@@ -20,7 +20,7 @@ const roles = sequelize.define(
     },
   },
   {
-    timestamps: true,
+    timestamps: false,
   }
 );
 
