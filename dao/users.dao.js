@@ -12,7 +12,7 @@ class usersDao {
 
       const get_all_users_query = `
           SELECT users.user_id, users.user_name,
-                 users.user_lastname, users.user_email, roles.role_type
+                 users.user_lastname, users.user_email, roles.role_type, roles.role_id
           FROM users 
           LEFT JOIN roles ON roles.role_id = users.user_role_id
           WHERE users.active = 'Y' AND roles.active = 'Y'
@@ -26,22 +26,28 @@ class usersDao {
         }
       );
 
-      const totalCountQuery = `SELECT COUNT(*) as total FROM users WHERE active = 'Y'`;
-      const totalCountResult = await users.sequelize.query(totalCountQuery, {
-        type: users.sequelize.QueryTypes.SELECT,
-      });
+      const get_all_roles_query = `SELECT * FROM roles WHERE active='Y' ORDER BY role_id ASC`;
+      const get_all_roles_data =await roles.sequelize.query(get_all_roles_query, {
+        type: roles.sequelize.QueryTypes.SELECT,
+      })
 
-      const total = totalCountResult[0]?.total || 0;
-
-      res.status(200).json({
-        success: true,
-        data: get_all_users_data,
-        total: total,
-        message: "Retrieved successfully",
-      });
+      if (get_all_users_data.length ) {
+        res.status(200).json({
+          success: true,
+          data: get_all_users_data,
+          total: get_all_users_data.length,
+          roles: get_all_roles_data,
+          message: "Retrieved successfully",
+        });
+      } else {
+        res.json({
+          success: false,
+          data: [],
+          total: 0,
+          message: "No users found",
+        });
+      }
     } catch (error) {
-      console.log("Error in getAllUsers:", error);
-
       return next(error);
     }
   }
