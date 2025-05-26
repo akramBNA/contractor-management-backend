@@ -174,33 +174,42 @@ class usersDao {
   }
 
   async getUserById(req, res, next) {
-    const userId = req.params.user_id;
+    const userId = req.params.id;
     try {
       const get_user_by_id_query = `select users.user_name, 
                                     users.user_lastname,
                                     users.user_email,
                                     users.user_password,
-                                    roles.role_type
+                                    roles.role_type,
+                                    roles.role_id
                                 FROM users
                                 LEFT JOIN roles
                                 ON users.user_role_id = roles.role_id
-                                WHERE users.user_id = ${userId} users.active='Y' AND roles.active='Y'`;
+                                WHERE users.user_id = ${userId} AND users.active='Y' AND roles.active='Y'`;
       const get_user_by_id_data = await users.sequelize.query(
         get_user_by_id_query,
         {
           type: users.sequelize.QueryTypes.SELECT,
         }
       );
+
+           const get_all_roles_query = `SELECT * FROM roles WHERE active='Y' ORDER BY role_id ASC`;
+      const get_all_roles_data =await roles.sequelize.query(get_all_roles_query, {
+        type: roles.sequelize.QueryTypes.SELECT,
+      });
+
       if (get_user_by_id_data.length === 0) {
         res.json({
           success: false,
           data: null,
+          roles: get_all_roles_data,
           message: "User not found",
         });
       }
       res.status(200).json({
         success: true,
-        data: get_user_by_id_data,
+        data: get_user_by_id_data[0],
+        roles: get_all_roles_data,
         message: "Retrieved successfully",
       });
     } catch (error) {
