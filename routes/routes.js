@@ -20,6 +20,7 @@ router.post("/users/UserLogin/", users_controller.UserLogin);
 router.get("/users/getUserDataByIdAfterLogin/:id", users_controller.getUserDataByIdAfterLogin);
 router.get("/users/getUserById/:id", users_controller.getUserById);
 router.put("/users/updateUser/:id", users_controller.updateUser);
+router.delete("/users/deleteUser/:id", users_controller.deleteUser);
 
 // ROLES ROUTES
 router.get("/roles/getAllRoles/", roles_controller.getAllRoles);

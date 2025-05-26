@@ -268,7 +268,7 @@ class usersDao {
           where: { user_id: userId },
         }
       );
-      
+
       if (updatedUser[0] === 0) {
           res.json({
           success: false,
@@ -279,6 +279,31 @@ class usersDao {
       res.status(200).json({
         success: true,
         message: "User updated successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async deleteUser(req, res, next) {
+    const userId = req.params.id;
+
+    try {
+      const deletedUser = await users.update(
+        { active: "N" },
+        { where: { user_id: userId } }
+      );
+
+      if (deletedUser[0] === 0) {
+          res.json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "User deleted successfully",
       });
     } catch (error) {
       return next(error);

@@ -20,4 +20,7 @@ module.exports = {
   updateUser: function (req, res, next) {
     users_instance.updateUser(req, res, next);
   },
+  deleteUser: function (req, res, next) {
+    users_instance.deleteUser(req, res, next);
+  }
 };
