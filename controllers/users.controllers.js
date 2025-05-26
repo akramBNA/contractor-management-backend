@@ -17,4 +17,7 @@ module.exports = {
   getUserById: function (req, res, next) {
     users_instance.getUserById(req, res, next);
   },
+  updateUser: function (req, res, next) {
+    users_instance.updateUser(req, res, next);
+  },
 };

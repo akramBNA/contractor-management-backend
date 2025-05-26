@@ -251,6 +251,39 @@ class usersDao {
       return next(error);
     }
   }
+
+  async updateUser(req, res, next) {
+    const userId = req.params.id;
+    const { user_name, user_lastname, user_email, user_role_id } = req.body;
+
+    try {
+      const updatedUser = await users.update(
+        {
+          user_name,
+          user_lastname,
+          user_email,
+          user_role_id,
+        },
+        {
+          where: { user_id: userId },
+        }
+      );
+
+      if (updatedUser[0] === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "User updated successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
 }
 
 module.exports = usersDao;
