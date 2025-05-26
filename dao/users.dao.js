@@ -268,9 +268,9 @@ class usersDao {
           where: { user_id: userId },
         }
       );
-
+      
       if (updatedUser[0] === 0) {
-        return res.status(404).json({
+          res.json({
           success: false,
           message: "User not found",
         });
