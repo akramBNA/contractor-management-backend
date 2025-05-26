@@ -174,7 +174,7 @@ class usersDao {
   }
 
   async getUserById(req, res, next) {
-    const userId = req.params.user_id;
+    const userId = req.params.id;
     try {
       const get_user_by_id_query = `select users.user_name, 
                                     users.user_lastname,
@@ -184,7 +184,7 @@ class usersDao {
                                 FROM users
                                 LEFT JOIN roles
                                 ON users.user_role_id = roles.role_id
-                                WHERE users.user_id = ${userId} users.active='Y' AND roles.active='Y'`;
+                                WHERE users.user_id = ${userId} AND users.active='Y' AND roles.active='Y'`;
       const get_user_by_id_data = await users.sequelize.query(
         get_user_by_id_query,
         {
@@ -200,7 +200,7 @@ class usersDao {
       }
       res.status(200).json({
         success: true,
-        data: get_user_by_id_data,
+        data: get_user_by_id_data[0],
         message: "Retrieved successfully",
       });
     } catch (error) {
