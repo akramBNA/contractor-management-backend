@@ -1,4 +1,4 @@
-const { missions } = require("../models/missions.model");
+const { missions } = require("../models/missions.models");
 
 class missionsDao {
   async getAllActiveMissions(req, res, next) {
