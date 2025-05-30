@@ -11,6 +11,7 @@ const jobs_controller = require("../controllers/jobs.controllers");
 const projects_controller = require("../controllers/projects.controllers");
 const tasks_controller = require("../controllers/tasks.controllers");
 const company_controller = require("../controllers/company.controllers");
+const missions_controller = require("../controllers/missions.controllers");
 
 
 // USERS ROUTES.
@@ -53,6 +54,9 @@ router.get("/projects/getProjectById/:project_id", projects_controller.getProjec
 
 // TASKS ROUTES
 router.post("/tasks/getAllTasks/:project_id", tasks_controller.addTask);
+
+// MISSIONS ROUTES
+router.get("/missions/getAllMissions/", missions_controller.getAllActiveMissions);
 
 
 module.exports = router;
