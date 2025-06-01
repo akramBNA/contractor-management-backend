@@ -57,6 +57,7 @@ router.post("/tasks/getAllTasks/:project_id", tasks_controller.addTask);
 
 // MISSIONS ROUTES
 router.get("/missions/getAllMissions/", missions_controller.getAllActiveMissions);
+router.post("/missions/addMission/", missions_controller.addMission);
 
 
 module.exports = router;

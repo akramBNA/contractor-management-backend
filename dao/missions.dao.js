@@ -1,3 +1,4 @@
+const { add } = require("date-fns");
 const { missions } = require("../models/missions.models");
 
 class missionsDao {
@@ -25,6 +26,47 @@ class missionsDao {
           status: false,
           data: [],
           message: "No active missions found",
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async AddMission(req, res, next) {
+    try {
+      const { mission_name, mission_description, start_at, end_at, priority, expenses } = req.body;
+
+      const add_mission_query = ` INSERT INTO missions ( mission_name, mission_description, start_at, end_at, priority, expenses, active ) VALUES ( ?, ?, ?, ?, ?, ?, 'Y' ) RETURNING *;`;
+
+      const values = [
+        mission_name,
+        mission_description,
+        start_at,
+        end_at,
+        priority || "LOW",
+        expenses || 0,
+      ];
+
+      const [add_missions_data] = await missions.sequelize.query(
+        add_mission_query,
+        {
+          replacements: values,
+          type: missions.sequelize.QueryTypes.INSERT,
+        }
+      );
+
+      if (add_missions_data && add_missions_data.length > 0) {
+        res.status(200).json({
+          success: true,
+          data: add_missions_data[0],
+          message: "Mission added successfully",
+        });
+      } else {
+        res.json({
+          success: false,
+          data: [],
+          message: "Failed to add mission",
         });
       }
     } catch (error) {
