@@ -17,13 +17,13 @@ class missionsDao {
 
       if (missionsData && missionsData.length > 0) {
         res.status(200).json({
-          status: true,
+          success: true,
           data: missionsData,
           message: "Missions retrieved successfully",
         });
       } else {
         res.status(200).json({
-          status: false,
+          success: false,
           data: [],
           message: "No active missions found",
         });
@@ -67,6 +67,35 @@ class missionsDao {
           success: false,
           data: [],
           message: "Failed to add mission",
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getMissionById(req, res, next) {
+    try {
+      const { mission_id } = req.params;
+
+      const query = `SELECT *  FROM missions  WHERE mission_id = ? AND active = 'Y'`;
+
+      const [missionData] = await missions.sequelize.query(query, {
+        replacements: [mission_id],
+        type: missions.sequelize.QueryTypes.SELECT,
+      });
+
+      if (missionData) {
+        res.status(200).json({
+          success: true,
+          data: missionData,
+          message: "Mission retrieved successfully",
+        });
+      } else {
+        res.json({
+          success: false,
+          data: [],
+          message: "Mission not found",
         });
       }
     } catch (error) {
