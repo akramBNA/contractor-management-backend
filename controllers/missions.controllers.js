@@ -10,4 +10,7 @@ module.exports = {
   addMission: function (req, res, next) {
     missions_instance.AddMission(req, res, next);
   },
+  getMissionById: function (req, res, next) {
+    missions_instance.getMissionById(req, res, next);
+  },
 };
