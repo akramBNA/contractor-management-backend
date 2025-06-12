@@ -60,5 +60,4 @@ router.get("/missions/getAllMissions/", missions_controller.getAllActiveMissions
 router.post("/missions/addMission/", missions_controller.addMission);
 router.get("/missions/getMissionById/:mission_id", missions_controller.getMissionById);
 
-// TEST ROUTES
 module.exports = router;
