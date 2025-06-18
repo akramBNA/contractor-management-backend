@@ -12,6 +12,7 @@ const projects_controller = require("../controllers/projects.controllers");
 const tasks_controller = require("../controllers/tasks.controllers");
 const company_controller = require("../controllers/company.controllers");
 const missions_controller = require("../controllers/missions.controllers");
+const mission_employees_controller = require("../controllers/mission_employees.controllers");
 
 
 // USERS ROUTES.
@@ -59,5 +60,8 @@ router.post("/tasks/getAllTasks/:project_id", tasks_controller.addTask);
 router.get("/missions/getAllMissions/", missions_controller.getAllActiveMissions);
 router.post("/missions/addMission/", missions_controller.addMission);
 router.get("/missions/getMissionById/:mission_id", missions_controller.getMissionById);
+
+// MISSION EMPLOYEES ROUTES
+router.get("/mission_employees/getAllAssignedEmployees/", mission_employees_controller.getAllAssignedEmployees);
 
 module.exports = router;
