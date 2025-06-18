@@ -1,7 +1,7 @@
 const { mission_employees } = require("../models/mission_employees.models");
 
 class mission_EmployeesDao {
-    async getAllAssugnedEmployees(req, res, next) {
+    async getAllAssignedEmployees(req, res, next) {
         try {
             const query = `SELECT * FROM mission_employees WHERE active = 'Y' ORDER BY employee_id ASC`;
 
