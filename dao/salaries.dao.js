@@ -60,10 +60,13 @@ class salariesDao {
         }
       );
 
+      const total = get_all_salaries_data.length;
+
       if (get_all_salaries_data && get_all_salaries_data.length > 0) {
         res.status(200).json({
           success: true,
           data: get_all_salaries_data,
+          total: total,
           message: "Salaries retrieved successfully",
         });
       } else {
