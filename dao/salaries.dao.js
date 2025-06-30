@@ -1,5 +1,6 @@
 const employee_bank_details = require("../models/employee_bank_details.models");
 const contracts = require("../models/contracts.models");
+const  employees  = require("../models/employees.models");
 
 class salariesDao {
   // async getAllSalaries(req, res, next) {
@@ -39,17 +40,23 @@ class salariesDao {
 
   async getAllSalaries(req, res, next) {
     try {
-      const get_all_salaries_query = `SELECT account_holder_name,
-                                    account_number,
-                                    bank_name,
-                                    branch_location
-                                FROM employee_bank_details
-                                WHERE active='Y'
-                                ORDER BY bank_details_id ASC`;
-      const get_all_salaries_data = await employee_bank_details.sequelize.query(
+      const get_all_salaries_query = `SELECT 
+                                        employee_bank_details.account_holder_name,
+                                        employee_bank_details.account_number,
+                                        employee_bank_details.bank_name,
+                                        employee_bank_details.branch_location,
+                                        contracts.salary
+                                    FROM employees
+                                    LEFT JOIN contracts
+                                    ON employees.employee_contract_id = contracts.contract_id
+                                    LEFT JOIN employee_bank_details
+                                    ON employees.employee_bank_details_id = employee_bank_details.bank_details_id
+                                    WHERE employees.active='Y' AND contracts.active='Y' AND employee_bank_details.active='Y'
+                                    ORDER BY employee_bank_details.bank_details_id ASC `;
+      const get_all_salaries_data = await employees.sequelize.query(
         get_all_salaries_query,
         {
-          type: employee_bank_details.sequelize.QueryTypes.SELECT,
+          type: employees.sequelize.QueryTypes.SELECT,
         }
       );
 
