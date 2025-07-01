@@ -66,6 +66,6 @@ router.get("/missions/getMissionById/:mission_id", missions_controller.getMissio
 router.get("/mission_employees/getAllAssignedEmployees/", mission_employees_controller.getAllAssignedEmployees);
 
 // SALARIES ROUTES
-router.get("/salaries/getAllSalaries/", salaries_controller.getAllSalaries);
+router.get("/salaries/getAllSalaries/:params", salaries_controller.getAllSalaries);
 
 module.exports = router;
