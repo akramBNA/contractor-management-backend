@@ -12,9 +12,7 @@ class salariesDao {
       const limit = parseInt(params.limit) || 20;
       const offset = parseInt(params.offset) || 0;
 
-      const searchCondition = keyWord
-        ? `AND employees.emp_name ILIKE '${keyWord}%'`
-        : "";
+      const searchCondition = keyWord ? `AND employees.emp_name ILIKE '${keyWord}%'` : "";
 
       const get_all_salaries_query = `SELECT 
                                         employee_bank_details.account_holder_name,
@@ -28,7 +26,10 @@ class salariesDao {
                                     LEFT JOIN employee_bank_details
                                     ON employees.employee_bank_details_id = employee_bank_details.bank_details_id
                                     WHERE employees.active='Y' AND contracts.active='Y' AND employee_bank_details.active='Y'
-                                    ORDER BY employee_bank_details.bank_details_id ASC `;
+                                    ${searchCondition};
+                                    ORDER BY employee_bank_details.bank_details_id ASC
+                                    LIMIT ${limit}
+                                    OFFSET ${offset} `;
       const get_all_salaries_data = await employees.sequelize.query(
         get_all_salaries_query,
         {
@@ -42,7 +43,12 @@ class salariesDao {
         res.status(200).json({
           success: true,
           data: get_all_salaries_data,
-          total: total,
+          attributes: {
+            total: total,
+            limit: limit,
+            offset: offset,
+            pages: Math.ceil(total / limit),
+          },
           message: "Salaries retrieved successfully",
         });
       } else {
