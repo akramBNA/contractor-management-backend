@@ -1,10 +1,21 @@
 const employee_bank_details = require("../models/employee_bank_details.models");
 const contracts = require("../models/contracts.models");
-const  employees  = require("../models/employees.models");
+const employees = require("../models/employees.models");
 
 class salariesDao {
   async getAllSalaries(req, res, next) {
     try {
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const keyWord = params.keyWord || "";
+      const limit = parseInt(params.limit) || 20;
+      const offset = parseInt(params.offset) || 0;
+
+      const searchCondition = keyWord
+        ? `AND employees.emp_name ILIKE '${keyWord}%'`
+        : "";
+
       const get_all_salaries_query = `SELECT 
                                         employee_bank_details.account_holder_name,
                                         employee_bank_details.account_number,
