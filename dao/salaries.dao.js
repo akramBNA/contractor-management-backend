@@ -27,7 +27,7 @@ class salariesDao {
                                     LEFT JOIN employee_bank_details
                                     ON employees.employee_bank_details_id = employee_bank_details.bank_details_id
                                     WHERE employees.active='Y' AND contracts.active='Y' AND employee_bank_details.active='Y'
-                                    ${searchCondition};
+                                    ${searchCondition}
                                     ORDER BY employee_bank_details.bank_details_id ASC
                                     LIMIT ${limit}
                                     OFFSET ${offset} `;
