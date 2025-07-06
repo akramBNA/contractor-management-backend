@@ -4,14 +4,22 @@ const employees = require("../models/employees.models");
 
 class salariesDao {
   async getAllSalaries(req, res, next) {
+    
     try {
-
       let params = req.params.params;
       params = params && params.length ? JSON.parse(params) : {};
 
       const keyWord = params.keyWord || "";
-      const limit = parseInt(params.limit) || 5;
+      const limit = parseInt(params.limit) || 20;
       const offset = parseInt(params.offset) || 0;
+
+      const total_salaries_query = `SELECT COUNT(*) AS total FROM employees WHERE active='Y'`;
+      const total_salaries_data = await employees.sequelize.query(
+        total_salaries_query,
+        {
+          type: employees.sequelize.QueryTypes.SELECT,
+        }
+      );
 
       const searchCondition = keyWord ? `AND employee_bank_details.account_holder_name ILIKE '${keyWord}%'` : "";
 
@@ -38,7 +46,7 @@ class salariesDao {
         }
       );
 
-      const total = get_all_salaries_data.length;
+      const total = parseInt(total_salaries_data[0].total);
 
       if (get_all_salaries_data && get_all_salaries_data.length > 0) {
         res.status(200).json({
