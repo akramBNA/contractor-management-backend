@@ -1,19 +1,7 @@
-const {
-  employees,
-  sequelize: employeesSequelize,
-} = require("../models/employees.models");
-const {
-  contracts,
-  sequelize: contractsSequelize,
-} = require("../models/contracts.models");
-const {
-  employee_bank_details,
-  sequelize: bankDetailsSequelize,
-} = require("../models/employee_bank_details.models");
-const {
-  contract_types,
-  sequelize: contractTypesSequelize,
-} = require("../models/contract_types.models");
+const { employees, sequelize: employeesSequelize } = require("../models/employees.models");
+const { contracts, sequelize: contractsSequelize,} = require("../models/contracts.models");
+const { employee_bank_details, sequelize: bankDetailsSequelize,} = require("../models/employee_bank_details.models");
+const { contract_types, sequelize: contractTypesSequelize,} = require("../models/contract_types.models");
 const { Op, Sequelize } = require("sequelize");
 
 class employeesDao {
@@ -22,6 +10,7 @@ class employeesDao {
       const { limit = 20, offset = 0, keyword = "" } = req.query;
 
       const activeCount = await employees.count({ where: { active: "Y" } });
+      
       if (activeCount === 0) {
         return res.status(404).json({
           success: false,
