@@ -36,6 +36,7 @@ router.get("/employees/getEmployeeById/:id", employees_controller.getEmployeeByI
 router.get("/employees/getJobsAndContractTypes/", employees_controller.getJobsAndContractTypes);
 router.put("/employees/editEmployee/:id", employees_controller.editEmployee);
 router.delete("/employees/deleteEmployee/:id", employees_controller.deleteEmployee);
+router.get("/employees/getAllActiveEmployeesNames/", employees_controller.getAllActiveEmployeesNames);
 
 // CONTRACTS ROUTES
 router.get("/contracts/getAllContracts/", contracts_controlers.getAllContracts);
