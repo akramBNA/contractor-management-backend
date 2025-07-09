@@ -486,16 +486,14 @@ class employeesDao {
 
   async getAllActiveEmployeesNames(req, res, next) {
     try {
-      const get_all_active_employees_names_query = `SELECT employee_id, employee_name, employee_lastname
-                                                      FROM employees 
-                                                      WHERE active='Y' 
-                                                      ORDER BY by employee_id asc`;
+      const get_all_active_employees_names_query = `SELECT employee_id, employee_name, employee_lastname FROM employees WHERE active='Y' ORDER BY employee_id asc`;
 
       const get_all_active_employees_names_data = await employeesSequelize.query(
         get_all_active_employees_names_query,
         {
           type: employeesSequelize.QueryTypes.SELECT,
-        })
+        });
+        
       if( get_all_active_employees_names_data &&  get_all_active_employees_names_data.length !== 0) {
          res.status(200).json({
           success: true,
@@ -504,12 +502,13 @@ class employeesDao {
         });
       }
       else {
-          res.json({
-            success: false,
-            data: [],
-            message: "No active employees found",
-          });}
-          
+        res.json({
+          success: false,
+          data: [],
+          message: "No active employees found",
+       });
+     }
+
     } catch (error) {
       return next(error);
     }
