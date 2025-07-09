@@ -23,5 +23,8 @@ module.exports = {
   },
   deleteEmployee: function (req, res, next) {
     employees_instance.deleteEmployee(req, res, next);
+  },
+  getAllActiveEmployeesNames: function (req, res, next) {
+    employees_instance.getAllActiveEmployeesNames(req, res, next);
   }
 };
