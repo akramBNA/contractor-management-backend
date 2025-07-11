@@ -198,9 +198,13 @@ async getMissionById_2(req, res, next) {
           )
         ) AS assigned_employees
       FROM missions m
-      JOIN mission_employees me ON m.mission_id = me.mission_id
-      JOIN employees e ON me.employee_id = e.employee_id
+      JOIN mission_employees me 
+        ON m.mission_id = me.mission_id
+      JOIN employees e 
+        ON me.employee_id = e.employee_id
       WHERE m.mission_id = :missionId
+        AND m.active = 'Y'
+        AND me.active = 'Y'
       GROUP BY m.mission_id;
     `;
 
