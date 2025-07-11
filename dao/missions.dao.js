@@ -33,35 +33,6 @@ class missionsDao {
     }
   }
 
-  async getMissionById(req, res, next) {
-    try {
-      const { mission_id } = req.params;
-
-      const query = `SELECT *  FROM missions  WHERE mission_id = ? AND active = 'Y'`;
-
-      const [missionData] = await missions.sequelize.query(query, {
-        replacements: [mission_id],
-        type: missions.sequelize.QueryTypes.SELECT,
-      });
-
-      if (missionData) {
-        res.status(200).json({
-          success: true,
-          data: missionData,
-          message: "Mission retrieved successfully",
-        });
-      } else {
-        res.json({
-          success: false,
-          data: [],
-          message: "Mission not found",
-        });
-      }
-    } catch (error) {
-      return next(error);
-    }
-  }
-
 async addMission(req, res, next) {
   try {
     const {
@@ -128,7 +99,7 @@ async addMission(req, res, next) {
   }
   }
 
-async getMissionById_2(req, res, next) {
+async getMissionById(req, res, next) {
   try {
     const { mission_id } = req.params;
 
