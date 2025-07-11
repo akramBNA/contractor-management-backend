@@ -13,4 +13,7 @@ module.exports = {
   getMissionById: function (req, res, next) {
     missions_instance.getMissionById(req, res, next);
   },
+  addMission_2: function (req, res, next) {
+    missions_instance.addMission_2(req, res, next);
+  }
 };
