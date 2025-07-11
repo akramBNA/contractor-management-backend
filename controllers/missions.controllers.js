@@ -8,13 +8,10 @@ module.exports = {
     missions_instance.getAllActiveMissions(req, res, next);
   },
   addMission: function (req, res, next) {
-    missions_instance.AddMission(req, res, next);
+    missions_instance.addMission(req, res, next);
   },
   getMissionById: function (req, res, next) {
     missions_instance.getMissionById(req, res, next);
-  },
-  addMission_2: function (req, res, next) {
-    missions_instance.addMission_2(req, res, next);
   },
   getMissionById_2: function (req, res, next) {
     missions_instance.getMissionById_2(req, res, next);
