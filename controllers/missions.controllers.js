@@ -12,8 +12,5 @@ module.exports = {
   },
   getMissionById: function (req, res, next) {
     missions_instance.getMissionById(req, res, next);
-  },
-  getMissionById_2: function (req, res, next) {
-    missions_instance.getMissionById_2(req, res, next);
   }
 };
