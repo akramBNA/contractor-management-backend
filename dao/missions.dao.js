@@ -175,7 +175,56 @@ async addMission_2(req, res, next) {
   } catch (error) {
     return next(error);
   }
-}
+  }
+
+async getMissionById_2(req, res, next) {
+  try {
+    const { mission_id } = req.params;
+
+    const query = `
+      SELECT 
+        m.mission_id,
+        m.mission_name,
+        m.mission_description,
+        m.start_at,
+        m.end_at,
+        m.priority,
+        m.expenses,
+        json_agg(
+          json_build_object(
+            'employee_id', e.employee_id,
+            'employee_name', e.employee_name,
+            'employee_lastname', e.employee_lastname
+          )
+        ) AS assigned_employees
+      FROM missions m
+      JOIN mission_employees me ON m.mission_id = me.mission_id
+      JOIN employees e ON me.employee_id = e.employee_id
+      WHERE m.mission_id = :missionId
+      GROUP BY m.mission_id;
+    `;
+
+    const result = await missions.sequelize.query(query, {
+      replacements: { missionId: mission_id },
+      type: missions.sequelize.QueryTypes.SELECT,
+    });
+
+    if (result.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Mission not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: result[0],
+    });
+  } catch (error) {
+    return next(error);
+  }
+  }
+
 
 }
 
