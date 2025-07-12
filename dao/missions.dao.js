@@ -104,31 +104,32 @@ async getMissionById(req, res, next) {
     const { mission_id } = req.params;
 
     const query = `
-      SELECT 
-        m.mission_id,
-        m.mission_name,
-        m.mission_description,
-        m.start_at,
-        m.end_at,
-        m.priority,
-        m.expenses,
-        json_agg(
-          json_build_object(
-            'employee_id', e.employee_id,
-            'employee_name', e.employee_name,
-            'employee_lastname', e.employee_lastname
-          )
-        ) AS assigned_employees
-      FROM missions m
-      JOIN mission_employees me 
-        ON m.mission_id = me.mission_id
-      JOIN employees e 
-        ON me.employee_id = e.employee_id
-      WHERE m.mission_id = :missionId
-        AND m.active = 'Y'
-        AND me.active = 'Y'
-      GROUP BY m.mission_id;
-    `;
+              SELECT 
+          m.mission_id,
+          m.mission_name,
+          m.mission_description,
+          m.start_at,
+          m.end_at,
+          m.priority,
+          m.expenses,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                'employee_id', e.employee_id,
+                'employee_name', e.employee_name,
+                'employee_lastname', e.employee_lastname
+              )
+            ) FILTER (WHERE e.employee_id IS NOT NULL),
+            '[]'
+          ) AS assigned_employees
+        FROM missions m
+        LEFT JOIN mission_employees me 
+          ON m.mission_id = me.mission_id AND me.active = 'Y'
+        LEFT JOIN employees e 
+          ON me.employee_id = e.employee_id
+        WHERE m.mission_id = :missionId
+          AND m.active = 'Y'
+        GROUP BY m.mission_id`;
 
     const result = await missions.sequelize.query(query, {
       replacements: { missionId: mission_id },
@@ -136,7 +137,7 @@ async getMissionById(req, res, next) {
     });
 
     if (result.length === 0) {
-      return res.status(404).json({
+      res.json({
         success: false,
         message: "Mission not found",
       });
@@ -148,7 +149,65 @@ async getMissionById(req, res, next) {
     });
   } catch (error) {
     return next(error);
+    }
   }
+
+async editMission(req, res, next) {
+  try {
+    const { mission_id } = req.params;
+    const {
+      mission_name,
+      mission_description,
+      start_at,
+      end_at,
+      priority,
+      expenses,
+    } = req.body;
+
+    const update_query = `
+      UPDATE missions 
+      SET 
+        mission_name = ?, 
+        mission_description = ?, 
+        start_at = ?, 
+        end_at = ?, 
+        priority = ?, 
+        expenses = ?
+      WHERE mission_id = ? AND active = 'Y'
+      RETURNING *;
+    `;
+
+    const values = [
+      mission_name,
+      mission_description,
+      start_at,
+      end_at,
+      priority || "LOW",
+      expenses || 0,
+      mission_id
+    ];
+
+    const updatedMissionData = await missions.sequelize.query(update_query, {
+      replacements: values,
+      type: missions.sequelize.QueryTypes.UPDATE,
+    });
+
+      if (updatedMissionData[0].length === 0) {
+        res.json({
+          success: false,
+          data: [],
+          message: "Mission not found or already inactive",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: updatedMissionData[0][0],
+        message: "Mission updated successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
 
 }
