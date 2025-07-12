@@ -151,6 +151,64 @@ async getMissionById(req, res, next) {
   }
   }
 
+async editMission(req, res, next) {
+  try {
+    const { mission_id } = req.params;
+    const {
+      mission_name,
+      mission_description,
+      start_at,
+      end_at,
+      priority,
+      expenses,
+    } = req.body;
+
+    const update_query = `
+      UPDATE missions 
+      SET 
+        mission_name = ?, 
+        mission_description = ?, 
+        start_at = ?, 
+        end_at = ?, 
+        priority = ?, 
+        expenses = ?
+      WHERE mission_id = ? AND active = 'Y'
+      RETURNING *;
+    `;
+
+    const values = [
+      mission_name,
+      mission_description,
+      start_at,
+      end_at,
+      priority || "LOW",
+      expenses || 0,
+      mission_id
+    ];
+
+    const updatedMissionData = await missions.sequelize.query(update_query, {
+      replacements: values,
+      type: missions.sequelize.QueryTypes.UPDATE,
+    });
+
+      if (updatedMissionData[0].length === 0) {
+        res.json({
+          success: false,
+          data: [],
+          message: "Mission not found or already inactive",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: updatedMissionData[0][0],
+        message: "Mission updated successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
 }
 
 module.exports = missionsDao;
