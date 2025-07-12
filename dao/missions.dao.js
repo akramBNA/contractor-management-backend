@@ -104,31 +104,32 @@ async getMissionById(req, res, next) {
     const { mission_id } = req.params;
 
     const query = `
-      SELECT 
-        m.mission_id,
-        m.mission_name,
-        m.mission_description,
-        m.start_at,
-        m.end_at,
-        m.priority,
-        m.expenses,
-        json_agg(
-          json_build_object(
-            'employee_id', e.employee_id,
-            'employee_name', e.employee_name,
-            'employee_lastname', e.employee_lastname
-          )
-        ) AS assigned_employees
-      FROM missions m
-      JOIN mission_employees me 
-        ON m.mission_id = me.mission_id
-      JOIN employees e 
-        ON me.employee_id = e.employee_id
-      WHERE m.mission_id = :missionId
-        AND m.active = 'Y'
-        AND me.active = 'Y'
-      GROUP BY m.mission_id;
-    `;
+              SELECT 
+          m.mission_id,
+          m.mission_name,
+          m.mission_description,
+          m.start_at,
+          m.end_at,
+          m.priority,
+          m.expenses,
+          COALESCE(
+            json_agg(
+              DISTINCT jsonb_build_object(
+                'employee_id', e.employee_id,
+                'employee_name', e.employee_name,
+                'employee_lastname', e.employee_lastname
+              )
+            ) FILTER (WHERE e.employee_id IS NOT NULL),
+            '[]'
+          ) AS assigned_employees
+        FROM missions m
+        LEFT JOIN mission_employees me 
+          ON m.mission_id = me.mission_id AND me.active = 'Y'
+        LEFT JOIN employees e 
+          ON me.employee_id = e.employee_id
+        WHERE m.mission_id = :missionId
+          AND m.active = 'Y'
+        GROUP BY m.mission_id`;
 
     const result = await missions.sequelize.query(query, {
       replacements: { missionId: mission_id },
@@ -136,7 +137,7 @@ async getMissionById(req, res, next) {
     });
 
     if (result.length === 0) {
-      return res.status(404).json({
+      res.json({
         success: false,
         message: "Mission not found",
       });
@@ -148,7 +149,7 @@ async getMissionById(req, res, next) {
     });
   } catch (error) {
     return next(error);
-  }
+    }
   }
 
 async editMission(req, res, next) {
