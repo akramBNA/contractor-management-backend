@@ -1,5 +1,6 @@
 const { add } = require("date-fns");
 const { missions } = require("../models/missions.models");
+const { mission_employees } = require("../models/mission_employees.models");
 
 class missionsDao {
   async getAllActiveMissions(req, res, next) {
@@ -83,10 +84,10 @@ async addMission(req, res, next) {
     }
 
     const insertValues = employee_id.map(empId => `(${insertedMission.mission_id}, ${empId})`).join(",");
-    const assign_query = `INSERT INTO mission_employees (mission_id, employee_id) VALUES ${insertValues}`;
+    const assign_employees_to_mission_query = `INSERT INTO mission_employees (mission_id, employee_id) VALUES ${insertValues}`;
 
-    await missions.sequelize.query(assign_query, {
-      type: missions.sequelize.QueryTypes.INSERT,
+    await mission_employees.sequelize.query(assign_employees_to_mission_query, {
+      type: mission_employees.sequelize.QueryTypes.INSERT,
     });
 
     res.status(200).json({
@@ -174,8 +175,7 @@ async editMission(req, res, next) {
         priority = ?, 
         expenses = ?
       WHERE mission_id = ? AND active = 'Y'
-      RETURNING *;
-    `;
+      RETURNING * `;
 
     const values = [
       mission_name,
@@ -205,6 +205,100 @@ async editMission(req, res, next) {
         data: updatedMissionData[0][0],
         message: "Mission updated successfully",
       });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+async editMission_2(req, res, next) {
+    try {
+      const { mission_id } = req.params;
+      const {
+        mission_name,
+        mission_description,
+        start_at,
+        end_at,
+        priority,
+        expenses,
+      } = req.body;
+
+      const delete_mission_employees_query = `delete from mission_employees where active='Y' and mission_id = ${mission_id}`;
+      const delete_mission_employees_data = await missions.sequelize.query(delete_mission_employees_query, {
+        type: missions.sequelize.QueryTypes.DELETE,
+      });
+
+      if( delete_mission_employees_data[0].length === 0) {
+        res.json({
+          success: false,
+          data: [],
+          message: "Mission not found or already inactive",
+        });
+      }
+
+        const update_mission_query = `UPDATE missions 
+                                        SET 
+                                          mission_name = ?, 
+                                          mission_description = ?, 
+                                          start_at = ?, 
+                                          end_at = ?, 
+                                          priority = ?, 
+                                          expenses = ?
+                                      WHERE mission_id = ? AND active = 'Y'
+                                      RETURNING * `;
+
+      const values = [
+        mission_name,
+        mission_description,
+        start_at,
+        end_at,
+        priority || "LOW",
+        expenses || 0,
+        mission_id
+      ];
+
+      const update_mission_data = await missions.sequelize.query(update_mission_query, {
+        replacements: values,
+        type: missions.sequelize.QueryTypes.UPDATE,
+      });
+
+      if(update_mission_data[0].length === 0) {
+        res.json({
+          success: false,
+          data: [],
+          message: "Mission not found or already inactive",
+        });
+      }
+
+
+      if (!Array.isArray(employee_id) || employee_id.length === 0) {
+        res.json({
+          success: false,
+          data: [],
+          message: "No employees provided for assignment",
+        });
+      }
+
+      const insertValues = employee_id.map(empId => `(${insertedMission.mission_id}, ${empId})`).join(",");
+      const assign_employees_to_mission_query = `INSERT INTO mission_employees (mission_id, employee_id) VALUES ${insertValues}`;
+
+      const assign_employees_to_mission_data = await mission_employees.sequelize.query(assign_employees_to_mission_query, {
+        type: mission_employees.sequelize.QueryTypes.INSERT,
+      });
+
+      if(assign_employees_to_mission_data[0].length === 0) {
+        res.json({
+          success: false,
+          data: [],
+          message: "Failed to assign employees to mission",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: update_mission_data[0][0],
+        message: "Mission and employees updated successfully",
+      });
+
     } catch (error) {
       return next(error);
     }
