@@ -170,8 +170,8 @@ async editMission(req, res, next) {
       const delete_mission_employees_data = await missions.sequelize.query(delete_mission_employees_query, {
         type: missions.sequelize.QueryTypes.DELETE,
       });
-
-      if( delete_mission_employees_data[0].length === 0) {
+      
+      if( !delete_mission_employees_data) {
         res.json({
           success: false,
           data: [],
@@ -222,14 +222,14 @@ async editMission(req, res, next) {
         });
       }
 
-      const insertValues = employee_id.map(empId => `(${insertedMission.mission_id}, ${empId})`).join(",");
+      const insertValues = employee_id.map(empId => `(${mission_id}, ${empId})`).join(",");
       const assign_employees_to_mission_query = `INSERT INTO mission_employees (mission_id, employee_id) VALUES ${insertValues}`;
 
       const assign_employees_to_mission_data = await mission_employees.sequelize.query(assign_employees_to_mission_query, {
         type: mission_employees.sequelize.QueryTypes.INSERT,
       });
 
-      if(assign_employees_to_mission_data[0].length === 0) {
+      if(assign_employees_to_mission_data[1] === 0) {
         res.json({
           success: false,
           data: [],
