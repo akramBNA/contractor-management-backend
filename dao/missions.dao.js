@@ -163,6 +163,7 @@ async editMission(req, res, next) {
         end_at,
         priority,
         expenses,
+        employee_id,
       } = req.body;
 
       const delete_mission_employees_query = `delete from mission_employees where active='Y' and mission_id = ${mission_id}`;
