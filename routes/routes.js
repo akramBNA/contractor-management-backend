@@ -62,6 +62,7 @@ router.post("/tasks/getAllTasks/:project_id", tasks_controller.addTask);
 router.get("/missions/getAllMissions/", missions_controller.getAllActiveMissions);
 router.post("/missions/addMission/", missions_controller.addMission);
 router.get("/missions/getMissionById/:mission_id", missions_controller.getMissionById);
+router.put("/missions/editMission/:mission_id", missions_controller.editMission);
 
 // MISSION EMPLOYEES ROUTES
 router.get("/mission_employees/getAllAssignedEmployees/", mission_employees_controller.getAllAssignedEmployees);
