@@ -12,5 +12,8 @@ module.exports = {
   },
   getMissionById: function (req, res, next) {
     missions_instance.getMissionById(req, res, next);
-  }
+  },
+  editMission: function (req, res, next) {
+    missions_instance.editMission(req, res, next);
+  },
 };
