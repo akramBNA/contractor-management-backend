@@ -5,11 +5,21 @@ const { mission_employees } = require("../models/mission_employees.models");
 class missionsDao {
   async getAllActiveMissions(req, res, next) {
     try {
+
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const keyWord = params.keyWord || "";
+      const limit = parseInt(params.limit) || 20;
+      const offset = parseInt(params.offset) || 0;
+
       const query = `
         SELECT * 
         FROM missions 
-        WHERE active = 'Y' 
-        ORDER BY mission_id ASC
+        WHERE active = 'Y' AND mission_name ILIKE '${keyWord}%'
+        ORDER BY mission_id ASC 
+        LIMIT ${limit}
+        OFFSET ${offset}
       `;
 
       const missionsData = await missions.sequelize.query(query, {
