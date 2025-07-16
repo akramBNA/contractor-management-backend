@@ -5,21 +5,49 @@ const { mission_employees } = require("../models/mission_employees.models");
 class missionsDao {
   async getAllActiveMissions(req, res, next) {
     try {
-      const query = `
+
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const keyWord = params.keyWord || "";
+      const limit = parseInt(params.limit) || 20;
+      const offset = parseInt(params.offset) || 0;
+
+      const total_missions_query = `SELECT COUNT(*) AS total FROM missions WHERE active='Y'`;
+      const total_missions_data = await missions.sequelize.query(
+        total_missions_query,
+        { type: missions.sequelize.QueryTypes.SELECT }
+      );
+
+      if(!total_missions_data || total_missions_data.length === 0) {
+        res.json({
+          success: false,
+          message: "No active missions found",
+        });
+      }
+      
+      const get_all_active_missions_query = `
         SELECT * 
         FROM missions 
-        WHERE active = 'Y' 
-        ORDER BY mission_id ASC
-      `;
+        WHERE active = 'Y' AND mission_name ILIKE '${keyWord}%'
+        ORDER BY mission_id ASC 
+        LIMIT ${limit}
+        OFFSET ${offset} `;
 
-      const missionsData = await missions.sequelize.query(query, {
+      const get_all_active_missions_data = await missions.sequelize.query(get_all_active_missions_query, {
         type: missions.sequelize.QueryTypes.SELECT,
       });
 
-      if (missionsData && missionsData.length > 0) {
+      if (get_all_active_missions_data && get_all_active_missions_data.length > 0) {
         res.status(200).json({
           success: true,
-          data: missionsData,
+          data: get_all_active_missions_data,
+          attributes: {
+            total: parseInt(total_missions_data[0].total),
+            limit: limit,
+            offset: offset, 
+            pages: Math.ceil(total_missions_data[0].total / limit),
+          },
           message: "Missions retrieved successfully",
         });
       } else {
