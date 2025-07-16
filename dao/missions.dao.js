@@ -38,10 +38,22 @@ class missionsDao {
         type: missions.sequelize.QueryTypes.SELECT,
       });
 
+      const get_all_running_missions_query = `SELECT COUNT(*) FROM missions WHERE end_at > CURRENT_DATE`;
+      const get_all_running_missions_data = await missions.sequelize.query(get_all_running_missions_query, {
+        type: missions.sequelize.QueryTypes.SELECT,
+      });
+
+      const get_all_completed_missions_query = `SELECT COUNT(*) FROM missions WHERE end_at <= CURRENT_DATE`;
+      const get_all_completed_missions_data = await missions.sequelize.query(get_all_completed_missions_query, {
+        type: missions.sequelize.QueryTypes.SELECT,
+      });
+
       if (get_all_active_missions_data && get_all_active_missions_data.length > 0) {
         res.status(200).json({
           success: true,
           data: get_all_active_missions_data,
+          running_missions: parseInt(get_all_running_missions_data[0].count),
+          completed_missions: parseInt(get_all_completed_missions_data[0].count),
           attributes: {
             total: parseInt(total_missions_data[0].total),
             limit: limit,
