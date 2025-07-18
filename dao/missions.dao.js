@@ -229,10 +229,27 @@ async editMission(req, res, next) {
       });
       
       if( !delete_mission_employees_data) {
-        res.json({
+        return res.json({
           success: false,
           data: [],
           message: "Mission not found or already inactive",
+        });
+      }
+
+      const startDate = new Date(start_at);
+      const endDate = new Date(end_at);
+
+      if (isNaN(startDate) || isNaN(endDate)) {
+        return res.json({
+          success: false,
+          message: "Invalid start or end date format",
+        });
+      }
+
+      if (startDate > endDate) {
+        return res.json({
+          success: false,
+          message: "Start date cannot be after end date",
         });
       }
 
@@ -263,7 +280,7 @@ async editMission(req, res, next) {
       });
 
       if(update_mission_data[0].length === 0) {
-        res.json({
+        return res.json({
           success: false,
           data: [],
           message: "Mission not found or already inactive",
@@ -272,7 +289,7 @@ async editMission(req, res, next) {
 
 
       if (!Array.isArray(employee_id) || employee_id.length === 0) {
-        res.json({
+        return res.json({
           success: false,
           data: [],
           message: "No employees provided for assignment",
@@ -287,7 +304,7 @@ async editMission(req, res, next) {
       });
 
       if(assign_employees_to_mission_data[1] === 0) {
-        res.json({
+        return res.json({
           success: false,
           data: [],
           message: "Failed to assign employees to mission",
