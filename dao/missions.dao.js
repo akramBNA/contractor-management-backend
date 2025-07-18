@@ -90,14 +90,14 @@ async addMission(req, res, next) {
     const endDate = new Date(end_at);
 
     if (isNaN(startDate) || isNaN(endDate)) {
-      res.json({
+      return res.json({
         success: false,
         message: "Invalid start or end date format",
       });
     }
 
     if (startDate > endDate) {
-      res.json({
+      return res.json({
         success: false,
         message: "Start date cannot be after end date",
       });
@@ -125,7 +125,7 @@ async addMission(req, res, next) {
     const insertedMission = add_missions_data[0][0];
 
     if (!insertedMission) {
-      res.json({
+      return res.json({
         success: false,
         data: [],
         message: "Failed to add mission",
@@ -133,7 +133,7 @@ async addMission(req, res, next) {
     }
 
     if (!Array.isArray(employee_id) || employee_id.length === 0) {
-      res.json({
+      return res.json({
         success: false,
         data: [],
         message: "No employees provided for assignment",
