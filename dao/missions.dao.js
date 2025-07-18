@@ -86,6 +86,23 @@ async addMission(req, res, next) {
       employee_id,
     } = req.body;
 
+    const startDate = new Date(start_at);
+    const endDate = new Date(end_at);
+
+    if (isNaN(startDate) || isNaN(endDate)) {
+      res.json({
+        success: false,
+        message: "Invalid start or end date format",
+      });
+    }
+
+    if (startDate > endDate) {
+      res.json({
+        success: false,
+        message: "Start date cannot be after end date",
+      });
+    }
+
     const add_mission_query = `
       INSERT INTO missions (mission_name, mission_description, start_at, end_at, priority, expenses)
       VALUES (?, ?, ?, ?, ?, ?)
