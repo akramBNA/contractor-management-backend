@@ -322,6 +322,46 @@ async editMission(req, res, next) {
     }
   }
 
+async deleteMission(req, res, next) {
+    try{
+      const { mission_id } = req.params;
+
+      const employees = await mission_employees.findAll({
+        where: { mission_id, active: 'Y' }
+      });
+
+      const mission = await missions.findOne({
+        where: { mission_id }
+      });
+      
+      if ( mission.active === 'N' || employees.active === 'N') {
+        return res.json({
+          success: false,
+          message: "Mission not found or already inactive",
+        });
+      }
+
+      const [updatedMissionEmployeesCount] = await mission_employees.update(
+        { active: 'N' },
+        { where: { mission_id }, returning: false }
+      );
+
+      const [updatedMissionCount] = await missions.update(
+        { active: 'N' },
+        { where: { mission_id }, returning: false }
+      );
+
+      res.status(200).json({
+        success: true,
+        data: [],
+        message: 'mission and its assigned employees deleted successfully',
+      });
+
+    } catch(error){
+      return next(error);
+    }
+  }
+
 }
 
 module.exports = missionsDao;

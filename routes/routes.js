@@ -63,6 +63,7 @@ router.get("/missions/getAllMissions/:params", missions_controller.getAllActiveM
 router.post("/missions/addMission/", missions_controller.addMission);
 router.get("/missions/getMissionById/:mission_id", missions_controller.getMissionById);
 router.put("/missions/editMission/:mission_id", missions_controller.editMission);
+router.delete("/missions/deleteMission/:mission_id", missions_controller.deleteMission);
 
 // MISSION EMPLOYEES ROUTES
 router.get("/mission_employees/getAllAssignedEmployees/", mission_employees_controller.getAllAssignedEmployees);
