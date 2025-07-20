@@ -43,14 +43,14 @@ const tasks = sequelize.define(
       type: DataTypes.BIGINT,
       allowNull: false,
     },
-    priority: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    status: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
+    // priority: {
+    //   type: DataTypes.TEXT,
+    //   allowNull: false,
+    // },
+    // status: {
+    //   type: DataTypes.TEXT,
+    //   allowNull: false,
+    // },
     active: {
       type: DataTypes.TEXT,
       allowNull: false,
