@@ -16,4 +16,7 @@ module.exports = {
   editMission: function (req, res, next) {
     missions_instance.editMission(req, res, next);
   },
+  deleteMission: function (req, res, next) {
+    missions_instance.deleteMission(req, res, next);
+  },
 };
