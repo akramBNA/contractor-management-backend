@@ -323,37 +323,44 @@ async editMission(req, res, next) {
   }
 
 async deleteMission(req, res, next) {
-  try{
-    const { mission_id } = req.params;
+    try{
+      const { mission_id } = req.params;
 
-    const delete_mission_employees_query = `UPDATE mission_employees SET active='N' WHERE mission_id = ${mission_id}`;
-    const delete_mission_employees_data = await mission_employees.sequelize.query(delete_mission_employees_query,{
-      type: mission_employees.sequelize.QueryTypes.UPDATE
-    });
+      const employees = await mission_employees.findAll({
+        where: { mission_id, active: 'Y' }
+      });
 
-    console.log("---- response : ", delete_mission_employees_data);
-    console.log("---- Command : ", delete_mission_employees_data.command);
-    console.log("---- rowCount : ", delete_mission_employees_data.rowCount);
+      const mission = await missions.findOne({
+        where: { mission_id }
+      });
+      
+      if ( mission.active === 'N' || employees.active === 'N') {
+        return res.json({
+          success: false,
+          message: "Mission not found or already inactive",
+        });
+      }
 
-    const delete_mission_query = `UPDATE missions SET active = 'N' WHERE mission_id = ${mission_id}`;
-    const delete_mission_data = await missions.sequelize.query(delete_mission_query,{
-      type: missions.sequelize.QueryTypes.UPDATE
-    });
+      const [updatedMissionEmployeesCount] = await mission_employees.update(
+        { active: 'N' },
+        { where: { mission_id }, returning: false }
+      );
 
-    console.log("---- response missions : ", delete_mission_data);
-    console.log("---- Command missions : ", delete_mission_data.command);
-    console.log("---- rowCount missions : ", delete_mission_data.rowCount);
+      const [updatedMissionCount] = await missions.update(
+        { active: 'N' },
+        { where: { mission_id }, returning: false }
+      );
 
-    res.status(200).json({
-      success: true,
-      data: delete_mission_data,
-      message: 'mission and its assigned employees deleted successfully',
-    });
-    
-  } catch(error){
-    return next(error);
+      res.status(200).json({
+        success: true,
+        data: [],
+        message: 'mission and its assigned employees deleted successfully',
+      });
+
+    } catch(error){
+      return next(error);
+    }
   }
-}
 
 }
 
