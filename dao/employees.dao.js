@@ -502,7 +502,7 @@ class employeesDao {
         });
       }
       else {
-        res.json({
+        return res.json({
           success: false,
           data: [],
           message: "No active employees found",
