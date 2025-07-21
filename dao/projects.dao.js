@@ -27,7 +27,7 @@ class projectsDao {
 
       if (totalCount === 0) {
         return res.json({
-          success: false,
+          success: true,
           data: [],
           message: "No projects found matching the criteria.",
         });
