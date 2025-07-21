@@ -13,7 +13,8 @@ class projectsDao {
       const offset = parseInt(params.offset) || 0;
 
       const whereClause = `WHERE active = 'Y'` + (keyword ? ` AND project_name ILIKE :likeKeyword` : '');
-      const countQuery = `SELECT COUNT(*) AS total FROM projects ${whereClause}`;
+
+      const countQuery = `SELECT * FROM projects ${whereClause}`;
 
       const countResult = await projects.sequelize.query(countQuery, {
         replacements: {
@@ -22,7 +23,7 @@ class projectsDao {
         type: projects.sequelize.QueryTypes.SELECT,
       });
 
-      const totalCount = parseInt(countResult[0].total);
+      const totalCount = parseInt(countResult.length);
 
       if (totalCount === 0) {
         return res.json({
@@ -54,7 +55,7 @@ class projectsDao {
         canceled: 0,
       };
 
-      get_all_projects_data.forEach((project) => {
+      countResult.forEach((project) => {
         switch (project.status) {
           case "Not Started":
             projectStats.notStarted++;
