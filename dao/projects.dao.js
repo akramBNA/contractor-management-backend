@@ -139,9 +139,7 @@ class projectsDao {
           start_date: result[0].project_start,
           end_date: result[0].project_end,
           duration: result[0].project_duration,
-          tasks: result
-            .filter((row) => row.task_id !== null)
-            .map((row) => ({
+          tasks: result.filter((row) => row.task_id !== null).map((row) => ({
               task_id: row.task_id,
               task_name: row.task_name,
               description: row.task_description,
@@ -160,7 +158,7 @@ class projectsDao {
           message: "Project retrieved successfully",
         });
       } else {
-        res.status(404).json({
+        return res.json({
           success: false,
           message: "Project not found",
         });
