@@ -5,52 +5,85 @@ const { differenceInDays, parseISO, isValid, isBefore } = require("date-fns");
 class projectsDao {
   async getAllProjects(req, res, next) {
     try {
-      const get_all_projects_query = `SELECT * FROM projects WHERE active='Y' ORDER BY project_id ASC`;
-      const get_all_projects_data = await projects.sequelize.query(
-        get_all_projects_query,
-        {
-          type: projects.sequelize.QueryTypes.SELECT,
-        }
-      );
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
 
-      if (get_all_projects_data) {
-        const projectStats = {
-          notStarted: 0,
-          inProgress: 0,
-          finished: 0,
-          canceled: 0,
-        };
+      const keyword = params.keyword || "";
+      const limit = parseInt(params.limit) || 20;
+      const offset = parseInt(params.offset) || 0;
 
-        get_all_projects_data.forEach((project) => {
-          switch (project.status) {
-            case "Not Started":
-              projectStats.notStarted += 1;
-              break;
-            case "In Progress":
-              projectStats.inProgress += 1;
-              break;
-            case "Finished":
-              projectStats.finished += 1;
-              break;
-            case "Canceled":
-              projectStats.canceled += 1;
-              break;
-          }
-        });
+      const whereClause = `WHERE active = 'Y'` + (keyword ? ` AND project_name ILIKE :likeKeyword` : '');
+      const countQuery = `SELECT COUNT(*) AS total FROM projects ${whereClause}`;
 
-        res.status(200).json({
-          success: true,
-          data: get_all_projects_data,
-          stats: projectStats,
-          message: "Retrieved successfully",
-        });
-      } else {
-        res.json({
+      const countResult = await projects.sequelize.query(countQuery, {
+        replacements: {
+          likeKeyword: `${keyword}%`
+        },
+        type: projects.sequelize.QueryTypes.SELECT,
+      });
+
+      const totalCount = parseInt(countResult[0].total);
+
+      if (totalCount === 0) {
+        return res.json({
           success: false,
           data: [],
-          message: "Failed to retrieve data",
+          message: "No projects found matching the criteria.",
         });
       }
+
+      const get_all_projects_query = `
+        SELECT * FROM projects 
+        ${whereClause}
+        ORDER BY project_id ASC
+        LIMIT :limit OFFSET :offset`;
+
+      const get_all_projects_data = await projects.sequelize.query(get_all_projects_query, {
+        replacements: {
+          likeKeyword: `${keyword}%`,
+          limit,
+          offset,
+        },
+        type: projects.sequelize.QueryTypes.SELECT,
+      });
+
+      const projectStats = {
+        notStarted: 0,
+        inProgress: 0,
+        finished: 0,
+        canceled: 0,
+      };
+
+      get_all_projects_data.forEach((project) => {
+        switch (project.status) {
+          case "Not Started":
+            projectStats.notStarted++;
+            break;
+          case "In Progress":
+            projectStats.inProgress++;
+            break;
+          case "Finished":
+            projectStats.finished++;
+            break;
+          case "Canceled":
+            projectStats.canceled++;
+            break;
+        }
+      });
+
+      res.status(200).json({
+        success: true,
+        data: get_all_projects_data,
+        attributes: {
+          total: totalCount,
+          limit: limit,
+          offset: offset,
+          pages: Math.ceil(totalCount / limit),
+        },
+        stats: projectStats,
+        message: "Retrieved successfully",
+      });
+
     } catch (error) {
       return next(error);
     }
