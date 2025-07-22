@@ -94,14 +94,37 @@ class projectsDao {
     try {
       const { project_id } = req.params;
 
-      const get_project_by_id_query = `SELECT * FROM projects WHERE project_id = :project_id AND active = 'Y'`;
+      const get_project_by_id_query = ` SELECT 
+                                          pr.project_id,
+                                          pr.project_name,
+                                          pr.description,
+                                          pr.start_date,
+                                          pr.end_date,
+                                          pr.duration,
+                                          pr.priority,
+                                          pr.status,
+                                          COALESCE(
+                                            json_agg(
+                                              DISTINCT jsonb_build_object(
+                                                'employee_id', e.employee_id,
+                                                'employee_name', e.employee_name,
+                                                'employee_lastname', e.employee_lastname
+                                              )
+                                            ) FILTER (WHERE e.employee_id IS NOT NULL),
+                                            '[]'
+                                          ) AS assigned_employees
+                                        FROM projects pr
+                                        LEFT JOIN project_employees pe 
+                                          ON pr.project_id = pe.project_id
+                                        LEFT JOIN employees e 
+                                          ON pe.employee_id = e.employee_id
+                                        WHERE pr.project_id = :project_id
+                                        GROUP BY pr.project_id;`;
 
       const result = await projects.sequelize.query(get_project_by_id_query, {
-        replacements: { project_id },
+        replacements: { project_id: project_id },
         type: projects.sequelize.QueryTypes.SELECT,
       });
-
-      console.log("---- result: ", result);
       
       if (result.length > 0) {
 
