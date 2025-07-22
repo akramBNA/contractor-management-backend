@@ -14,6 +14,7 @@ const company_controller = require("../controllers/company.controllers");
 const missions_controller = require("../controllers/missions.controllers");
 const mission_employees_controller = require("../controllers/mission_employees.controllers");
 const salaries_controller = require("../controllers/salaries.controllers");
+const project_employees_controller = require("../controllers/project_employees.controllers")
 
 
 // USERS ROUTES.
@@ -70,5 +71,7 @@ router.get("/mission_employees/getAllAssignedEmployees/", mission_employees_cont
 
 // SALARIES ROUTES
 router.get("/salaries/getAllSalaries/:params", salaries_controller.getAllSalaries);
+
+// PROJECT EMPLOYEES ROUTES
 
 module.exports = router;
