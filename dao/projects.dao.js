@@ -126,7 +126,6 @@ class projectsDao {
       const {
         project_name,
         description,
-        assigned_to,
         start_date,
         end_date,
         priority,
@@ -163,7 +162,6 @@ class projectsDao {
       const newProject = await projects.create({
         project_name,
         description,
-        assigned_to,
         start_date,
         end_date,
         duration,
