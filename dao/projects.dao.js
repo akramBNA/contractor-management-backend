@@ -94,67 +94,20 @@ class projectsDao {
     try {
       const { project_id } = req.params;
 
-      const get_project_by_id_query = `
-      SELECT 
-        p.project_id AS project_id,
-        p.project_name,
-        p.description AS project_description,
-        p.assigned_to AS project_assigned_to,
-        p.priority AS project_priority,
-        p.status AS project_status,
-        p.start_date AS project_start,
-        p.end_date AS project_end,
-        p.duration AS project_duration,
-        t.task_id AS task_id,
-        t.task_name,
-        t.description AS task_description,
-        t.assigned_to AS task_assigned_to,
-        t.priority AS task_priority,
-        t.status AS task_status,
-        t.start_date AS task_start,
-        t.end_date AS task_end,
-        t.duration AS task_duration
-      FROM 
-        projects p
-      LEFT JOIN 
-        tasks t ON t.project_id = p.project_id
-      WHERE 
-        p.project_id = :project_id AND p.active = 'Y'
-      ORDER BY 
-        t.start_date ASC`;
+      const get_project_by_id_query = `SELECT * FROM projects WHERE project_id = :project_id AND active = 'Y'`;
 
       const result = await projects.sequelize.query(get_project_by_id_query, {
         replacements: { project_id },
         type: projects.sequelize.QueryTypes.SELECT,
       });
 
+      console.log("---- result: ", result);
+      
       if (result.length > 0) {
-        const project_data = {
-          project_id: result[0].project_id,
-          project_name: result[0].project_name,
-          description: result[0].project_description,
-          assigned_to: result[0].project_assigned_to,
-          priority: result[0].project_priority,
-          status: result[0].project_status,
-          start_date: result[0].project_start,
-          end_date: result[0].project_end,
-          duration: result[0].project_duration,
-          tasks: result.filter((row) => row.task_id !== null).map((row) => ({
-              task_id: row.task_id,
-              task_name: row.task_name,
-              description: row.task_description,
-              assigned_to: row.task_assigned_to,
-              priority: row.task_priority,
-              status: row.task_status,
-              start_date: row.task_start,
-              end_date: row.task_end,
-              duration: row.task_duration,
-            })),
-        };
 
         res.status(200).json({
           success: true,
-          data: project_data,
+          data: result[0],
           message: "Project retrieved successfully",
         });
       } else {
