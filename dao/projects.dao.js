@@ -130,6 +130,7 @@ class projectsDao {
         end_date,
         priority,
         status,
+        employee_id
       } = req.body;
 
       if (!project_name || !start_date || !end_date || !priority || !status) {
@@ -170,15 +171,31 @@ class projectsDao {
         active: "Y",
       });
 
+      if (!Array.isArray(employee_id) || employee_id.length === 0) {
+        return res.json({
+          success: false,
+          message: "No employees provided for assignment",
+        });
+      }
+
+      const insertValues = employee_id.map(empId => `(${newProject.project_id}, ${empId})`).join(",");
+
+      const assignEmployeesQuery = `INSERT INTO project_employees (project_id, employee_id) VALUES ${insertValues}`;
+
+      await projects.sequelize.query(assignEmployeesQuery, {
+        type: projects.sequelize.QueryTypes.INSERT,
+      });
+
       res.status(200).json({
         success: true,
         data: newProject,
-        message: "Project created successfully",
+        message: "Project created and employees assigned successfully",
       });
     } catch (error) {
       next(error);
     }
   }
+
 }
 
 module.exports = projectsDao;
