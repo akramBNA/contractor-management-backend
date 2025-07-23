@@ -1,4 +1,5 @@
 const { projects } = require("../models/projects.models");
+const {tasks} = require("../models/tasks.models.js")
 const { sequelize } = require("../database/database.js");
 const { differenceInDays, parseISO, isValid, isBefore } = require("date-fns");
 
@@ -216,6 +217,50 @@ class projectsDao {
       });
     } catch (error) {
       next(error);
+    }
+  }
+
+  async deleteProject(req, res, next){
+    try{
+      // let params = req.params.params;
+      // params = params && params.length ? JSON.parse(params) : {};
+
+      const { project_id } = req.params;
+
+      const find_tasks_query = await tasks.findAll({
+        where:{project_id, active:'Y'}
+      });
+
+      const find_project_query = await projects.findOne({
+        where: { project_id }
+      });
+
+      if( find_project_query.active === 'N' || find_tasks_query.active ==='N'){
+        return res.json({
+          success: false,
+          data: [],
+          message: "Project not found or inactive"
+        })
+      }
+
+      const [delete_tasks] = await tasks.update(
+        { active: 'N' },
+        { where: { project_id }, returning: false }
+      );
+
+      const [delete_project] = await projects.update(
+        { active: 'N' },
+        { where: { project_id }, returning: false }
+      );
+
+      res.status(200).json({
+        success: true,
+        data: [],
+        message: 'project and its assigned tasks deleted successfully',
+      });
+
+    }catch(error){
+      return next(error);
     }
   }
 
