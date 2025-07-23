@@ -92,44 +92,43 @@ class projectsDao {
     }
   }
 
-  async getProjectById(req, res, next) {
+async getProjectById(req, res, next) {
     try {
       const { project_id } = req.params;
 
-      const get_project_by_id_query = ` SELECT 
-                                          pr.project_id,
-                                          pr.project_name,
-                                          pr.description,
-                                          pr.start_date,
-                                          pr.end_date,
-                                          pr.duration,
-                                          pr.priority,
-                                          pr.status,
-                                          COALESCE(
-                                            json_agg(
-                                              DISTINCT jsonb_build_object(
-                                                'employee_id', e.employee_id,
-                                                'employee_name', e.employee_name,
-                                                'employee_lastname', e.employee_lastname
-                                              )
-                                            ) FILTER (WHERE e.employee_id IS NOT NULL),
-                                            '[]'
-                                          ) AS assigned_employees
-                                        FROM projects pr
-                                        LEFT JOIN project_employees pe 
-                                          ON pr.project_id = pe.project_id
-                                        LEFT JOIN employees e 
-                                          ON pe.employee_id = e.employee_id
-                                        WHERE pr.project_id = :project_id
-                                        GROUP BY pr.project_id;`;
+      const get_project_by_id_query = `SELECT 
+                                        pr.project_id,
+                                        pr.project_name,
+                                        pr.description,
+                                        pr.start_date,
+                                        pr.end_date,
+                                        pr.duration,
+                                        pr.priority,
+                                        pr.status,
+                                        COALESCE(
+                                          json_agg(
+                                            DISTINCT jsonb_build_object(
+                                              'employee_id', e.employee_id,
+                                              'employee_name', e.employee_name,
+                                              'employee_lastname', e.employee_lastname
+                                            )
+                                          ) FILTER (WHERE pe.active = 'Y' AND e.employee_id IS NOT NULL),
+                                          '[]'
+                                        ) AS assigned_employees
+                                      FROM projects pr
+                                      LEFT JOIN project_employees pe 
+                                        ON pr.project_id = pe.project_id
+                                      LEFT JOIN employees e 
+                                        ON pe.employee_id = e.employee_id
+                                      WHERE pr.project_id = :project_id
+                                      GROUP BY pr.project_id;`;
 
       const result = await projects.sequelize.query(get_project_by_id_query, {
-        replacements: { project_id: project_id },
+        replacements: { project_id },
         type: projects.sequelize.QueryTypes.SELECT,
       });
-      
-      if (result.length > 0) {
 
+      if (result.length > 0) {
         res.status(200).json({
           success: true,
           data: result[0],
@@ -145,6 +144,7 @@ class projectsDao {
       next(error);
     }
   }
+
 
   async addProject(req, res, next) {
     try {
