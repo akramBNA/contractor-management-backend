@@ -223,21 +223,22 @@ class projectsDao {
 
   async deleteProject(req, res, next){
     try{
-      // let params = req.params.params;
-      // params = params && params.length ? JSON.parse(params) : {};
 
-      const { project_id } = req.params;
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const project_id  = params.project_id;
 
       const find_tasks_query = await tasks.findAll({
-        where:{project_id, active:'Y'}
+        where:{project_id: project_id, active:'Y'}
       });
 
       const find_project_employees_query = await project_employees.findAll({
-        where:{project_id, active:'Y'}
+        where:{project_id: project_id, active:'Y'}
       });
 
       const find_project_query = await projects.findOne({
-        where: { project_id }
+        where: { project_id: project_id }
       });
 
       if( find_project_query.active === 'N' ){
@@ -250,17 +251,17 @@ class projectsDao {
 
       const [delete_tasks] = await tasks.update(
         { active: 'N' },
-        { where: { project_id }, returning: false }
+        { where: { project_id: project_id }, returning: false }
       );
 
       const [delete_project_employees] = await project_employees.update(
         { active: 'N' },
-        { where: { project_id }, returning: false }
+        { where: { project_id: project_id }, returning: false }
       );
 
       const [delete_project] = await projects.update(
         { active: 'N' },
-        { where: { project_id }, returning: false }
+        { where: { project_id: project_id }, returning: false }
       );
 
       res.status(200).json({
