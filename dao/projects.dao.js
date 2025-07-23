@@ -94,7 +94,10 @@ class projectsDao {
 
 async getProjectById(req, res, next) {
     try {
-      const { project_id } = req.params;
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const project_id = params.project_id;
 
       const get_project_by_id_query = `SELECT 
                                         pr.project_id,
@@ -112,9 +115,7 @@ async getProjectById(req, res, next) {
                                               'employee_name', e.employee_name,
                                               'employee_lastname', e.employee_lastname
                                             )
-                                          ) FILTER (WHERE pe.active = 'Y' AND e.employee_id IS NOT NULL),
-                                          '[]'
-                                        ) AS assigned_employees
+                                          ) FILTER (WHERE pe.active = 'Y' AND e.employee_id IS NOT NULL), '[]' ) AS assigned_employees
                                       FROM projects pr
                                       LEFT JOIN project_employees pe 
                                         ON pr.project_id = pe.project_id
@@ -144,7 +145,6 @@ async getProjectById(req, res, next) {
       next(error);
     }
   }
-
 
   async addProject(req, res, next) {
     try {
