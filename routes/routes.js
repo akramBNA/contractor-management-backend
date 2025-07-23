@@ -58,7 +58,7 @@ router.get("/projects/getProjectById/:params", projects_controller.getProjectByI
 router.delete("/projects/deleteProject/:params", projects_controller.deleteProject);
 
 // TASKS ROUTES
-router.post("/tasks/getAllTasks/:project_id", tasks_controller.addTask);
+router.post("/tasks/addTask/:params", tasks_controller.addTask);
 
 // MISSIONS ROUTES
 router.get("/missions/getAllMissions/:params", missions_controller.getAllActiveMissions);

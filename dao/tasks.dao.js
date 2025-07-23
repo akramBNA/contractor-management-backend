@@ -4,29 +4,17 @@ const { parseISO, isValid, isBefore, differenceInDays } = require("date-fns");
 class tasksDao {
   async addTask(req, res, next) {
     try {
-      const { project_id } = req.params;
-      const {
-        task_name,
-        description,
-        assigned_to,
-        start_date,
-        end_date,
-        priority,
-        status,
-      } = req.body;
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};      
+      
+      const project_id = params.project_id;
 
-      if (
-        !project_id ||
-        !task_name ||
-        !start_date ||
-        !end_date ||
-        !priority ||
-        !status
-      ) {
-        return res.status(400).json({
+      const { task_name, description, start_date, end_date } = req.body;
+
+      if ( !project_id || !task_name || !start_date || !end_date ) {
+        return res.json({
           success: false,
-          message:
-            "Missing required fields: project_id, task_name, start_date, end_date, priority, status",
+          message: "Missing required fields: project_id, task_name, start_date, end_date"
         });
       }
 
@@ -34,14 +22,14 @@ class tasksDao {
       const end = parseISO(end_date);
 
       if (!isValid(start) || !isValid(end)) {
-        return res.status(400).json({
+        return res.json({
           success: false,
           message: "Invalid date format. Use 'YYYY-MM-DD'",
         });
       }
 
       if (!isBefore(start, end) && start_date !== end_date) {
-        return res.status(400).json({
+        return res.json({
           success: false,
           message: "start_date must be before or equal to end_date",
         });
@@ -53,17 +41,14 @@ class tasksDao {
         project_id,
         task_name,
         description,
-        assigned_to,
         start_date,
         end_date,
         duration,
-        priority,
-        status,
         active: "Y",
       });
 
       if (!newTask) {
-        return res.status(500).json({
+        return res.json({
           success: false,
           message: "Failed to add task",
         });

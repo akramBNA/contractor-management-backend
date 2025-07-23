@@ -27,10 +27,10 @@ const tasks = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    assigned_to: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
+    // assigned_to: {
+    //   type: DataTypes.TEXT,
+    //   allowNull: true,
+    // },
     start_date: {
       type: DataTypes.DATE,
       allowNull: false,
