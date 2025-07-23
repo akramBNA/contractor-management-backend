@@ -2,6 +2,7 @@ const { projects } = require("../models/projects.models");
 const {tasks} = require("../models/tasks.models.js")
 const { sequelize } = require("../database/database.js");
 const { differenceInDays, parseISO, isValid, isBefore } = require("date-fns");
+const { project_employees } = require("../models/project_employees.models.js");
 
 class projectsDao {
   async getAllProjects(req, res, next) {
@@ -231,11 +232,15 @@ class projectsDao {
         where:{project_id, active:'Y'}
       });
 
+      const find_project_employees_query = await project_employees.findAll({
+        where:{project_id, active:'Y'}
+      });
+
       const find_project_query = await projects.findOne({
         where: { project_id }
       });
 
-      if( find_project_query.active === 'N' || find_tasks_query.active ==='N'){
+      if( find_project_query.active === 'N' ){
         return res.json({
           success: false,
           data: [],
@@ -248,6 +253,11 @@ class projectsDao {
         { where: { project_id }, returning: false }
       );
 
+      const [delete_project_employees] = await project_employees.update(
+        { active: 'N' },
+        { where: { project_id }, returning: false }
+      );
+
       const [delete_project] = await projects.update(
         { active: 'N' },
         { where: { project_id }, returning: false }
@@ -256,7 +266,7 @@ class projectsDao {
       res.status(200).json({
         success: true,
         data: [],
-        message: 'project and its assigned tasks deleted successfully',
+        message: 'project , project_employees and its assigned tasks deleted successfully',
       });
 
     }catch(error){
