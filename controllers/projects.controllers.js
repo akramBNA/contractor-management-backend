@@ -11,5 +11,8 @@ module.exports = {
   },
   getProjectById: function (req, res, next) {
     projects_instance.getProjectById(req, res, next);
-  }
+  },
+  deleteProject: function (req, res, next) {
+    projects_instance.deleteProject(req, res, next);
+  },
 };
