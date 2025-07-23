@@ -55,6 +55,7 @@ router.get("/jobs/getAllJobs/", jobs_controller.getAllJobs);
 router.get("/projects/getAllProjects/:params", projects_controller.getAllProjects);
 router.post("/projects/addProject/", projects_controller.addProject);
 router.get("/projects/getProjectById/:project_id", projects_controller.getProjectById);
+router.delete("/projects/getProjectById/:project_id", projects_controller.deleteProject)
 
 // TASKS ROUTES
 router.post("/tasks/getAllTasks/:project_id", tasks_controller.addTask);
