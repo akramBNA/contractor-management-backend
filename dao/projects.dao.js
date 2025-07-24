@@ -108,6 +108,21 @@ async getProjectById(req, res, next) {
                                         pr.duration,
                                         pr.priority,
                                         pr.status,
+
+                                        -- Aggregate tasks into an array
+                                        COALESCE(
+                                          json_agg(
+                                            DISTINCT jsonb_build_object(
+                                              'task_id', t.task_id,
+                                              'task_name', t.task_name,
+                                              'description', t.description,
+                                              'start_date', t.start_date,
+                                              'end_date', t.end_date
+                                            )
+                                          ) FILTER (WHERE t.task_id IS NOT NULL), '[]'
+                                        ) AS tasks,
+
+                                        -- Aggregate assigned employees into an array
                                         COALESCE(
                                           json_agg(
                                             DISTINCT jsonb_build_object(
@@ -115,12 +130,13 @@ async getProjectById(req, res, next) {
                                               'employee_name', e.employee_name,
                                               'employee_lastname', e.employee_lastname
                                             )
-                                          ) FILTER (WHERE pe.active = 'Y' AND e.employee_id IS NOT NULL), '[]' ) AS assigned_employees
+                                          ) FILTER (WHERE pe.active = 'Y' AND e.employee_id IS NOT NULL), '[]'
+                                        ) AS assigned_employees
+
                                       FROM projects pr
-                                      LEFT JOIN project_employees pe 
-                                        ON pr.project_id = pe.project_id
-                                      LEFT JOIN employees e 
-                                        ON pe.employee_id = e.employee_id
+                                      LEFT JOIN tasks t ON t.project_id = pr.project_id
+                                      LEFT JOIN project_employees pe ON pr.project_id = pe.project_id
+                                      LEFT JOIN employees e ON pe.employee_id = e.employee_id
                                       WHERE pr.project_id = :project_id
                                       GROUP BY pr.project_id;`;
 
