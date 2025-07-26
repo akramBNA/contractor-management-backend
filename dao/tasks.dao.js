@@ -1,17 +1,17 @@
 const { tasks } = require("../models/tasks.models");
-const { parseISO, isValid, isBefore, differenceInDays } = require("date-fns");
+const { projects } = require("../models/projects.models");
+const { parseISO, isValid, isBefore, isAfter, differenceInDays } = require('date-fns');
 
 class tasksDao {
   async addTask(req, res, next) {
     try {
       let params = req.params.params;
-      params = params && params.length ? JSON.parse(params) : {};      
-      
-      const project_id = params.project_id;
+      params = params && params.length ? JSON.parse(params) : {};
 
+      const project_id = params.project_id;
       const { task_name, description, start_date, end_date } = req.body;
 
-      if ( !project_id || !task_name || !start_date || !end_date ) {
+      if (!project_id || !task_name || !start_date || !end_date) {
         return res.json({
           success: false,
           message: "Missing required fields: project_id, task_name, start_date, end_date"
@@ -32,6 +32,25 @@ class tasksDao {
         return res.json({
           success: false,
           message: "start_date must be before or equal to end_date",
+        });
+      }
+
+      const project = await projects.findOne({ where: { project_id } });
+
+      if (!project) {
+        return res.json({
+          success: false,
+          message: "Project not found",
+        });
+      }
+
+      const projectStart = new Date(project.start_date);
+      const projectEnd = new Date(project.end_date);
+
+      if (isBefore(start, projectStart) || isAfter(end, projectEnd)) {
+        return res.json({
+          success: false,
+          message: `Task dates must be within project range: ${project.start_date} to ${project.end_date}`,
         });
       }
 
@@ -59,6 +78,7 @@ class tasksDao {
         data: newTask,
         message: "Task added successfully",
       });
+
     } catch (error) {
       next(error);
     }
