@@ -50,11 +50,6 @@ class tasksDao {
       const projectStart = startOfDay(new Date(project.start_date));
       const projectEnd = startOfDay(new Date(project.end_date));
 
-      console.log("----- Project Start Date:", projectStart);
-      console.log("----- Project End Date:", projectEnd);
-      console.log("----- Task Start Date:", start);
-      console.log("----- Task End Date:", end);
-
       if (isBefore(start, projectStart) || isAfter(end, projectEnd)) {
         return res.json({
           success: false,
