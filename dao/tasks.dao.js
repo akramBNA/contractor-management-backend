@@ -1,6 +1,6 @@
 const { tasks } = require("../models/tasks.models");
 const { projects } = require("../models/projects.models");
-const { parseISO, isValid, isBefore, isAfter, differenceInDays } = require('date-fns');
+const { parseISO, isValid, isAfter, isBefore, differenceInDays, startOfDay, endOfDay } = require('date-fns');
 
 class tasksDao {
   async addTask(req, res, next) {
@@ -18,8 +18,8 @@ class tasksDao {
         });
       }
 
-      const start = parseISO(start_date);
-      const end = parseISO(end_date);
+      let start = parseISO(start_date);
+      let end = parseISO(end_date);
 
       if (!isValid(start) || !isValid(end)) {
         return res.json({
@@ -28,7 +28,10 @@ class tasksDao {
         });
       }
 
-      if (!isBefore(start, end) && start_date !== end_date) {
+      start = startOfDay(start);
+      end = startOfDay(end);
+
+      if (isAfter(start, end)) {
         return res.json({
           success: false,
           message: "start_date must be before or equal to end_date",
@@ -44,13 +47,18 @@ class tasksDao {
         });
       }
 
-      const projectStart = new Date(project.start_date);
-      const projectEnd = new Date(project.end_date);
+      const projectStart = startOfDay(new Date(project.start_date));
+      const projectEnd = startOfDay(new Date(project.end_date));
+
+      console.log("----- Project Start Date:", projectStart);
+      console.log("----- Project End Date:", projectEnd);
+      console.log("----- Task Start Date:", start);
+      console.log("----- Task End Date:", end);
 
       if (isBefore(start, projectStart) || isAfter(end, projectEnd)) {
         return res.json({
           success: false,
-          message: `Task dates must be within project range: ${project.start_date} to ${project.end_date}`,
+          message: `Task dates must be within the project's date range: ${project.start_date} to ${project.end_date}`,
         });
       }
 
@@ -83,6 +91,7 @@ class tasksDao {
       next(error);
     }
   }
+
 }
 
 module.exports = tasksDao;
