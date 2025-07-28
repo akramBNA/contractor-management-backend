@@ -22,9 +22,9 @@ class employeesDao {
       const searchCondition = keyword
         ? {
             [Op.or]: [
-              { employee_name: { [Op.iLike]: `%${keyword}%` } },
-              { employee_lastname: { [Op.iLike]: `%${keyword}%` } },
-              { employee_email: { [Op.iLike]: `%${keyword}%` } },
+              { employee_name: { [Op.iLike]: `${keyword}%` } },
+              { employee_lastname: { [Op.iLike]: `${keyword}%` } },
+              { employee_email: { [Op.iLike]: `${keyword}%` } },
             ],
           }
         : {};
