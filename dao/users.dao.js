@@ -5,53 +5,6 @@ const bcrypt = require("bcryptjs");
 const SECRET_KEY = process.env.AUTH_SECRET_KEY || "";
 
 class usersDao {
-  // async getAllUsers(req, res, next) {
-  //   try {
-  //     let limit = req.query.limit ? parseInt(req.query.limit) : null;
-  //     const offset = parseInt(req.query.offset) || 0;
-
-  //     const get_all_users_query = `
-  //         SELECT users.user_id, users.user_name,
-  //                users.user_lastname, users.user_email, roles.role_type, roles.role_id
-  //         FROM users 
-  //         LEFT JOIN roles ON roles.role_id = users.user_role_id
-  //         WHERE users.active = 'Y' AND roles.active = 'Y'
-  //         ORDER BY user_id ASC
-  //         ${limit ? `LIMIT ${limit} OFFSET ${offset}` : ""}`;
-
-  //     const get_all_users_data = await users.sequelize.query(
-  //       get_all_users_query,
-  //       {
-  //         type: users.sequelize.QueryTypes.SELECT,
-  //       }
-  //     );
-
-  //     const get_all_roles_query = `SELECT * FROM roles WHERE active='Y' ORDER BY role_id ASC`;
-  //     const get_all_roles_data =await roles.sequelize.query(get_all_roles_query, {
-  //       type: roles.sequelize.QueryTypes.SELECT,
-  //     })
-
-  //     if (get_all_users_data.length ) {
-  //       res.status(200).json({
-  //         success: true,
-  //         data: get_all_users_data,
-  //         total: get_all_users_data.length,
-  //         roles: get_all_roles_data,
-  //         message: "Retrieved successfully",
-  //       });
-  //     } else {
-  //       res.json({
-  //         success: false,
-  //         data: [],
-  //         total: 0,
-  //         message: "No users found",
-  //       });
-  //     }
-  //   } catch (error) {
-  //     return next(error);
-  //   }
-  // }
-
   async getAllUsers(req, res, next) {
     try {
       let params = req.params.params;
@@ -78,21 +31,18 @@ class usersDao {
         WHERE users.active = 'Y' AND roles.active = 'Y'
         ${searchCondition}
         ORDER BY user_id ASC
-        LIMIT :limit OFFSET :offset
-      `;
+        LIMIT :limit OFFSET :offset`;
 
       const get_all_users_data = await users.sequelize.query(get_all_users_query, {
         replacements: {
-          keyword: `%${keyword}%`,
+          keyword: `${keyword}%`,
           limit,
           offset,
         },
         type: users.sequelize.QueryTypes.SELECT,
       });
 
-      const get_all_roles_query = `
-        SELECT * FROM roles WHERE active='Y' ORDER BY role_id ASC
-      `;
+      const get_all_roles_query = `SELECT * FROM roles WHERE active='Y' ORDER BY role_id ASC`;
       const get_all_roles_data = await roles.sequelize.query(get_all_roles_query, {
         type: roles.sequelize.QueryTypes.SELECT,
       });
@@ -106,7 +56,7 @@ class usersDao {
       `;
       const count_result = await users.sequelize.query(count_query, {
         replacements: {
-          keyword: `%${keyword}%`
+          keyword: `${keyword}%`
         },
         type: users.sequelize.QueryTypes.SELECT,
       });
