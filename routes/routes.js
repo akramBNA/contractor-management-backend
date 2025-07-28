@@ -18,7 +18,7 @@ const project_employees_controller = require("../controllers/project_employees.c
 
 
 // USERS ROUTES.
-router.get("/users/getAllUsers/", users_controller.getAllUsers);
+router.get("/users/getAllUsers/:params", users_controller.getAllUsers);
 router.post("/users/addUser/", users_controller.addUser);
 router.post("/users/UserLogin/", users_controller.UserLogin);
 router.get("/users/getUserDataByIdAfterLogin/:id", users_controller.getUserDataByIdAfterLogin);

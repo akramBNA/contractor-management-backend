@@ -7,46 +7,74 @@ const SECRET_KEY = process.env.AUTH_SECRET_KEY || "";
 class usersDao {
   async getAllUsers(req, res, next) {
     try {
-      let limit = req.query.limit ? parseInt(req.query.limit) : null;
-      const offset = parseInt(req.query.offset) || 0;
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const keyword = params.keyword || "";
+      const limit = parseInt(params.limit) || 20;
+      const offset = parseInt(params.offset) || 0;
+
+      let searchCondition = '';
+      if (keyword) {
+        searchCondition = `AND (
+          LOWER(users.user_name) ILIKE :keyword OR
+          LOWER(users.user_lastname) ILIKE :keyword OR
+          LOWER(users.user_email) ILIKE :keyword
+        )`;
+      }
 
       const get_all_users_query = `
-          SELECT users.user_id, users.user_name,
-                 users.user_lastname, users.user_email, roles.role_type, roles.role_id
-          FROM users 
-          LEFT JOIN roles ON roles.role_id = users.user_role_id
-          WHERE users.active = 'Y' AND roles.active = 'Y'
-          ORDER BY user_id ASC
-          ${limit ? `LIMIT ${limit} OFFSET ${offset}` : ""}`;
+        SELECT users.user_id, users.user_name,
+              users.user_lastname, users.user_email, roles.role_type, roles.role_id
+        FROM users 
+        LEFT JOIN roles ON roles.role_id = users.user_role_id
+        WHERE users.active = 'Y' AND roles.active = 'Y'
+        ${searchCondition}
+        ORDER BY user_id ASC
+        LIMIT :limit OFFSET :offset`;
 
-      const get_all_users_data = await users.sequelize.query(
-        get_all_users_query,
-        {
-          type: users.sequelize.QueryTypes.SELECT,
-        }
-      );
+      const get_all_users_data = await users.sequelize.query(get_all_users_query, {
+        replacements: {
+          keyword: `${keyword}%`,
+          limit,
+          offset,
+        },
+        type: users.sequelize.QueryTypes.SELECT,
+      });
 
       const get_all_roles_query = `SELECT * FROM roles WHERE active='Y' ORDER BY role_id ASC`;
-      const get_all_roles_data =await roles.sequelize.query(get_all_roles_query, {
+      const get_all_roles_data = await roles.sequelize.query(get_all_roles_query, {
         type: roles.sequelize.QueryTypes.SELECT,
-      })
+      });
 
-      if (get_all_users_data.length ) {
-        res.status(200).json({
-          success: true,
-          data: get_all_users_data,
-          total: get_all_users_data.length,
-          roles: get_all_roles_data,
-          message: "Retrieved successfully",
-        });
-      } else {
-        res.json({
-          success: false,
-          data: [],
-          total: 0,
-          message: "No users found",
-        });
-      }
+      const count_query = `
+        SELECT COUNT(*) AS total
+        FROM users 
+        LEFT JOIN roles ON roles.role_id = users.user_role_id
+        WHERE users.active = 'Y' AND roles.active = 'Y'
+        ${searchCondition}
+      `;
+      const count_result = await users.sequelize.query(count_query, {
+        replacements: {
+          keyword: `${keyword}%`
+        },
+        type: users.sequelize.QueryTypes.SELECT,
+      });
+
+      const total = parseInt(count_result[0]?.total || 0);
+
+      res.status(200).json({
+        success: true,
+        data: get_all_users_data,
+        attributes: {
+          totalCount: total,
+          limit,
+          offset
+        },
+        total,
+        roles: get_all_roles_data,
+        message: "Users retrieved successfully",
+      });
     } catch (error) {
       return next(error);
     }
