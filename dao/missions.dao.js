@@ -55,7 +55,8 @@ class missionsDao {
           running_missions: parseInt(get_all_running_missions_data[0].count),
           completed_missions: parseInt(get_all_completed_missions_data[0].count),
           attributes: {
-            total: parseInt(total_missions_data[0].total),
+            overall_count: parseInt(total_missions_data[0].total),
+            total: get_all_active_missions_data.length,
             limit: limit,
             offset: offset, 
             pages: Math.ceil(total_missions_data[0].total / limit),
