@@ -92,7 +92,7 @@ class projectsDao {
     }
   }
 
-async getProjectById(req, res, next) {
+  async getProjectById(req, res, next) {
     try {
       let params = req.params.params;
       params = params && params.length ? JSON.parse(params) : {};
