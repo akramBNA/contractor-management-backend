@@ -79,6 +79,7 @@ router.get("/salaries/getAllSalaries/:params", salaries_controller.getAllSalarie
 
 // LEAVES ROUTES
 router.get("/leaves/getAllLeaves/", leaves_controller.getAllLeaves);
+router.post("/leaves/requestLeave/", leaves_controller.requestLeave);
 
 // LEAVE TYPES ROUTES
 router.get("/leave_types/getAllLeaveTypes/", leave_types_controller.getAllLeaveTypes);
