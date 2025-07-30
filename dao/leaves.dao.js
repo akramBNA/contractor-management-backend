@@ -4,7 +4,8 @@ const { employees } = require("../models/employees.models");
 class leavesDao {
   async getAllLeaves(req, res, next) {
     try {
-      const get_all_leaves_query ="SELECT * FROM leaves WHERE active='Y' ORDER BY leave_id ASC";
+      const get_all_leaves_query =
+        "SELECT * FROM leaves WHERE active='Y' ORDER BY leave_id ASC";
       const get_all_leaves_data = await leaves.sequelize.query(
         get_all_leaves_query,
         {
@@ -123,6 +124,50 @@ class leavesDao {
         data: leave,
         message: "Leave request created successfully",
       });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getAllLeavesById(req, res, next) {
+    try {
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+        const employee_id = params.employee_id;
+        const limit = params.limit || 20;
+        const offset = params.offset || 0;
+
+        const get_all_leaves_by_id_query = `SELECT * FROM leaves 
+                                            WHERE employee_id = :employee_id AND active='Y' 
+                                            ORDER BY leave_id ASC 
+                                            LIMIT :limit OFFSET :offset`;
+        const get_all_leaves_by_id_data = await leaves.sequelize.query(
+          get_all_leaves_by_id_query,
+          {
+            replacements: {
+              employee_id,
+              limit,
+              offset,
+            },
+            type: leaves.sequelize.QueryTypes.SELECT,
+          });
+
+          if(get_all_leaves_by_id_data && get_all_leaves_by_id_data.length > 0) {
+            res.status(200).json({
+              success: true,
+              data: get_all_leaves_by_id_data,
+              message: "Retrieved successfully",
+            });
+          }
+          else {
+            res.json({
+              success: true,
+              data: [],
+              message: "No leaves found for this employee",
+            });
+          }
+
     } catch (error) {
       return next(error);
     }
