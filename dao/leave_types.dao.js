@@ -1,4 +1,4 @@
-const leave_types = require("../models/leave_types.models");
+const {leave_types} = require("../models/leave_types.models");
 
 class leave_typesDao {
   async getAllLeaveTypes(req, res, next) {
