@@ -8,5 +8,8 @@ module.exports = {
   },
   requestLeave: function (req, res, next) {
     leaves_instance.requestLeave(req, res, next);
+  },
+  getAllLeavesById: function (req, res, next) {
+    leaves_instance.getAllLeavesById(req, res, next);
   }
 };
