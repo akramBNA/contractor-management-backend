@@ -6,4 +6,7 @@ module.exports = {
   getAllLeaves: function (req, res, next) {
     leaves_instance.getAllLeaves(req, res, next);
   },
+  requestLeave: function (req, res, next) {
+    leaves_instance.requestLeave(req, res, next);
+  }
 };
