@@ -82,5 +82,6 @@ router.get("/leaves/getAllLeaves/", leaves_controller.getAllLeaves);
 
 // LEAVE TYPES ROUTES
 router.get("/leave_types/getAllLeaveTypes/", leave_types_controller.getAllLeaveTypes);
+router.post("/leave_types/addLeaveType/", leave_types_controller.addLeaveType);
 
 module.exports = router;
