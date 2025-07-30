@@ -56,9 +56,8 @@ class leavesDao {
 
       if (!employee_id || !leave_type_id || !start_date || !end_date) {
         return res.json({
-          status: false,
-          message:
-            "Missing required fields: employee_id, leave_type_id, start_date, end_date",
+          success: false,
+          message:"Missing required fields: employee_id, leave_type_id, start_date, end_date",
         });
       }
 
@@ -72,14 +71,14 @@ class leavesDao {
 
       if (start < today) {
         return res.json({
-          status: false,
+          success: false,
           message: "Start date cannot be before today",
         });
       }
 
       if (end < start) {
         return res.json({
-          status: false,
+          success: false,
           message: "End date must be after start date",
         });
       }
@@ -88,7 +87,7 @@ class leavesDao {
 
       if (weekdays <= 0) {
         return res.json({
-          status: false,
+          success: false,
           message: "Leave duration must include at least one weekday",
         });
       }
@@ -97,14 +96,14 @@ class leavesDao {
 
       if (!employee) {
         return res.json({
-          status: false,
+          success: false,
           message: "Employee not found",
         });
       }
 
       if (employee.leave_credit < weekdays) {
         return res.json({
-          status: false,
+          success: false,
           message: "Insufficient leave credit",
         });
       }
@@ -120,7 +119,7 @@ class leavesDao {
       });
 
       res.status(200).json({
-        status: true,
+        success: true,
         data: leave,
         message: "Leave request created successfully",
       });
