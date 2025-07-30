@@ -12,13 +12,13 @@ class leave_typesDao {
       );
       if (get_all_leave_types_data) {
         res.status(200).json({
-          status: true,
+          success: true,
           data: get_all_leave_types_data,
           message: "Retrieved successfully",
         });
       } else {
         res.json({
-          status: false,
+          success: false,
           data: [],
           message: "Failed to retrieve data",
         });
