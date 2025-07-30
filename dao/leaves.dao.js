@@ -138,6 +138,20 @@ class leavesDao {
         const limit = params.limit || 20;
         const offset = params.offset || 0;
 
+        const get_all_leaves_by_id_count_query = `SELECT COUNT(*) as total FROM leaves WHERE employee_id = :employee_id AND active='Y'`;
+        const get_all_leaves_by_id_count_data = await leaves.sequelize.query(get_all_leaves_by_id_count_query, {
+            replacements: { employee_id },
+            type: leaves.sequelize.QueryTypes.SELECT,
+        });
+        
+        if(!get_all_leaves_by_id_count_data || get_all_leaves_by_id_count_data[0].total === 0) {
+          return res.json({
+            success: true,
+            data: [],
+            message: "No leaves found for this employee",
+          });
+        };
+
         const get_all_leaves_by_id_query = `SELECT * FROM leaves 
                                             WHERE employee_id = :employee_id AND active='Y' 
                                             ORDER BY leave_id ASC 
@@ -157,6 +171,12 @@ class leavesDao {
             res.status(200).json({
               success: true,
               data: get_all_leaves_by_id_data,
+              attributes:{
+                total: get_all_leaves_by_id_count_data[0].total,
+                limit: limit,
+                offset: offset,
+              },
+              stats: {},
               message: "Retrieved successfully",
             });
           }
