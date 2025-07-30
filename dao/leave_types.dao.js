@@ -1,7 +1,7 @@
 const leave_types = require("../models/leave_types.models");
 
 class leave_typesDao {
-  async getAllleave_types(req, res, next) {
+  async getAllLeaveTypes(req, res, next) {
     try {
       const get_all_leave_types_query = "SELECT * FROM leave_types WHERE active='Y' ORDER BY leave_type_id ASC";
       const get_all_leave_types_data = await leave_types.sequelize.query(
