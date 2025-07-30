@@ -14,7 +14,9 @@ const company_controller = require("../controllers/company.controllers");
 const missions_controller = require("../controllers/missions.controllers");
 const mission_employees_controller = require("../controllers/mission_employees.controllers");
 const salaries_controller = require("../controllers/salaries.controllers");
-const project_employees_controller = require("../controllers/project_employees.controllers")
+const project_employees_controller = require("../controllers/project_employees.controllers");
+const leaves_controller = require("../controllers/leaves.controllers");
+const leave_types_controller = require("../controllers/leave_types.controllers");
 
 
 // USERS ROUTES.
@@ -74,5 +76,14 @@ router.get("/mission_employees/getAllAssignedEmployees/", mission_employees_cont
 router.get("/salaries/getAllSalaries/:params", salaries_controller.getAllSalaries);
 
 // PROJECT EMPLOYEES ROUTES
+
+// LEAVES ROUTES
+router.get("/leaves/getAllLeaves/", leaves_controller.getAllLeaves);
+router.get("/leaves/getAllLeavesById/:params", leaves_controller.getAllLeavesById);
+router.post("/leaves/requestLeave/", leaves_controller.requestLeave);
+
+// LEAVE TYPES ROUTES
+router.get("/leave_types/getAllLeaveTypes/", leave_types_controller.getAllLeaveTypes);
+router.post("/leave_types/addLeaveType/", leave_types_controller.addLeaveType);
 
 module.exports = router;
