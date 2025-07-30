@@ -1,11 +1,10 @@
-const leaves = require("../models/leaves.models");
-const employees = require("../models/employees.models");
+const { leaves } = require("../models/leaves.models");
+const { employees } = require("../models/employees.models");
 
 class leavesDao {
   async getAllLeaves(req, res, next) {
     try {
-      const get_all_leaves_query =
-        "SELECT * FROM leaves WHERE active='Y' ORDER BY leave_id ASC";
+      const get_all_leaves_query ="SELECT * FROM leaves WHERE active='Y' ORDER BY leave_id ASC";
       const get_all_leaves_data = await leaves.sequelize.query(
         get_all_leaves_query,
         {
@@ -30,6 +29,25 @@ class leavesDao {
     }
   }
 
+  isWeekend(date) {
+    const day = date.getDay();
+    return day === 0 || day === 6;
+  }
+
+  calculateWeekdaysOnly(start, end) {
+    let count = 0;
+    let current = new Date(start);
+
+    while (current <= end) {
+      if (!this.isWeekend(current)) {
+        count++;
+      }
+      current.setDate(current.getDate() + 1);
+    }
+
+    return count;
+  }
+
   async requestLeave(req, res, next) {
     try {
       const { employee_id, leave_type_id, description, start_date, end_date } =
@@ -43,14 +61,34 @@ class leavesDao {
         });
       }
 
-      const durationInDays = Math.ceil(
-        (new Date(end_date) - new Date(start_date)) / (1000 * 60 * 60 * 24) + 1
-      );
+      const start = new Date(start_date);
+      const end = new Date(end_date);
+      const today = new Date();
 
-      if (durationInDays <= 0) {
+      today.setHours(0, 0, 0, 0);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
+
+      if (start < today) {
+        return res.json({
+          status: false,
+          message: "Start date cannot be before today",
+        });
+      }
+
+      if (end < start) {
         return res.json({
           status: false,
           message: "End date must be after start date",
+        });
+      }
+
+      const weekdays = this.calculateWeekdaysOnly(start, end);
+
+      if (weekdays <= 0) {
+        return res.json({
+          status: false,
+          message: "Leave duration must include at least one weekday",
         });
       }
 
@@ -63,7 +101,7 @@ class leavesDao {
         });
       }
 
-      if (employee.leave_credit < durationInDays) {
+      if (employee.leave_credit < weekdays) {
         return res.json({
           status: false,
           message: "Insufficient leave credit",
@@ -74,9 +112,9 @@ class leavesDao {
         employee_id,
         leave_type_id,
         description,
-        start_date,
-        end_date,
-        duration: durationInDays,
+        start_date: start,
+        end_date: end,
+        duration: weekdays,
         status: "Pending",
       });
 
