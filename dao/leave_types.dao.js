@@ -26,6 +26,23 @@ class leave_typesDao {
     } catch (error) {
       return next(error);
     }
+  };
+
+  async addLeaveType(req, res, next) {
+    try {
+      const { leave_type_name } = req.body;
+      const newLeaveType = await leave_types.create({
+       leave_type_name
+      });
+
+      res.status(200).json({
+        status: true,
+        data: newLeaveType,
+        message: "Leave type created successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
 }
 
