@@ -2,7 +2,7 @@ const { DATE } = require("sequelize");
 const { holidays } = require("../models/holidays.models");
 
 class holidaysDao {
-  async getAllHolidays(req, res, next) {
+  async getAllHolidaysByYear(req, res, next) {
     try {
       let params = req.params.params;
       params = params && params.length ? JSON.parse(params) : {};
