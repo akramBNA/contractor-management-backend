@@ -89,5 +89,6 @@ router.post("/leave_types/addLeaveType/", leave_types_controller.addLeaveType);
 
 // HOLIDAYS ROUTES
 router.get("/holidays/getAllHolidays/", holidays_controller.getAllHolidays);
+router.post("/holidays/addHoliday/", holidays_controller.addHoliday);
 
 module.exports = router;
