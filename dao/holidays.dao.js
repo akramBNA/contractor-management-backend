@@ -8,7 +8,13 @@ class holidaysDao {
       params = params && params.length ? JSON.parse(params) : {};
 
       const year = params.year || new Date().getFullYear();
-
+      if (!year || isNaN(year)) {
+        return res.json({
+          success: false,
+          message: "Invalid year provided",
+        });
+      };
+      
       const get_all_holidays_query = `SELECT * FROM holidays WHERE active='Y' AND EXTRACT(YEAR FROM holiday_date) = :year ORDER BY holiday_date ASC`;
       const get_all_holidays_data = await holidays.sequelize.query(
         get_all_holidays_query,
