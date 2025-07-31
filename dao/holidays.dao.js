@@ -27,6 +27,32 @@ class holidaysDao {
       return next(error);
     }
   }
+
+  async addHoliday(res, req, next) {
+    try {
+      const { holiday_name, holiday_date } = req.body;
+      const newHoliday = await holidays.holidays.create({
+        holiday_name,
+        holiday_date,
+        active: "Y",
+      });
+
+      if(!newHoliday) {
+        return res.json({
+          success: false,
+          message: "Failed to add holiday",
+        });
+      };
+      
+      res.status(200).json({
+        success: true,
+        data: newHoliday,
+        message: "Holiday added successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
 }
 
 module.exports = holidaysDao;
