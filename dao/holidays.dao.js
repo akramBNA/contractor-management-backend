@@ -9,7 +9,7 @@ class holidaysDao {
 
       const years = params.years || new Date().getFullYear();
 
-      const get_all_holidays_query = `SELECT * FROM holidays WHERE active='Y' AND YEAR(holiday_date) = :years ORDER BY holiday_date ASC`;
+      const get_all_holidays_query = `SELECT * FROM holidays WHERE active='Y' AND EXTRACT(YEAR FROM holiday_date) = :years ORDER BY holiday_date ASC`;
       const get_all_holidays_data = await holidays.sequelize.query(
         get_all_holidays_query,
         {
