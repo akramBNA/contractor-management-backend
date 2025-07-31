@@ -17,6 +17,7 @@ const salaries_controller = require("../controllers/salaries.controllers");
 const project_employees_controller = require("../controllers/project_employees.controllers");
 const leaves_controller = require("../controllers/leaves.controllers");
 const leave_types_controller = require("../controllers/leave_types.controllers");
+const holidays_controller = require("../controllers/holidays.controllers");
 
 
 // USERS ROUTES.
@@ -85,5 +86,9 @@ router.post("/leaves/requestLeave/", leaves_controller.requestLeave);
 // LEAVE TYPES ROUTES
 router.get("/leave_types/getAllLeaveTypes/", leave_types_controller.getAllLeaveTypes);
 router.post("/leave_types/addLeaveType/", leave_types_controller.addLeaveType);
+
+// HOLIDAYS ROUTES
+router.get("/holidays/getAllHolidaysByYear/:params", holidays_controller.getAllHolidaysByYear);
+router.post("/holidays/addHoliday/", holidays_controller.addHoliday);
 
 module.exports = router;
