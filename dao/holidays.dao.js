@@ -1,4 +1,4 @@
-const holidays = require("../models/holidays.models");
+const {holidays} = require("../models/holidays.models");
 
 class holidaysDao {
   async getAllHolidays(req, res, next) {
@@ -28,22 +28,23 @@ class holidaysDao {
     }
   }
 
-  async addHoliday(res, req, next) {
+  async addHoliday(req, res, next) {
     try {
-      const { holiday_name, holiday_date } = req.body;
-      const newHoliday = await holidays.holidays.create({
+
+      const { holiday_name, holiday_date } = req.body;      
+      const newHoliday = await holidays.create({
         holiday_name,
         holiday_date,
         active: "Y",
       });
-
+      
       if(!newHoliday) {
         return res.json({
           success: false,
           message: "Failed to add holiday",
         });
       };
-      
+
       res.status(200).json({
         success: true,
         data: newHoliday,
