@@ -1,12 +1,19 @@
-const {holidays} = require("../models/holidays.models");
+const { DATE } = require("sequelize");
+const { holidays } = require("../models/holidays.models");
 
 class holidaysDao {
   async getAllHolidays(req, res, next) {
     try {
-      const get_all_holidays_query = "SELECT * FROM holidays WHERE active='Y' ORDER BY holiday_id ASC";
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const years = params.years || new Date().getFullYear();
+
+      const get_all_holidays_query = `SELECT * FROM holidays WHERE active='Y' AND YEAR(holiday_date) = :years ORDER BY holiday_date ASC`;
       const get_all_holidays_data = await holidays.sequelize.query(
         get_all_holidays_query,
         {
+          replacements: { years },
           type: holidays.sequelize.QueryTypes.SELECT,
         }
       );
@@ -30,20 +37,19 @@ class holidaysDao {
 
   async addHoliday(req, res, next) {
     try {
-
-      const { holiday_name, holiday_date } = req.body;      
+      const { holiday_name, holiday_date } = req.body;
       const newHoliday = await holidays.create({
         holiday_name,
         holiday_date,
         active: "Y",
       });
-      
-      if(!newHoliday) {
+
+      if (!newHoliday) {
         return res.json({
           success: false,
           message: "Failed to add holiday",
         });
-      };
+      }
 
       res.status(200).json({
         success: true,
