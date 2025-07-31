@@ -7,13 +7,13 @@ class holidaysDao {
       let params = req.params.params;
       params = params && params.length ? JSON.parse(params) : {};
 
-      const years = params.years || new Date().getFullYear();
+      const year = params.year || new Date().getFullYear();
 
-      const get_all_holidays_query = `SELECT * FROM holidays WHERE active='Y' AND EXTRACT(YEAR FROM holiday_date) = :years ORDER BY holiday_date ASC`;
+      const get_all_holidays_query = `SELECT * FROM holidays WHERE active='Y' AND EXTRACT(YEAR FROM holiday_date) = :year ORDER BY holiday_date ASC`;
       const get_all_holidays_data = await holidays.sequelize.query(
         get_all_holidays_query,
         {
-          replacements: { years },
+          replacements: { year },
           type: holidays.sequelize.QueryTypes.SELECT,
         }
       );
