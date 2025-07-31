@@ -1,7 +1,7 @@
 const holidays = require("../models/holidays.models");
 
 class holidaysDao {
-  async getAllholidays(req, res, next) {
+  async getAllHolidays(req, res, next) {
     try {
       const get_all_holidays_query = "SELECT * FROM holidays WHERE active='Y' ORDER BY holiday_id ASC";
       const get_all_holidays_data = await holidays.sequelize.query(
