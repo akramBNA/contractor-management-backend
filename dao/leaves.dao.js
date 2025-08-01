@@ -43,7 +43,7 @@ class leavesDao {
       );
       if (get_all_leaves_data) {
         res.status(200).json({
-          status: true,
+          success: true,
           data: get_all_leaves_data,
           attributes: {
             total: get_all_leaves_data.length,
@@ -54,7 +54,7 @@ class leavesDao {
         });
       } else {
         res.json({
-          status: false,
+          success: false,
           data: [],
           message: "Failed to retrieve data",
         });
@@ -337,9 +337,7 @@ class leavesDao {
   }
 
   async acceptLeaves(req, res, next) {
-    const t = await sequelize.transaction();
     try {
-
       let params = req.params.params;
       params = params && params.length ? JSON.parse(params) : {};
 
@@ -353,7 +351,9 @@ class leavesDao {
         });
       }
 
-      const leave = await leaves.findOne({ where: { leave_id, active: 'Y' }, transaction: t });
+      const leave = await leaves.findOne({
+        where: { leave_id, active: 'Y' },
+      });
 
       if (!leave || leave.status !== "Pending") {
         return res.json({
@@ -362,7 +362,7 @@ class leavesDao {
         });
       }
 
-      const employee = await employees.findOne({ where: { employee_id }, transaction: t });
+      const employee = await employees.findOne({ where: { employee_id } });
 
       if (!employee) {
         return res.json({
@@ -378,24 +378,22 @@ class leavesDao {
         });
       }
 
-      leave.status = "Approved";
-      await leave.save({ transaction: t });
+      await leaves.update(
+        { status: "Approved" },
+        { where: { leave_id } }
+      );
 
       await employees.update(
         { leave_credit: employee.leave_credit - leave.duration },
-        { where: { employee_id }, transaction: t }
+        { where: { employee_id } }
       );
 
-      await t.commit();
-
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
-        data: leave,
         message: "Leave request approved successfully",
       });
 
     } catch (error) {
-      await t.rollback();
       return next(error);
     }
   }
