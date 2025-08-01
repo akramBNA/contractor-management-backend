@@ -7,6 +7,24 @@ class holidaysDao {
       let params = req.params.params;
       params = params && params.length ? JSON.parse(params) : {};
 
+      const get_all_holidays_count_query = `SELECT COUNT(*) as total FROM holidays WHERE active='Y'`;
+      const get_all_holidays_count_data = await holidays.sequelize.query(get_all_holidays_count_query, {
+        type: holidays.sequelize.QueryTypes.SELECT,
+      });
+
+      if(!get_all_holidays_count_data || get_all_holidays_count_data[0].total === 0) {
+        return res.json({
+          success: true,
+          data: [],
+          message: "No holidays found",
+        });
+      };
+
+      const get_available_years_query = `SELECT DISTINCT EXTRACT(YEAR FROM holiday_date) as year FROM holidays WHERE active='Y' ORDER BY year DESC`;
+      const available_years_data = await holidays.sequelize.query(get_available_years_query, {
+        type: holidays.sequelize.QueryTypes.SELECT,
+      });
+
       const year = params.year || new Date().getFullYear();
       if (!year || isNaN(year)) {
         return res.json({
@@ -15,18 +33,19 @@ class holidaysDao {
         });
       };
       
-      const get_all_holidays_query = `SELECT * FROM holidays WHERE active='Y' AND EXTRACT(YEAR FROM holiday_date) = :year ORDER BY holiday_date ASC`;
-      const get_all_holidays_data = await holidays.sequelize.query(
-        get_all_holidays_query,
+      const get_all_holidays_by_year_query = `SELECT * FROM holidays WHERE active='Y' AND EXTRACT(YEAR FROM holiday_date) = :year ORDER BY holiday_date ASC`;
+      const get_all_holidays_by_year_data = await holidays.sequelize.query(
+        get_all_holidays_by_year_query,
         {
           replacements: { year },
           type: holidays.sequelize.QueryTypes.SELECT,
         }
       );
-      if (get_all_holidays_data) {
+      if (get_all_holidays_by_year_data) {
         res.status(200).json({
           success: true,
-          data: get_all_holidays_data,
+          data: get_all_holidays_by_year_data,
+          years: available_years_data.map(y => y.year),
           message: "Retrieved successfully",
         });
       } else {

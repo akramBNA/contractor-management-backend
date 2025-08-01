@@ -7,11 +7,37 @@ const { Op } = require("sequelize");
 class leavesDao {
   async getAllLeaves(req, res, next) {
     try {
-      const get_all_leaves_query =
-        "SELECT * FROM leaves WHERE active='Y' ORDER BY leave_id ASC";
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const limit = params.limit || 20;
+      const offset = params.offset || 0;
+
+      const get_all_leaves_query =`select e.employee_id,
+                                      l.leave_id,
+                                      e.employee_name,
+                                      e.employee_lastname,
+                                      lt.leave_type_name,
+                                      l.start_date,
+                                      l.end_date,
+                                      l.duration,
+                                      l.status
+                                  from leaves as l
+                                  left join leave_types as lt
+                                  on l.leave_type_id = lt.leave_type_id
+                                  left join employees as e
+                                  on l.employee_id = e.employee_id
+                                  where  l.active = 'Y' and e.active='Y' and lt.active='Y'
+                                  order by l.leave_id asc
+                                  limit :limit
+                                  offset :offset`;
       const get_all_leaves_data = await leaves.sequelize.query(
         get_all_leaves_query,
         {
+          replacements: {
+            limit,
+            offset,
+          },
           type: leaves.sequelize.QueryTypes.SELECT,
         }
       );
@@ -19,6 +45,11 @@ class leavesDao {
         res.status(200).json({
           status: true,
           data: get_all_leaves_data,
+          attributes: {
+            total: get_all_leaves_data.length,
+            limit: limit,
+            offset: offset,
+          },
           message: "Retrieved successfully",
         });
       } else {
@@ -304,6 +335,107 @@ class leavesDao {
       return next(error);
     }
   }
+
+  async acceptLeaves(req, res, next) {
+    const t = await sequelize.transaction();
+    try {
+
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const leave_id = params.leave_id;
+      const employee_id = params.employee_id;
+
+      if (!leave_id) {
+        return res.json({
+          success: false,
+          message: "Missing required field: leave_id",
+        });
+      }
+
+      const leave = await leaves.findOne({ where: { leave_id, active: 'Y' }, transaction: t });
+
+      if (!leave || leave.status !== "Pending") {
+        return res.json({
+          success: false,
+          message: "Leave request not found or already processed",
+        });
+      }
+
+      const employee = await employees.findOne({ where: { employee_id }, transaction: t });
+
+      if (!employee) {
+        return res.json({
+          success: false,
+          message: "Employee not found",
+        });
+      }
+
+      if (employee.leave_credit < leave.duration) {
+        return res.json({
+          success: false,
+          message: "Insufficient leave credit",
+        });
+      }
+
+      leave.status = "Approved";
+      await leave.save({ transaction: t });
+
+      await employees.update(
+        { leave_credit: employee.leave_credit - leave.duration },
+        { where: { employee_id }, transaction: t }
+      );
+
+      await t.commit();
+
+      res.status(200).json({
+        success: true,
+        data: leave,
+        message: "Leave request approved successfully",
+      });
+
+    } catch (error) {
+      await t.rollback();
+      return next(error);
+    }
+  }
+
+  async rejectLeaves(req, res, next) {
+    try {
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const leave_id = params.leave_id;
+
+      if (!leave_id) {
+        return res.json({
+          success: false,
+          message: "Missing required field: leave_id",
+        });
+      }
+
+      const leave = await leaves.findOne({ where: { leave_id, active: 'Y' } });
+
+      if (!leave) {
+        return res.json({
+          success: false,
+          message: "Leave request not found or already processed",
+        });
+      }
+
+      leave.status = "Rejected";
+      await leave.save();
+
+      res.status(200).json({
+        success: true,
+        data: leave,
+        message: "Leave request rejected successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
 }
 
 module.exports = leavesDao;
