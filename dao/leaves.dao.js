@@ -369,7 +369,7 @@ class leavesDao {
     }
   }
 
-  async declineLeaves(req, res, next) {
+  async rejectLeaves(req, res, next) {
     try {
       let params = req.params.params;
       params = params && params.length ? JSON.parse(params) : {};
