@@ -14,5 +14,8 @@ module.exports = {
   },
   acceptLeaves: function (req, res, next) {
     leaves_instance.acceptLeaves(req, res, next);
+  },
+  rejectLeaves: function (req, res, next) {
+    leaves_instance.rejectLeaves(req, res, next);
   }
 };
