@@ -1,5 +1,8 @@
 const { leaves } = require("../models/leaves.models");
 const { employees } = require("../models/employees.models");
+const { holidays } = require("../models/holidays.models");
+const { Op } = require("sequelize");
+
 
 class leavesDao {
   async getAllLeaves(req, res, next) {
@@ -49,15 +52,93 @@ class leavesDao {
     return count;
   }
 
+  // async requestLeave(req, res, next) {
+  //   try {
+  //     const { employee_id, leave_type_id, description, start_date, end_date } =
+  //       req.body;
+
+  //     if (!employee_id || !leave_type_id || !start_date || !end_date) {
+  //       return res.json({
+  //         success: false,
+  //         message:"Missing required fields: employee_id, leave_type_id, start_date, end_date",
+  //       });
+  //     }
+
+  //     const start = new Date(start_date);
+  //     const end = new Date(end_date);
+  //     const today = new Date();
+
+  //     today.setHours(0, 0, 0, 0);
+  //     start.setHours(0, 0, 0, 0);
+  //     end.setHours(0, 0, 0, 0);
+
+  //     if (start < today) {
+  //       return res.json({
+  //         success: false,
+  //         message: "Start date cannot be before today",
+  //       });
+  //     }
+
+  //     if (end < start) {
+  //       return res.json({
+  //         success: false,
+  //         message: "End date must be after start date",
+  //       });
+  //     }
+
+  //     const weekdays = this.calculateWeekdaysOnly(start, end);
+
+  //     if (weekdays <= 0) {
+  //       return res.json({
+  //         success: false,
+  //         message: "Leave duration must include at least one weekday",
+  //       });
+  //     }
+
+  //     const employee = await employees.findOne({ where: { employee_id } });
+
+  //     if (!employee) {
+  //       return res.json({
+  //         success: false,
+  //         message: "Employee not found",
+  //       });
+  //     }
+
+  //     if (employee.leave_credit < weekdays) {
+  //       return res.json({
+  //         success: false,
+  //         message: "Insufficient leave credit",
+  //       });
+  //     }
+
+  //     const leave = await leaves.create({
+  //       employee_id,
+  //       leave_type_id,
+  //       description,
+  //       start_date: start,
+  //       end_date: end,
+  //       duration: weekdays,
+  //       status: "Pending",
+  //     });
+
+  //     res.status(200).json({
+  //       success: true,
+  //       data: leave,
+  //       message: "Leave request created successfully",
+  //     });
+  //   } catch (error) {
+  //     return next(error);
+  //   }
+  // }
+
   async requestLeave(req, res, next) {
     try {
-      const { employee_id, leave_type_id, description, start_date, end_date } =
-        req.body;
+      const { employee_id, leave_type_id, description, start_date, end_date } = req.body;
 
       if (!employee_id || !leave_type_id || !start_date || !end_date) {
         return res.json({
           success: false,
-          message:"Missing required fields: employee_id, leave_type_id, start_date, end_date",
+          message: "Missing required fields: employee_id, leave_type_id, start_date, end_date",
         });
       }
 
@@ -92,6 +173,30 @@ class leavesDao {
         });
       }
 
+      const holidayList = await holidays.findAll({
+        where: {
+          holiday_date: {
+            [Op.between]: [start, end],
+          },
+          active: 'Y',
+        },
+      });
+
+      const holidayWeekdays = holidayList.filter(h => {
+        const d = new Date(h.holiday_date);
+        const day = d.getDay();
+        return day !== 0 && day !== 6;
+      });
+
+      const adjustedLeaveDays = weekdays - holidayWeekdays.length;
+
+      if (adjustedLeaveDays <= 0) {
+        return res.json({
+          success: false,
+          message: "All selected days are holidays or weekends. Leave duration must include valid weekdays.",
+        });
+      }
+
       const employee = await employees.findOne({ where: { employee_id } });
 
       if (!employee) {
@@ -101,7 +206,7 @@ class leavesDao {
         });
       }
 
-      if (employee.leave_credit < weekdays) {
+      if (employee.leave_credit < adjustedLeaveDays) {
         return res.json({
           success: false,
           message: "Insufficient leave credit",
@@ -114,14 +219,14 @@ class leavesDao {
         description,
         start_date: start,
         end_date: end,
-        duration: weekdays,
+        duration: adjustedLeaveDays,
         status: "Pending",
       });
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         data: leave,
-        message: "Leave request created successfully",
+        message: "Leave request created successfully (excluding holidays)",
       });
     } catch (error) {
       return next(error);
