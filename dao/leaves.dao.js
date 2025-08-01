@@ -304,6 +304,66 @@ class leavesDao {
       return next(error);
     }
   }
+
+  async acceptLeaves(req, res, next) {
+    const t = await sequelize.transaction();
+    try {
+      const { leave_id, employee_id } = req.body;
+
+      if (!leave_id) {
+        return res.json({
+          success: false,
+          message: "Missing required field: leave_id",
+        });
+      }
+
+      const leave = await leaves.findOne({ where: { leave_id, active: 'Y' }, transaction: t });
+
+      if (!leave || leave.status !== "Pending") {
+        return res.json({
+          success: false,
+          message: "Leave request not found or already processed",
+        });
+      }
+
+      const employee = await employees.findOne({ where: { employee_id }, transaction: t });
+
+      if (!employee) {
+        return res.json({
+          success: false,
+          message: "Employee not found",
+        });
+      }
+
+      if (employee.leave_credit < leave.duration) {
+        return res.json({
+          success: false,
+          message: "Insufficient leave credit",
+        });
+      }
+
+      leave.status = "Approved";
+      await leave.save({ transaction: t });
+
+      await employees.update(
+        { leave_credit: employee.leave_credit - leave.duration },
+        { where: { employee_id }, transaction: t }
+      );
+
+      await t.commit();
+
+      res.status(200).json({
+        success: true,
+        data: leave,
+        message: "Leave request approved successfully",
+      });
+
+    } catch (error) {
+      await t.rollback();
+      return next(error);
+    }
+  }
+
 }
 
 module.exports = leavesDao;
