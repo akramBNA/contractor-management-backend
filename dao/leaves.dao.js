@@ -308,7 +308,12 @@ class leavesDao {
   async acceptLeaves(req, res, next) {
     const t = await sequelize.transaction();
     try {
-      const { leave_id, employee_id } = req.body;
+
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const leave_id = params.leave_id;
+      const employee_id = params.employee_id;
 
       if (!leave_id) {
         return res.json({
