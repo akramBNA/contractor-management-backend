@@ -11,5 +11,8 @@ module.exports = {
   },
   getAllLeavesById: function (req, res, next) {
     leaves_instance.getAllLeavesById(req, res, next);
+  },
+  acceptLeaves: function (req, res, next) {
+    leaves_instance.acceptLeaves(req, res, next);
   }
 };
