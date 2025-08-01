@@ -7,11 +7,37 @@ const { Op } = require("sequelize");
 class leavesDao {
   async getAllLeaves(req, res, next) {
     try {
-      const get_all_leaves_query =
-        "SELECT * FROM leaves WHERE active='Y' ORDER BY leave_id ASC";
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const limit = params.limit || 20;
+      const offset = params.offset || 0;
+
+      const get_all_leaves_query =`select e.employee_id,
+                                      l.leave_id,
+                                      e.employee_name,
+                                      e.employee_lastname,
+                                      lt.leave_type_name,
+                                      l.start_date,
+                                      l.end_date,
+                                      l.duration,
+                                      l.status
+                                  from leaves as l
+                                  left join leave_types as lt
+                                  on l.leave_type_id = lt.leave_type_id
+                                  left join employees as e
+                                  on l.employee_id = e.employee_id
+                                  where  l.active = 'Y' and e.active='Y' and lt.active='Y'
+                                  order by l.leave_id asc
+                                  limit :limit
+                                  offset :offset`;
       const get_all_leaves_data = await leaves.sequelize.query(
         get_all_leaves_query,
         {
+          replacements: {
+            limit,
+            offset,
+          },
           type: leaves.sequelize.QueryTypes.SELECT,
         }
       );
@@ -19,6 +45,11 @@ class leavesDao {
         res.status(200).json({
           status: true,
           data: get_all_leaves_data,
+          attributes: {
+            total: get_all_leaves_data.length,
+            limit: limit,
+            offset: offset,
+          },
           message: "Retrieved successfully",
         });
       } else {
