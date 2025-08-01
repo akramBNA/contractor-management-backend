@@ -79,7 +79,7 @@ router.get("/salaries/getAllSalaries/:params", salaries_controller.getAllSalarie
 // PROJECT EMPLOYEES ROUTES
 
 // LEAVES ROUTES
-router.get("/leaves/getAllLeaves/", leaves_controller.getAllLeaves);
+router.get("/leaves/getAllLeaves/:params", leaves_controller.getAllLeaves);
 router.get("/leaves/getAllLeavesById/:params", leaves_controller.getAllLeavesById);
 router.post("/leaves/requestLeave/", leaves_controller.requestLeave);
 router.put("/leaves/acceptLeaves/:params", leaves_controller.acceptLeaves);
