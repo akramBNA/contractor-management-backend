@@ -43,7 +43,7 @@ class leavesDao {
       );
       if (get_all_leaves_data) {
         res.status(200).json({
-          status: true,
+          success: true,
           data: get_all_leaves_data,
           attributes: {
             total: get_all_leaves_data.length,
@@ -54,7 +54,7 @@ class leavesDao {
         });
       } else {
         res.json({
-          status: false,
+          success: false,
           data: [],
           message: "Failed to retrieve data",
         });
