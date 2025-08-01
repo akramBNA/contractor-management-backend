@@ -369,6 +369,42 @@ class leavesDao {
     }
   }
 
+  async declineLeaves(req, res, next) {
+    try {
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const leave_id = params.leave_id;
+
+      if (!leave_id) {
+        return res.json({
+          success: false,
+          message: "Missing required field: leave_id",
+        });
+      }
+
+      const leave = await leaves.findOne({ where: { leave_id, active: 'Y' } });
+
+      if (!leave) {
+        return res.json({
+          success: false,
+          message: "Leave request not found or already processed",
+        });
+      }
+
+      leave.status = "Rejected";
+      await leave.save();
+
+      res.status(200).json({
+        success: true,
+        data: leave,
+        message: "Leave request rejected successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
 }
 
 module.exports = leavesDao;
