@@ -28,7 +28,7 @@ class leavesDao {
                                   left join employees as e
                                   on l.employee_id = e.employee_id
                                   where  l.active = 'Y' and e.active='Y' and lt.active='Y'
-                                  order by l.leave_id asc
+                                  order by l.leave_id desc
                                   limit :limit
                                   offset :offset`;
       const get_all_leaves_data = await leaves.sequelize.query(
@@ -297,7 +297,7 @@ class leavesDao {
 											LEFT JOIN leave_types as lt
 											ON l.leave_type_id = lt.leave_type_id
                                             WHERE employee_id = :employee_id AND l.active='Y' AND lt.active='Y'
-                                            ORDER BY leave_id ASC 
+                                            ORDER BY leave_id DESC 
                                             LIMIT :limit OFFSET :offset`;
         const get_all_leaves_by_id_data = await leaves.sequelize.query(
           get_all_leaves_by_id_query,

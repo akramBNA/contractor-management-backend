@@ -190,6 +190,7 @@ class usersDao {
         status: true,
         message: "Login successful",
         data: {
+          user_id: user.employee_id,
           user_name: user.user_name,
           user_lastname: user.user_lastname,
           user_role_type: user.roles.role_type,
