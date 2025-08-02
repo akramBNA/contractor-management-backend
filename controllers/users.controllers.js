@@ -22,5 +22,8 @@ module.exports = {
   },
   deleteUser: function (req, res, next) {
     users_instance.deleteUser(req, res, next);
+  },
+  signupWithEmployeeEmail: function (req, res, next) {
+    users_instance.signupWithEmployeeEmail(req, res, next);
   }
 };
