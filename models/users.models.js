@@ -35,6 +35,7 @@ const users = sequelize.define(
     user_role_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 3,
       references: {
         model: roles,
         key: "role_id",
