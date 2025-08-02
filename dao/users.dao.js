@@ -337,6 +337,69 @@ class usersDao {
       return next(error);
     }
   }
+
+  async signupWithEmployeeEmail(req, res, next) {
+    try {
+      const { user_email, user_password } = req.body;
+
+      if (!user_email || !user_password) {
+        return res.json({
+          success: false,
+          message: "Email and password are required.",
+        });
+      }
+
+      const employee = await employees.findOne({
+        where: { employee_email: user_email, active: "Y" },
+      });
+
+      if (!employee) {
+        return res.json({
+          success: false,
+          message: "Email not found in employee records.",
+        });
+      }
+
+      const existingUser = await users.findOne({
+        where: { user_email },
+      });
+
+      if (existingUser) {
+        return res.json({
+          success: false,
+          message: "A user with this email already exists.",
+        });
+      }
+
+      const hashedPassword = await bcrypt.hash(user_password, 10);
+
+      const newUser = await users.create({
+        employee_id: employee.employee_id,
+        user_name: employee.employee_name,
+        user_lastname: employee.employee_lastname,
+        user_email,
+        user_password: hashedPassword,
+        user_role_id: 3,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "User account created and linked to employee.",
+        data: {
+          user_id: newUser.user_id,
+          user_name: newUser.user_name,
+          user_lastname: newUser.user_lastname,
+          user_email: newUser.user_email,
+          employee_id: newUser.employee_id,
+          user_role_id: newUser.user_role_id,
+        },
+      });
+    } catch (error) {
+      console.error("Error in signupWithEmployeeEmail:", error);
+      return next(error);
+    }
+  }
+
 }
 
 module.exports = usersDao;
