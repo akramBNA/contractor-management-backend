@@ -1,5 +1,6 @@
 const { users } = require("../models/users.models.js");
 const { roles } = require("../models/roles.models.js");
+const { employees } = require("../models/employees.models.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const SECRET_KEY = process.env.AUTH_SECRET_KEY || "";
