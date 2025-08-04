@@ -25,5 +25,8 @@ module.exports = {
   },
   signupWithEmployeeEmail: function (req, res, next) {
     users_instance.signupWithEmployeeEmail(req, res, next);
+  },
+  updateUserRole: function (req, res, next) {
+    users_instance.updateUserRole(req, res, next);
   }
 };
