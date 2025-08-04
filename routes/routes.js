@@ -29,6 +29,7 @@ router.get("/users/getUserById/:id", users_controller.getUserById);
 router.put("/users/updateUser/:id", users_controller.updateUser);
 router.delete("/users/deleteUser/:id", users_controller.deleteUser);
 router.post("/users/signupWithEmployeeEmail/", users_controller.signupWithEmployeeEmail);
+router.put("/users/updateUserRole/:params", users_controller.updateUserRole);
 
 // ROLES ROUTES
 router.get("/roles/getAllRoles/", roles_controller.getAllRoles);
