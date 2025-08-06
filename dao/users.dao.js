@@ -404,13 +404,15 @@ class usersDao {
 
   async updateUserRole(req, res, next) {
 
-    let params = req.params.params;
-    params = params && params.length ? JSON.parse(params) : {};
-
-    const user_id = req.params.user_id;
-    const { user_role_id } = req.body;
-
+    
     try {
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+      
+      const user_id = req.params.user_id;
+      const user_role_id = req.body;
+      console.log("params ???? ", user_id, " -- ", user_role_id);
+      
       const updatedUser = await users.update(
         { user_role_id },
         { where: { user_id: user_id } }
