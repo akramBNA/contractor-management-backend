@@ -1,7 +1,7 @@
 const { employees, sequelize: employeesSequelize } = require("../models/employees.models");
-const { contracts, sequelize: contractsSequelize,} = require("../models/contracts.models");
-const { employee_bank_details, sequelize: bankDetailsSequelize,} = require("../models/employee_bank_details.models");
-const { contract_types, sequelize: contractTypesSequelize,} = require("../models/contract_types.models");
+const { contracts, sequelize: contractsSequelize } = require("../models/contracts.models");
+const { employee_bank_details, sequelize: bankDetailsSequelize } = require("../models/employee_bank_details.models");
+const { contract_types, sequelize: contractTypesSequelize } = require("../models/contract_types.models");
 const { Op, Sequelize } = require("sequelize");
 
 class employeesDao {
@@ -10,7 +10,7 @@ class employeesDao {
       const { limit = 20, offset = 0, keyword = "" } = req.query;
 
       const activeCount = await employees.count({ where: { active: "Y" } });
-      
+
       if (activeCount === 0) {
         return res.status(404).json({
           success: false,
@@ -488,28 +488,60 @@ class employeesDao {
     try {
       const get_all_active_employees_names_query = `SELECT employee_id, employee_name, employee_lastname FROM employees WHERE active='Y' ORDER BY employee_id asc`;
 
-      const get_all_active_employees_names_data = await employeesSequelize.query(
-        get_all_active_employees_names_query,
-        {
+      const get_all_active_employees_names_data =
+        await employeesSequelize.query(get_all_active_employees_names_query, {
           type: employeesSequelize.QueryTypes.SELECT,
         });
-        
-      if( get_all_active_employees_names_data &&  get_all_active_employees_names_data.length !== 0) {
-         res.status(200).json({
+
+      if (
+        get_all_active_employees_names_data &&
+        get_all_active_employees_names_data.length !== 0
+      ) {
+        res.status(200).json({
           success: true,
           data: get_all_active_employees_names_data,
           message: "Retrieved successfully",
         });
-      }
-      else {
+      } else {
         return res.json({
           success: false,
           data: [],
           message: "No active employees found",
-       });
-     }
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async addLeaveCreditEveryMonth(req, res, next) {
+    try {
+      const add_leaves_to_employees_query = `UPDATE employees SET leave_credit = leave_credit + 2.5 WHERE active='Y' AND employee_id = 3`;
+      const add_leaves_to_employees_data = await employeesSequelize.query(
+        add_leaves_to_employees_query,
+        {
+          type: employeesSequelize.QueryTypes.UPDATE
+        }
+      );
+      console.log("--- Testing query response ! ", add_leaves_to_employees_data);
+      
+      if (add_leaves_to_employees_data.length > 0) {
+        res.status(200).json({
+          success: true,
+          data: add_leaves_to_employees_data,
+          message: "Leave credit successfully added to employees",
+        });
+      } else {
+        return res.json({
+          success: false,
+          data: [],
+          message: "Error while adding leave credits!",
+        });
+      };
 
     } catch (error) {
+      console.log("==========> error !!", error);
+      
       return next(error);
     }
   }
