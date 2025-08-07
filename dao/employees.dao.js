@@ -514,35 +514,32 @@ class employeesDao {
     }
   }
 
-  async addLeaveCreditEveryMonth(req, res, next) {
+  async addLeaveCreditEveryMonth() {
     try {
-      const add_leaves_to_employees_query = `UPDATE employees SET leave_credit = leave_credit + 2.5 WHERE active='Y' AND employee_id = 3`;
+      const add_leaves_to_employees_query = `UPDATE employees SET leave_credit = leave_credit + 2.5 WHERE active='Y'`;
       const add_leaves_to_employees_data = await employeesSequelize.query(
         add_leaves_to_employees_query,
         {
           type: employeesSequelize.QueryTypes.UPDATE
         }
       );
-      console.log("--- Testing query response ! ", add_leaves_to_employees_data);
       
       if (add_leaves_to_employees_data.length > 0) {
-        res.status(200).json({
+        return ({
           success: true,
           data: add_leaves_to_employees_data,
           message: "Leave credit successfully added to employees",
         });
       } else {
-        return res.json({
+        return ({
           success: false,
           data: [],
           message: "Error while adding leave credits!",
         });
       };
 
-    } catch (error) {
-      console.log("==========> error !!", error);
-      
-      return next(error);
+    } catch (error) {      
+      throw error
     }
   }
 }

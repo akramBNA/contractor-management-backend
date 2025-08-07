@@ -26,5 +26,8 @@ module.exports = {
   },
   getAllActiveEmployeesNames: function (req, res, next) {
     employees_instance.getAllActiveEmployeesNames(req, res, next);
-  }
+  },
+  addLeaveCreditEveryMonth: function () {
+    employees_instance.addLeaveCreditEveryMonth();
+  },
 };
