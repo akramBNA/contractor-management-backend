@@ -69,8 +69,8 @@ class usersDao {
         data: get_all_users_data,
         attributes: {
           totalCount: total,
-          limit,
-          offset
+          limit: limit,
+          offset: offset
         },
         total,
         roles: get_all_roles_data,
