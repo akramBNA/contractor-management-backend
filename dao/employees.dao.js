@@ -1,19 +1,7 @@
-const {
-  employees,
-  sequelize: employeesSequelize,
-} = require("../models/employees.models");
-const {
-  contracts,
-  sequelize: contractsSequelize,
-} = require("../models/contracts.models");
-const {
-  employee_bank_details,
-  sequelize: bankDetailsSequelize,
-} = require("../models/employee_bank_details.models");
-const {
-  contract_types,
-  sequelize: contractTypesSequelize,
-} = require("../models/contract_types.models");
+const { employees, sequelize: employeesSequelize } = require("../models/employees.models");
+const { contracts, sequelize: contractsSequelize } = require("../models/contracts.models");
+const { employee_bank_details, sequelize: bankDetailsSequelize } = require("../models/employee_bank_details.models");
+const { contract_types, sequelize: contractTypesSequelize } = require("../models/contract_types.models");
 const { Op, Sequelize } = require("sequelize");
 
 class employeesDao {
@@ -528,14 +516,15 @@ class employeesDao {
 
   async addLeaveCreditEveryMonth(req, res, next) {
     try {
-      const add_leaves_to_employees_query = `UPDATE employees SET leave_credit = leave_credit + 2.5 WHERE active='Y' `;
-      const add_leaves_to_employees_data = await employees.sequelize.query(
+      const add_leaves_to_employees_query = `UPDATE employees SET leave_credit = leave_credit + 2.5 WHERE active='Y' AND employee_id = 3`;
+      const add_leaves_to_employees_data = await employeesSequelize.query(
         add_leaves_to_employees_query,
         {
-          type: employees.QueryTypes.UPDATE,
+          type: employeesSequelize.QueryTypes.UPDATE
         }
       );
-
+      console.log("--- Testing query response ! ", add_leaves_to_employees_data);
+      
       if (add_leaves_to_employees_data.length > 0) {
         res.status(200).json({
           success: true,
@@ -548,8 +537,11 @@ class employeesDao {
           data: [],
           message: "Error while adding leave credits!",
         });
-      }
+      };
+
     } catch (error) {
+      console.log("==========> error !!", error);
+      
       return next(error);
     }
   }
