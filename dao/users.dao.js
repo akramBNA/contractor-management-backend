@@ -22,7 +22,32 @@ class usersDao {
           LOWER(users.user_lastname) ILIKE :keyword OR
           LOWER(users.user_email) ILIKE :keyword
         )`;
-      }
+      };
+
+       const count_query = `
+        SELECT COUNT(*) AS total
+        FROM users 
+        LEFT JOIN roles ON roles.role_id = users.user_role_id
+        WHERE users.active = 'Y' AND roles.active = 'Y'
+        ${searchCondition}
+      `;
+
+      const count_result = await users.sequelize.query(count_query, {
+        replacements: {
+          keyword: `${keyword}%`
+        },
+        type: users.sequelize.QueryTypes.SELECT,
+      });
+      
+      const total = parseInt(count_result[0]?.total || 0);      
+
+      if(!total){
+        return res.json({
+          success: true,
+          data: [],
+          message: 'No users found!'
+        })
+      };
 
       const get_all_users_query = `
         SELECT users.user_id, users.user_name,
@@ -43,36 +68,34 @@ class usersDao {
         type: users.sequelize.QueryTypes.SELECT,
       });
 
+      const get_user_counts_query = `
+        SELECT 
+          COUNT(*) FILTER (WHERE users.active = 'Y') AS active_users,
+          COUNT(*) FILTER (WHERE users.active = 'N') AS inactive_users,
+          COUNT(*) FILTER (WHERE users.user_role_id IN (1, 2)) AS admin_users
+        FROM users
+        LEFT JOIN roles ON roles.role_id = users.user_role_id
+        WHERE roles.active = 'Y'`;
+      
+      const get_user_counts_data = await users.sequelize.query(get_user_counts_query, {
+        type: users.sequelize.QueryTypes.SELECT
+      });
+
       const get_all_roles_query = `SELECT * FROM roles WHERE active='Y' ORDER BY role_id ASC`;
       const get_all_roles_data = await roles.sequelize.query(get_all_roles_query, {
         type: roles.sequelize.QueryTypes.SELECT,
       });
-
-      const count_query = `
-        SELECT COUNT(*) AS total
-        FROM users 
-        LEFT JOIN roles ON roles.role_id = users.user_role_id
-        WHERE users.active = 'Y' AND roles.active = 'Y'
-        ${searchCondition}
-      `;
-      const count_result = await users.sequelize.query(count_query, {
-        replacements: {
-          keyword: `${keyword}%`
-        },
-        type: users.sequelize.QueryTypes.SELECT,
-      });
-
-      const total = parseInt(count_result[0]?.total || 0);
 
       res.status(200).json({
         success: true,
         data: get_all_users_data,
         attributes: {
           totalCount: total,
-          limit,
-          offset
+          limit: limit,
+          offset: offset
         },
         total,
+        stats: get_user_counts_data[0],
         roles: get_all_roles_data,
         message: "Users retrieved successfully",
       });
