@@ -7,6 +7,8 @@ const port = process.env.PORT || 3000;
 const Routes = require('./routes/routes.js');
 const { sequelize } = require('./database/database.js');
 
+require('./Cron Jobs/leave_crons.js');
+
 app.use(cors());
 app.use(express.json());
 
