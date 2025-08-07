@@ -1,10 +1,11 @@
-const cron = require('node-cron');
-const { addLeaveCreditEveryMonth } = require('../controllers/employees.controlers');
-// const employeesDao = require('../dao/employees.dao');
+const cron = require("node-cron");
+const employeesControllers = require("../controllers/employees.controlers");
 
-cron.schedule('* * * * *', async () =>{
-    // const employeeConrollers = new (require('../controllers/employees.controlers'))();
-    const  employyesControllers = require('../controllers/employees.controlers')
-    employyesControllers.addLeaveCreditEveryMonth();
-    console.log("** Running every minute! **");
+cron.schedule("0 0 1 * *", async () => {
+  try {
+    console.log("-- Cron job started: Adding leave credits...");
+    employeesControllers.addLeaveCreditEveryMonth();
+  } catch (error) {
+    console.log("-- failed to ran this job!");
+  }
 });
