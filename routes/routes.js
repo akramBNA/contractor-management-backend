@@ -86,6 +86,7 @@ router.get("/leaves/getAllLeavesById/:params", leaves_controller.getAllLeavesByI
 router.post("/leaves/requestLeave/", leaves_controller.requestLeave);
 router.put("/leaves/acceptLeaves/:params", leaves_controller.acceptLeaves);
 router.put("/leaves/rejectLeaves/:params", leaves_controller.rejectLeaves);
+router.put("/leaves/deleteLeaves/:params", leaves_controller.deleteLeaves);
 
 // LEAVE TYPES ROUTES
 router.get("/leave_types/getAllLeaveTypes/", leave_types_controller.getAllLeaveTypes);
