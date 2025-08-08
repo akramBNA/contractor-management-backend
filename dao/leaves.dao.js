@@ -304,7 +304,8 @@ class leavesDao {
               l.start_date,
               l.end_date,
               l.status,
-              lt.leave_type_name
+              lt.leave_type_name,
+              l.leave_id
         FROM leaves AS l
         LEFT JOIN leave_types AS lt ON l.leave_type_id = lt.leave_type_id
         WHERE l.employee_id = :employee_id 
@@ -461,14 +462,14 @@ class leavesDao {
       params = params && params.length ? JSON.parse(params) : {};
 
       const leave_id = params.leave_id;
-
+      
       const delete_leaves_query = `UPDATE leaves SET active = 'N' WHERE leave_id = :leave_id`;
-      const [affectedRows] = await leaves.sequelize.query(delete_leaves_query, {
-        replacements: { leave_id: leave_id },
+      const delete_leaves_data = await leaves.sequelize.query(delete_leaves_query, {
+        replacements: { leave_id: parseInt(leave_id) },
         type: leaves.sequelize.QueryTypes.UPDATE,
       });
-
-      if (affectedRows > 0) {
+      
+      if ( delete_leaves_data.length ) {
         return res.status(200).json({
           success: true,
           data: [],
