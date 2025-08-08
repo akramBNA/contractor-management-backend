@@ -455,6 +455,37 @@ class leavesDao {
     }
   }
 
+  async deleteLeaves(req, res, next) {
+    try {
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const leave_id = params.leave_id;
+
+      const delete_leaves_query = `UPDATE leaves SET active = 'N' WHERE leave_id = :leave_id`;
+      const [affectedRows] = await leaves.sequelize.query(delete_leaves_query, {
+        replacements: { leave_id: leave_id },
+        type: leaves.sequelize.QueryTypes.UPDATE,
+      });
+
+      if (affectedRows > 0) {
+        return res.status(200).json({
+          success: true,
+          data: [],
+          message: 'Leave deleted successfully',
+        });
+      } else {
+        return res.json({
+          success: false,
+          data: [],
+          message: 'No leave found to delete',
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+  }
+
 }
 
 module.exports = leavesDao;
