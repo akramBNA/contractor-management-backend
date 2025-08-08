@@ -17,5 +17,8 @@ module.exports = {
   },
   rejectLeaves: function (req, res, next) {
     leaves_instance.rejectLeaves(req, res, next);
-  }
+  },
+  deleteLeaves: function (req, res, next) {
+    leaves_instance.deleteLeaves(req, res, next);
+  },
 };
