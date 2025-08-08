@@ -11,20 +11,26 @@ class usersDao {
       let params = req.params.params;
       params = params && params.length ? JSON.parse(params) : {};
 
-      const keyword = params.keyword || "";
+      const keyword = (params.keyword || "").toLowerCase();
       const limit = parseInt(params.limit) || 20;
       const offset = parseInt(params.offset) || 0;
 
       let searchCondition = '';
+      const replacements = {
+        limit,
+        offset,
+      };
+
       if (keyword) {
         searchCondition = `AND (
           LOWER(users.user_name) ILIKE :keyword OR
           LOWER(users.user_lastname) ILIKE :keyword OR
           LOWER(users.user_email) ILIKE :keyword
         )`;
-      };
+        replacements.keyword = `${keyword}%`;
+      }
 
-       const count_query = `
+      const countQuery = `
         SELECT COUNT(*) AS total
         FROM users 
         LEFT JOIN roles ON roles.role_id = users.user_role_id
@@ -32,24 +38,22 @@ class usersDao {
         ${searchCondition}
       `;
 
-      const count_result = await users.sequelize.query(count_query, {
-        replacements: {
-          keyword: `${keyword}%`
-        },
+      const countResult = await users.sequelize.query(countQuery, {
+        replacements,
         type: users.sequelize.QueryTypes.SELECT,
       });
-      
-      const total = parseInt(count_result[0]?.total || 0);      
 
-      if(!total){
-        return res.json({
-          success: true,
+      const total = parseInt(countResult[0]?.total || 0);
+
+      if (!total) {
+        return res.status(200).json({
+          success: false,
           data: [],
-          message: 'No users found!'
-        })
-      };
+          message: 'No users found!',
+        });
+      }
 
-      const get_all_users_query = `
+      const userQuery = `
         SELECT users.user_id, users.user_name,
               users.user_lastname, users.user_email, roles.role_type, roles.role_id
         FROM users 
@@ -57,48 +61,47 @@ class usersDao {
         WHERE users.active = 'Y' AND roles.active = 'Y'
         ${searchCondition}
         ORDER BY user_id ASC
-        LIMIT :limit OFFSET :offset`;
+        LIMIT :limit OFFSET :offset
+      `;
 
-      const get_all_users_data = await users.sequelize.query(get_all_users_query, {
-        replacements: {
-          keyword: `${keyword}%`,
-          limit,
-          offset,
-        },
+      const usersData = await users.sequelize.query(userQuery, {
+        replacements,
         type: users.sequelize.QueryTypes.SELECT,
       });
 
-      const get_user_counts_query = `
+      const statsQuery = `
         SELECT 
           COUNT(*) FILTER (WHERE users.active = 'Y') AS active_users,
           COUNT(*) FILTER (WHERE users.active = 'N') AS inactive_users,
           COUNT(*) FILTER (WHERE users.user_role_id IN (1, 2)) AS admin_users
         FROM users
         LEFT JOIN roles ON roles.role_id = users.user_role_id
-        WHERE roles.active = 'Y'`;
-      
-      const get_user_counts_data = await users.sequelize.query(get_user_counts_query, {
-        type: users.sequelize.QueryTypes.SELECT
+        WHERE roles.active = 'Y'
+      `;
+
+      const statsData = await users.sequelize.query(statsQuery, {
+        type: users.sequelize.QueryTypes.SELECT,
       });
 
-      const get_all_roles_query = `SELECT * FROM roles WHERE active='Y' ORDER BY role_id ASC`;
-      const get_all_roles_data = await roles.sequelize.query(get_all_roles_query, {
+      const rolesQuery = `SELECT * FROM roles WHERE active = 'Y' ORDER BY role_id ASC`;
+      const rolesData = await roles.sequelize.query(rolesQuery, {
         type: roles.sequelize.QueryTypes.SELECT,
       });
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
-        data: get_all_users_data,
+        data: usersData,
         attributes: {
           totalCount: total,
-          limit: limit,
-          offset: offset
+          limit,
+          offset,
         },
         total,
-        stats: get_user_counts_data[0],
-        roles: get_all_roles_data,
+        stats: statsData[0],
+        roles: rolesData,
         message: "Users retrieved successfully",
       });
+
     } catch (error) {
       return next(error);
     }
