@@ -269,72 +269,93 @@ class leavesDao {
       let params = req.params.params;
       params = params && params.length ? JSON.parse(params) : {};
 
-        const employee_id = params.employee_id;
-        const limit = params.limit || 20;
-        const offset = params.offset || 0;
+      const employee_id = params.employee_id;
+      const limit = params.limit || 20;
+      const offset = params.offset || 0;
 
-        const get_all_leaves_by_id_count_query = `SELECT COUNT(*) as total FROM leaves WHERE employee_id = :employee_id AND active='Y'`;
-        const get_all_leaves_by_id_count_data = await leaves.sequelize.query(get_all_leaves_by_id_count_query, {
-            replacements: { employee_id },
-            type: leaves.sequelize.QueryTypes.SELECT,
+      const countQuery = `SELECT COUNT(*) as total 
+        FROM leaves 
+        WHERE employee_id = :employee_id AND active = 'Y'
+      `;
+
+      const countResult = await leaves.sequelize.query(countQuery, {
+        replacements: { employee_id },
+        type: leaves.sequelize.QueryTypes.SELECT,
+      });
+
+      const total = parseInt(countResult[0]?.total || 0);
+
+      if (total === 0) {
+        return res.json({
+          success: true,
+          data: [],
+          stats: {
+            total: 0,
+            pending: 0,
+            approved: 0,
+            rejected: 0,
+          },
+          message: "No leaves found for this employee",
         });
-        
-        if(!get_all_leaves_by_id_count_data || get_all_leaves_by_id_count_data[0].total === 0) {
-          return res.json({
-            success: true,
-            data: [],
-            message: "No leaves found for this employee",
-          });
-        };
+      }
 
-        const get_all_leaves_by_id_query = `SELECT l.description,
-                                                    l.duration,
-                                                    l.start_date,
-                                                    l.end_date,
-                                                    l.status,
-                                                    lt.leave_type_name
-                                            FROM leaves as l 
-											LEFT JOIN leave_types as lt
-											ON l.leave_type_id = lt.leave_type_id
-                                            WHERE employee_id = :employee_id AND l.active='Y' AND lt.active='Y'
-                                            ORDER BY leave_id DESC 
-                                            LIMIT :limit OFFSET :offset`;
-        const get_all_leaves_by_id_data = await leaves.sequelize.query(
-          get_all_leaves_by_id_query,
-          {
-            replacements: {
-              employee_id,
-              limit,
-              offset,
-            },
-            type: leaves.sequelize.QueryTypes.SELECT,
-          });
+      const leavesQuery = `SELECT l.description,
+              l.duration,
+              l.start_date,
+              l.end_date,
+              l.status,
+              lt.leave_type_name
+        FROM leaves AS l
+        LEFT JOIN leave_types AS lt ON l.leave_type_id = lt.leave_type_id
+        WHERE l.employee_id = :employee_id 
+          AND l.active = 'Y' 
+          AND lt.active = 'Y'
+        ORDER BY l.leave_id DESC 
+        LIMIT :limit OFFSET :offset
+      `;
 
-          if(get_all_leaves_by_id_data && get_all_leaves_by_id_data.length > 0) {
-            res.status(200).json({
-              success: true,
-              data: get_all_leaves_by_id_data,
-              attributes:{
-                total: parseInt(get_all_leaves_by_id_count_data[0].total),
-                limit: limit,
-                offset: offset,
-              },
-              stats: {},
-              message: "Retrieved successfully",
-            });
-          }
-          else {
-            res.json({
-              success: true,
-              data: [],
-              message: "No leaves found for this employee",
-            });
-          }
+      const leavesData = await leaves.sequelize.query(leavesQuery, {
+        replacements: { employee_id, limit, offset },
+        type: leaves.sequelize.QueryTypes.SELECT,
+      });
+
+      const statsQuery = `SELECT
+          COUNT(*) FILTER (WHERE status = 'Pending') AS pending,
+          COUNT(*) FILTER (WHERE status = 'Approved') AS approved,
+          COUNT(*) FILTER (WHERE status = 'Rejected') AS rejected
+        FROM leaves
+        WHERE employee_id = :employee_id AND active = 'Y'
+      `;
+
+      const statsResult = await leaves.sequelize.query(statsQuery, {
+        replacements: { employee_id },
+        type: leaves.sequelize.QueryTypes.SELECT,
+      });
+
+      const stats = statsResult[0] || {};
+
+      res.status(200).json({
+        success: true,
+        data: leavesData,
+        attributes: {
+          total,
+          limit,
+          offset,
+        },
+        stats: {
+          // total,
+          pending: parseInt(stats.pending || 0),
+          approved: parseInt(stats.approved || 0),
+          rejected: parseInt(stats.rejected || 0),
+        },
+        message: "Retrieved successfully",
+      });
 
     } catch (error) {
       return next(error);
     }
   }
+
 
   async acceptLeaves(req, res, next) {
     try {
