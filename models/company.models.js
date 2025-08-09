@@ -5,7 +5,7 @@ const company = sequelize.define(
   "company",
   {
     company_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       primaryKey: true,
       autoIncrement: true,
     },
@@ -13,24 +13,24 @@ const company = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    company_representative_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     company_activity_field: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    company_tax_id: {
-      type: DataTypes.STRING,
+    company_representative_id: {
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
-    company_commercial_id: {
-      type: DataTypes.STRING,
+    company_tax_id: {
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
     company_ss_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    company_establishment_year: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     active: {
