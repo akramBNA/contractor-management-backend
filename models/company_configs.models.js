@@ -9,6 +9,10 @@ const company_configs = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    company_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     payroll_cycle_start_day: {
       type: DataTypes.INTEGER,
       allowNull: false,
