@@ -22,7 +22,7 @@ app.use('/api', Routes);
 sequelize.authenticate()
   .then(() => {
     app.listen(port, () => {
-      console.log(`Server is running on http://localhost:${port}`);
+      console.log(`Server is running on PORT: ${port}`);
     });
   })
   .catch(err => {
