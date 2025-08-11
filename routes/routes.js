@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const net = require('net');
+// const net = require('net');
 
 
 const users_controller = require("../controllers/users.controllers");
@@ -98,30 +98,30 @@ router.post("/leave_types/addLeaveType/", leave_types_controller.addLeaveType);
 router.get("/holidays/getAllHolidaysByYear/:params", holidays_controller.getAllHolidaysByYear);
 router.post("/holidays/addHoliday/", holidays_controller.addHoliday);
 
-router.get('/test-ipv6-tcp', (req, res) => {
-  const host = process.env.DB_HOST || 'db.dwljrqocfqirbgrulxck.supabase.co';
-  const port = process.env.DB_PORT || 5432;
+// router.get('/test-ipv6-tcp', (req, res) => {
+//   const host = process.env.DB_HOST || 'db.dwljrqocfqirbgrulxck.supabase.co';
+//   const port = process.env.DB_PORT || 5432;
 
-  const socket = new net.Socket();
-  socket.setTimeout(5000);
+//   const socket = new net.Socket();
+//   socket.setTimeout(5000);
 
-  socket.on('connect', () => {
-    socket.destroy();
-    res.json({ success: true, message: `TCP connection to ${host}:${port} succeeded` });
-  });
+//   socket.on('connect', () => {
+//     socket.destroy();
+//     res.json({ success: true, message: `TCP connection to ${host}:${port} succeeded` });
+//   });
 
-  socket.on('error', (err) => {
-    socket.destroy();
-    res.status(500).json({ success: false, message: 'TCP connection failed', error: err.message });
-  });
+//   socket.on('error', (err) => {
+//     socket.destroy();
+//     res.status(500).json({ success: false, message: 'TCP connection failed', error: err.message });
+//   });
 
-  socket.on('timeout', () => {
-    socket.destroy();
-    res.status(500).json({ success: false, message: 'TCP connection timed out' });
-  });
+//   socket.on('timeout', () => {
+//     socket.destroy();
+//     res.status(500).json({ success: false, message: 'TCP connection timed out' });
+//   });
 
-  socket.connect(port, host);
-});
+//   socket.connect(port, host);
+// });
 
 
 module.exports = router;
