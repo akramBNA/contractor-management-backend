@@ -5,80 +5,129 @@ const { contract_types, sequelize: contractTypesSequelize } = require("../models
 const { Op, Sequelize } = require("sequelize");
 
 class employeesDao {
+  // async getAllEmployees(req, res, next) {
+  //   try {
+  //     const { limit = 20, offset = 0, keyword = "" } = req.query;
+
+  //     const activeCount = await employees.count({ where: { active: "Y" } });
+
+  //     if (activeCount === 0) {
+  //       return res.status(404).json({
+  //         success: false,
+  //         data: [],
+  //         message: "No employees found",
+  //       });
+  //     }
+
+  //     const searchCondition = keyword
+  //       ? {
+  //           [Op.or]: [
+  //             { employee_name: { [Op.iLike]: `${keyword}%` } },
+  //             { employee_lastname: { [Op.iLike]: `${keyword}%` } },
+  //             { employee_email: { [Op.iLike]: `${keyword}%` } },
+  //           ],
+  //         }
+  //       : {};
+
+  //     const whereCondition = {
+  //       active: "Y",
+  //       ...searchCondition,
+  //     };
+
+  //     const employeesData = await employees.findAll({
+  //       attributes: [
+  //         "employee_id",
+  //         "employee_matricule",
+  //         "employee_name",
+  //         "employee_lastname",
+  //         "employee_email",
+  //         "employee_address",
+  //         "employee_job_title",
+  //         "employee_phone_number",
+  //       ],
+  //       where: whereCondition,
+  //       order: [["employee_id", "ASC"]],
+  //       limit: parseInt(limit),
+  //       offset: parseInt(offset),
+  //     });
+
+  //     const [totalCount, maleCount, femaleCount, newEmployeesCount] =
+  //       await Promise.all([
+  //         employees.count({ where: { active: "Y" } }),
+  //         employees.count({ where: { active: "Y", employee_gender: "Male" } }),
+  //         employees.count({
+  //           where: { active: "Y", employee_gender: "Female" },
+  //         }),
+  //         employees.count({
+  //           where: {
+  //             active: "Y",
+  //             employee_joining_date: {
+  //               [Op.gte]: Sequelize.literal(
+  //                 "CURRENT_DATE - INTERVAL '1 MONTH'"
+  //               ),
+  //             },
+  //           },
+  //         }),
+  //       ]);
+
+  //     return res.status(200).json({
+  //       success: true,
+  //       data: employeesData,
+  //       statistics: {
+  //         total: totalCount,
+  //         male: maleCount,
+  //         female: femaleCount,
+  //         newEmployees: newEmployeesCount,
+  //       },
+  //       message: "Retrieved successfully",
+  //     });
+  //   } catch (error) {
+  //     return next(error);
+  //   }
+  // }
+
   async getAllEmployees(req, res, next) {
     try {
       const { limit = 20, offset = 0, keyword = "" } = req.query;
 
-      const activeCount = await employees.count({ where: { active: "Y" } });
+      const searchKeyword = keyword ? `%${keyword}%` : "%";
 
-      if (activeCount === 0) {
-        return res.status(404).json({
-          success: false,
-          data: [],
-          message: "No employees found",
-        });
-      }
+      const query = `
+        WITH filtered AS (
+          SELECT *
+          FROM employees
+          WHERE active = 'Y'
+          AND employee_name ILIKE $1
+        ),
+        stats AS (
+          SELECT 
+            COUNT(*)::int AS total,
+            COUNT(*) FILTER (WHERE employee_gender = 'Male')::int AS male,
+            COUNT(*) FILTER (WHERE employee_gender = 'Female')::int AS female,
+            COUNT(*) FILTER (WHERE employee_joining_date >= CURRENT_DATE - INTERVAL '1 month')::int AS "newEmployees"
+          FROM filtered
+        )
+        SELECT 
+          json_agg(emp) AS employees,
+          (SELECT row_to_json(stats) FROM stats) AS statistics
+        FROM (
+          SELECT employee_id, employee_matricule, employee_name, employee_lastname, 
+                 employee_email, employee_address, employee_job_title, employee_phone_number
+          FROM filtered
+          ORDER BY employee_id ASC
+          LIMIT $2 OFFSET $3
+        ) emp;
+      `;
 
-      const searchCondition = keyword
-        ? {
-            [Op.or]: [
-              { employee_name: { [Op.iLike]: `${keyword}%` } },
-              { employee_lastname: { [Op.iLike]: `${keyword}%` } },
-              { employee_email: { [Op.iLike]: `${keyword}%` } },
-            ],
-          }
-        : {};
-
-      const whereCondition = {
-        active: "Y",
-        ...searchCondition,
-      };
-
-      const employeesData = await employees.findAll({
-        attributes: [
-          "employee_id",
-          "employee_matricule",
-          "employee_name",
-          "employee_lastname",
-          "employee_email",
-          "employee_address",
-          "employee_job_title",
-          "employee_phone_number",
-        ],
-        where: whereCondition,
-        order: [["employee_id", "ASC"]],
-        limit: parseInt(limit),
-        offset: parseInt(offset),
+      const [result] = await employees.sequelize.query(query, {
+        bind: [searchKeyword, parseInt(limit), parseInt(offset)],
+        type: employees.sequelize.QueryTypes.SELECT,
       });
-
-      const [totalCount, maleCount, femaleCount, newEmployeesCount] =
-        await Promise.all([
-          employees.count({ where: { active: "Y" } }),
-          employees.count({ where: { active: "Y", employee_gender: "Male" } }),
-          employees.count({
-            where: { active: "Y", employee_gender: "Female" },
-          }),
-          employees.count({
-            where: {
-              active: "Y",
-              employee_joining_date: {
-                [Op.gte]: Sequelize.literal(
-                  "CURRENT_DATE - INTERVAL '1 MONTH'"
-                ),
-              },
-            },
-          }),
-        ]);
 
       return res.status(200).json({
         success: true,
-        data: employeesData,
-        statistics: {
-          total: totalCount,
-          male: maleCount,
-          female: femaleCount,
-          newEmployees: newEmployeesCount,
-        },
+        data: result.employees || [],
+        statistics: result.statistics || { total: 0, male: 0, female: 0, newEmployees: 0 },
         message: "Retrieved successfully",
       });
     } catch (error) {
