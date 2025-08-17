@@ -98,8 +98,11 @@ router.post("/leave_types/addLeaveType/", leave_types_controller.addLeaveType);
 router.get("/holidays/getAllHolidaysByYear/:params", holidays_controller.getAllHolidaysByYear);
 router.post("/holidays/addHoliday/", holidays_controller.addHoliday);
 
-// COMPANY CONFIGS
-router.get("/company_configs/getCompanyConfigs/:params", company_configs_controller.getCompanyConfigs)
+// COMPANY CONFIGS ROUTES
+router.get("/company_configs/getCompanyConfigs/:params", company_configs_controller.getCompanyConfigs);
+
+// COMPANY ROUTES
+router.get("company/getCompanyInformations/", company_controller.getCompanyInformations);
 
 
 module.exports = router;
