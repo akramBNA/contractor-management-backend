@@ -1,7 +1,7 @@
 const company = require("../models/company.models");
 
 class companyDao {
-    async getCompanyINformations (req, res ,next) {
+    async getCompanyInformations (req, res ,next) {
             try {   
                 const get_conpany_query =`SELECT * FROM company WHERE active='Y'`;
     
