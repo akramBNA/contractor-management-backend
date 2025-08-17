@@ -19,6 +19,7 @@ const project_employees_controller = require("../controllers/project_employees.c
 const leaves_controller = require("../controllers/leaves.controllers");
 const leave_types_controller = require("../controllers/leave_types.controllers");
 const holidays_controller = require("../controllers/holidays.controllers");
+const company_configs_controller = require('../controllers/company_configs.controllers');
 
 
 // USERS ROUTES.
@@ -96,6 +97,9 @@ router.post("/leave_types/addLeaveType/", leave_types_controller.addLeaveType);
 // HOLIDAYS ROUTES
 router.get("/holidays/getAllHolidaysByYear/:params", holidays_controller.getAllHolidaysByYear);
 router.post("/holidays/addHoliday/", holidays_controller.addHoliday);
+
+// COMPANY CONFIGS
+router.get("/company_configs/getCompanyConfigs/:params", company_configs_controller.getCompanyConfigs)
 
 
 module.exports = router;
