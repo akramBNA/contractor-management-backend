@@ -90,7 +90,7 @@ class employeesDao {
     try {
       const { limit = 20, offset = 0, keyword = "" } = req.query;
 
-      const searchKeyword = keyword ? `%${keyword}%` : "%";
+      const searchKeyword = keyword ? `${keyword}%` : "%";
 
       const query = `
         WITH filtered AS (

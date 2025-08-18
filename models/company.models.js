@@ -40,11 +40,12 @@ const company = sequelize.define(
     },
   },
   {
+    tableName: "company",
+    freezeTableName: true,
     timestamps: false,
   }
 );
 
-module.exports = {
-  company,
-  sequelize,
-};
+
+module.exports= company
+
