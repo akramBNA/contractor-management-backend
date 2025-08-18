@@ -1,34 +1,29 @@
-const company = require("../models/company.models");
+const company  = require("../models/company.models");
 
 class companyDao {
-    async getCompanyInformations (req, res ,next) {
-            try {   
-                const get_conpany_query =`SELECT * FROM company WHERE active='Y'`;
-    
-                const get_conpany_data = await company.sequelize.query(get_conpany_query, 
-                    {
-                        type: company.sequelize.QueryTypes.SELECT
-                    }
-                );
-    
-            if(get_conpany_data){
+    async getCompanyInformations(req, res, next) {
+        try {
+            const get_company_data = await company.findAll({
+                where: { active: "Y" }
+            });
+
+            if (get_company_data && get_company_data.length > 0) {
                 res.status(200).json({
                     success: true,
-                    data: get_conpany_data,
-                    message: 'Data retrieved successfully'
-                })
+                    data: get_company_data,
+                    message: "Data retrieved successfully",
+                });
             } else {
                 res.json({
                     success: false,
                     data: [],
-                    message: 'Failed to retrieve data'
-                })
+                    message: "No data found",
+                });
             }
-                
-            } catch(error) {
-                return next (error);
-            }
+        } catch (error) {
+            return next(error);
         }
+    }
 }
 
 module.exports = companyDao;
