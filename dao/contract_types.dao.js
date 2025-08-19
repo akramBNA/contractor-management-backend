@@ -10,7 +10,7 @@ class contract_typesDao {
           type: contract_types.sequelize.QueryTypes.SELECT,
         }
       );
-      if (get_all_contract_types_data) {
+      if (get_all_contract_types_data && get_all_contract_types_data.length > 0) {
         res.status(200).json({
           success: true,
           data: get_all_contract_types_data,
