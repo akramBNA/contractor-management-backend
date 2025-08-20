@@ -23,7 +23,9 @@ class companyDao {
         } catch (error) {
             return next(error);
         }
-    }
+    };
+
+    async addCompanyInformations(req, res, next) {};
 }
 
 module.exports = companyDao;
