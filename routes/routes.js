@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+const authenticateToken = require('../middlewares/authentication.middlewares');
+
 
 const users_controller = require("../controllers/users.controllers");
 const roles_controller = require("../controllers/roles.controllers");
@@ -23,7 +25,7 @@ const company_configs_controller = require('../controllers/company_configs.contr
 
 
 // USERS ROUTES.
-router.get("/users/getAllUsers/:params", users_controller.getAllUsers);
+router.get("/users/getAllUsers/:params", authenticateToken, users_controller.getAllUsers);
 router.post("/users/addUser/", users_controller.addUser);
 router.post("/users/UserLogin/", users_controller.UserLogin);
 router.get("/users/getUserDataByIdAfterLogin/:id", users_controller.getUserDataByIdAfterLogin);
