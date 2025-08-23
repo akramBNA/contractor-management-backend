@@ -26,85 +26,85 @@ const company_configs_controller = require('../controllers/company_configs.contr
 
 // USERS ROUTES.
 router.get("/users/getAllUsers/:params", authenticateToken, users_controller.getAllUsers);
-router.post("/users/addUser/", users_controller.addUser);
-router.post("/users/UserLogin/", users_controller.UserLogin);
-router.get("/users/getUserDataByIdAfterLogin/:id", users_controller.getUserDataByIdAfterLogin);
-router.get("/users/getUserById/:id", users_controller.getUserById);
-router.put("/users/updateUser/:id", users_controller.updateUser);
-router.delete("/users/deleteUser/:id", users_controller.deleteUser);
+router.post("/users/addUser/", authenticateToken, users_controller.addUser);
+router.post("/users/UserLogin/", authenticateToken, users_controller.UserLogin);
+router.get("/users/getUserDataByIdAfterLogin/:id", authenticateToken, users_controller.getUserDataByIdAfterLogin);
+router.get("/users/getUserById/:id", authenticateToken, users_controller.getUserById);
+router.put("/users/updateUser/:id", authenticateToken, users_controller.updateUser);
+router.delete("/users/deleteUser/:id", authenticateToken, users_controller.deleteUser);
 router.post("/users/signupWithEmployeeEmail/", users_controller.signupWithEmployeeEmail);
-router.put("/users/updateUserRole/:params", users_controller.updateUserRole);
+router.put("/users/updateUserRole/:params", authenticateToken, users_controller.updateUserRole);
 
 // ROLES ROUTES
-router.get("/roles/getAllRoles/", roles_controller.getAllRoles);
+router.get("/roles/getAllRoles/", authenticateToken, roles_controller.getAllRoles);
 
 // EMPLOYEES ROUTES
-router.get("/employees/getAllEmployees/", employees_controller.getAllEmployees);
-router.get("/employees/getEmployeeById/:id", employees_controller.getEmployeeById);
-router.post("/employees/addOneEmployee/", employees_controller.addOneEmployee);
-router.get("/employees/getEmployeeById/:id", employees_controller.getEmployeeById);
-router.get("/employees/getJobsAndContractTypes/", employees_controller.getJobsAndContractTypes);
-router.put("/employees/editEmployee/:id", employees_controller.editEmployee);
-router.delete("/employees/deleteEmployee/:id", employees_controller.deleteEmployee);
-router.get("/employees/getAllActiveEmployeesNames/", employees_controller.getAllActiveEmployeesNames);
+router.get("/employees/getAllEmployees/", authenticateToken, employees_controller.getAllEmployees);
+router.get("/employees/getEmployeeById/:id", authenticateToken, employees_controller.getEmployeeById);
+router.post("/employees/addOneEmployee/", authenticateToken, employees_controller.addOneEmployee);
+router.get("/employees/getEmployeeById/:id", authenticateToken, employees_controller.getEmployeeById);
+router.get("/employees/getJobsAndContractTypes/", authenticateToken, employees_controller.getJobsAndContractTypes);
+router.put("/employees/editEmployee/:id", authenticateToken, employees_controller.editEmployee);
+router.delete("/employees/deleteEmployee/:id", authenticateToken, employees_controller.deleteEmployee);
+router.get("/employees/getAllActiveEmployeesNames/", authenticateToken, employees_controller.getAllActiveEmployeesNames);
 
 // CONTRACTS ROUTES
-router.get("/contracts/getAllContracts/", contracts_controlers.getAllContracts);
+router.get("/contracts/getAllContracts/", authenticateToken, contracts_controlers.getAllContracts);
 
 // CONTRACT TYPES ROUTES
-router.get("/contract_types/getAllContractTypes/", contract_types_controller.getAllContractTypes);
+router.get("/contract_types/getAllContractTypes/", authenticateToken, contract_types_controller.getAllContractTypes);
 
 // EMPLOYEE BANK DETAILS ROUTES
-router.get("/employee_bank_details/getAllEmployeeBankDetails/", employee_bank_details_controller.getAllEmployeeBankDetails);
+router.get("/employee_bank_details/getAllEmployeeBankDetails/", authenticateToken, employee_bank_details_controller.getAllEmployeeBankDetails);
 
 // JOBS ROUTES
-router.get("/jobs/getAllJobs/", jobs_controller.getAllJobs);
+router.get("/jobs/getAllJobs/", authenticateToken, jobs_controller.getAllJobs);
 
 // PROJECTS ROUTES
-router.get("/projects/getAllProjects/:params", projects_controller.getAllProjects);
-router.post("/projects/addProject/", projects_controller.addProject);
-router.get("/projects/getProjectById/:params", projects_controller.getProjectById);
-router.delete("/projects/deleteProject/:params", projects_controller.deleteProject);
+router.get("/projects/getAllProjects/:params", authenticateToken, projects_controller.getAllProjects);
+router.post("/projects/addProject/", authenticateToken, projects_controller.addProject);
+router.get("/projects/getProjectById/:params", authenticateToken, projects_controller.getProjectById);
+router.delete("/projects/deleteProject/:params", authenticateToken, projects_controller.deleteProject);
 
 // TASKS ROUTES
-router.post("/tasks/addTask/:params", tasks_controller.addTask);
+router.post("/tasks/addTask/:params", authenticateToken, tasks_controller.addTask);
 
 // MISSIONS ROUTES
-router.get("/missions/getAllMissions/:params", missions_controller.getAllActiveMissions);
-router.post("/missions/addMission/", missions_controller.addMission);
-router.get("/missions/getMissionById/:mission_id", missions_controller.getMissionById);
-router.put("/missions/editMission/:mission_id", missions_controller.editMission);
-router.delete("/missions/deleteMission/:mission_id", missions_controller.deleteMission);
+router.get("/missions/getAllMissions/:params", authenticateToken, missions_controller.getAllActiveMissions);
+router.post("/missions/addMission/", authenticateToken, missions_controller.addMission);
+router.get("/missions/getMissionById/:mission_id", authenticateToken, missions_controller.getMissionById);
+router.put("/missions/editMission/:mission_id", authenticateToken, missions_controller.editMission);
+router.delete("/missions/deleteMission/:mission_id", authenticateToken, missions_controller.deleteMission);
 
 // MISSION EMPLOYEES ROUTES
-router.get("/mission_employees/getAllAssignedEmployees/", mission_employees_controller.getAllAssignedEmployees);
+router.get("/mission_employees/getAllAssignedEmployees/", authenticateToken, mission_employees_controller.getAllAssignedEmployees);
 
 // SALARIES ROUTES
-router.get("/salaries/getAllSalaries/:params", salaries_controller.getAllSalaries);
+router.get("/salaries/getAllSalaries/:params", authenticateToken, salaries_controller.getAllSalaries);
 
 // PROJECT EMPLOYEES ROUTES
 
 // LEAVES ROUTES
-router.get("/leaves/getAllLeaves/:params", leaves_controller.getAllLeaves);
-router.get("/leaves/getAllLeavesById/:params", leaves_controller.getAllLeavesById);
-router.post("/leaves/requestLeave/", leaves_controller.requestLeave);
-router.put("/leaves/acceptLeaves/:params", leaves_controller.acceptLeaves);
-router.put("/leaves/rejectLeaves/:params", leaves_controller.rejectLeaves);
-router.put("/leaves/deleteLeaves/:params", leaves_controller.deleteLeaves);
+router.get("/leaves/getAllLeaves/:params", authenticateToken, leaves_controller.getAllLeaves);
+router.get("/leaves/getAllLeavesById/:params", authenticateToken, leaves_controller.getAllLeavesById);
+router.post("/leaves/requestLeave/", authenticateToken, leaves_controller.requestLeave);
+router.put("/leaves/acceptLeaves/:params", authenticateToken, leaves_controller.acceptLeaves);
+router.put("/leaves/rejectLeaves/:params", authenticateToken, leaves_controller.rejectLeaves);
+router.put("/leaves/deleteLeaves/:params", authenticateToken, leaves_controller.deleteLeaves);
 
 // LEAVE TYPES ROUTES
-router.get("/leave_types/getAllLeaveTypes/", leave_types_controller.getAllLeaveTypes);
-router.post("/leave_types/addLeaveType/", leave_types_controller.addLeaveType);
+router.get("/leave_types/getAllLeaveTypes/", authenticateToken, leave_types_controller.getAllLeaveTypes);
+router.post("/leave_types/addLeaveType/", authenticateToken, leave_types_controller.addLeaveType);
 
 // HOLIDAYS ROUTES
-router.get("/holidays/getAllHolidaysByYear/:params", holidays_controller.getAllHolidaysByYear);
-router.post("/holidays/addHoliday/", holidays_controller.addHoliday);
+router.get("/holidays/getAllHolidaysByYear/:params", authenticateToken, holidays_controller.getAllHolidaysByYear);
+router.post("/holidays/addHoliday/", authenticateToken, holidays_controller.addHoliday);
 
 // COMPANY CONFIGS ROUTES
-router.get("/company_configs/getCompanyConfigs/", company_configs_controller.getCompanyConfigs);
+router.get("/company_configs/getCompanyConfigs/", authenticateToken, company_configs_controller.getCompanyConfigs);
 
 // COMPANY ROUTES
-router.get("/company/getCompanyInformations/", company_controller.getCompanyInformations);
+router.get("/company/getCompanyInformations/", authenticateToken, company_controller.getCompanyInformations);
 
 
 module.exports = router;
