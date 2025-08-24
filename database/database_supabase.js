@@ -1,9 +1,6 @@
 const { Pool } = require('pg');
 const { Sequelize, DataTypes } = require('sequelize');
-const dns = require("dns");
-
-// Force IPv4 resolution
-dns.setDefaultResultOrder("ipv4first");
+const dns = require('dns');
 
 dns.lookup(process.env.DB_HOST_2, { all: true }, (err, addresses) => {
   if (err) console.error(err);
