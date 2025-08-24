@@ -27,7 +27,7 @@ const company_configs_controller = require('../controllers/company_configs.contr
 // USERS ROUTES.
 router.get("/users/getAllUsers/:params", authenticateToken, users_controller.getAllUsers);
 router.post("/users/addUser/", authenticateToken, users_controller.addUser);
-router.post("/users/UserLogin/", authenticateToken, users_controller.UserLogin);
+router.post("/users/UserLogin/", users_controller.UserLogin);
 router.get("/users/getUserDataByIdAfterLogin/:id", authenticateToken, users_controller.getUserDataByIdAfterLogin);
 router.get("/users/getUserById/:id", authenticateToken, users_controller.getUserById);
 router.put("/users/updateUser/:id", authenticateToken, users_controller.updateUser);
