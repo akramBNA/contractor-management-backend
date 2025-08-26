@@ -172,9 +172,8 @@ class leavesDao {
           message: "Missing required fields: employee_id, leave_type_id, start_date, end_date",
         });
       }
-
-      const start = new Date(start_date);
-      const end = new Date(end_date);
+      const start = new Date(`${start_date}T00:00:00`);
+      const end = new Date(`${end_date}T00:00:00`); 
       const today = new Date();
 
       today.setHours(0, 0, 0, 0);
@@ -356,7 +355,6 @@ class leavesDao {
       return next(error);
     }
   }
-
 
   async acceptLeaves(req, res, next) {
     try {
