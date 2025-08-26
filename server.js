@@ -1,4 +1,7 @@
 require('dotenv').config();
+const { initSocket } = require("./socket");
+initSocket(server);
+
 const express = require('express');
 const cors = require('cors');
 const app = express();
