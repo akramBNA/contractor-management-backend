@@ -14,7 +14,15 @@ const { initSocket } = require("./socket");
 // initSocket(server);
 require('./Cron Jobs/leave_crons.js');
 
-app.use(cors());
+const corsOptions = {
+  origin: ['http://localhost:4200'],
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 app.get('/', (req, res) => {
