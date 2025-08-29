@@ -31,11 +31,14 @@ app.get('/', (req, res) => {
 
 app.use('/api', Routes);
 
+const server = app.listen(port, () => {
+  console.log(`Server is running on PORT:${port}`);
+});
+
 sequelize.authenticate()
   .then(() => {
-    app.listen(port, () => {
-      console.log(`Server is running on PORT:${port}`);
-    });
+   console.log("connected to the DB successfully.");
+   
   })
   .catch(err => {
     console.error('Unable to connect to the DB:', err);
