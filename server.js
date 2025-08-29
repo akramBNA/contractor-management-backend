@@ -31,9 +31,14 @@ app.get('/', (req, res) => {
 
 app.use('/api', Routes);
 
-const server = app.listen(port, () => {
-  console.log(`Server is running on PORT:${port}`);
-});
+// const server = app.listen(process.env.PORT, () => {
+//   console.log(`Server is running on PORT:${port}`);
+// });
+
+try {
+  const u = new URL(process.env.DATABASE_URL);
+  console.log('DB host:', u.hostname, 'port:', u.port, 'db:', u.pathname);
+} catch {}
 
 sequelize.authenticate()
   .then(() => {
