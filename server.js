@@ -1,50 +1,39 @@
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
+const { sequelize } = require('./database/database_supabase_2'); // your working pooler URL
+
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-const Routes = require('./routes/routes.js');
-// const { sequelize } = require('./database/database.js');
-// const { sequelize } = require('./database/database_supabase.js');
-const { sequelize } = require('./database/database_supabase_2.js');
-
-const { initSocket } = require("./socket");
-// initSocket(server);
-require('./Cron Jobs/leave_crons.js');
-
-const corsOptions = {
-  origin: ['http://localhost:4200'],
-  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization'],
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
-app.options('*splat', cors(corsOptions));
+// CORS & JSON
+app.use(cors({ origin: ['http://localhost:4200', /* add your deployed FE here */], credentials: true }));
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello from the Node.js backend!');
+// Health check so Render can verify readiness
+app.get('/healthz', (_req, res) => res.status(200).send('ok'));
+
+// Start HTTP FIRST so Render sees an open port
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`HTTP listening on ${PORT}`);
 });
 
-app.use('/api', Routes);
+// (If you use websockets)
+// const { initSocket } = require('./socket');
+// initSocket(server);
 
-// const server = app.listen(process.env.PORT, () => {
-//   console.log(`Server is running on PORT:${port}`);
-// });
+// Your routes
+app.use('/api', require('./routes/routes'));
 
-try {
-  const u = new URL(process.env.DATABASE_URL);
-  console.log('DB host:', u.hostname, 'port:', u.port, 'db:', u.pathname);
-} catch {}
-
-sequelize.authenticate()
-  .then(() => {
-   console.log("connected to the DB successfully.");
-   
-  })
-  .catch(err => {
-    console.error('Unable to connect to the DB:', err);
-  });
+// Connect to DB (don’t exit if it fails; just log)
+(async () => {
+  try {
+    // Optional: log what we’re connecting to
+    const u = new URL(process.env.DATABASE_URL);
+    console.log('DB host:', u.hostname, 'port:', u.port, 'db:', u.pathname);
+    await sequelize.authenticate();
+    console.log('DB connected');
+  } catch (err) {
+    console.error('DB connection failed:', err);
+  }
+})();
