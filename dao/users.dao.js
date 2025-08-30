@@ -224,7 +224,7 @@ class usersDao {
         token,
       });
     } catch (error) {
-      console.error("Error in login:", error);
+      console.error("*** Error in login:", error.message, " --- statck: ", error.stack);
       return next(error);
     }
   }
