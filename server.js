@@ -1,6 +1,4 @@
 require('dotenv').config();
-const { initSocket } = require("./socket");
-initSocket(server);
 
 const express = require('express');
 const cors = require('cors');
@@ -13,6 +11,8 @@ const { sequelize } = require('./database/database.js');
 
 require('./Cron Jobs/leave_crons.js');
 
+const { initSocket } = require("./socket");
+
 app.use(cors());
 app.use(express.json());
 
@@ -23,10 +23,11 @@ app.get('/', (req, res) => {
 app.use('/api', Routes);
 
 sequelize.authenticate()
-  .then(() => {
-    app.listen(port, () => {
-      console.log(`Server is running on PORT:${port}`);
-    });
+.then(() => {
+  app.listen(port, () => {
+    console.log(`Server is running on PORT:${port}`);
+  });
+  initSocket(server);
   })
   .catch(err => {
     console.error('Unable to connect to the DB:', err);
