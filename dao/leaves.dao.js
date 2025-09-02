@@ -15,7 +15,7 @@ class leavesDao {
       const limit = params.limit || 20;
       const offset = params.offset || 0;
 
-      const get_all_leaves_query =`select e.employee_id,
+      const get_all_leaves_query = `select e.employee_id,
                                       l.leave_id,
                                       e.employee_name,
                                       e.employee_lastname,
@@ -166,16 +166,18 @@ class leavesDao {
 
   async requestLeave(req, res, next) {
     try {
-      const { employee_id, leave_type_id, description, start_date, end_date } = req.body;
+      const { employee_id, leave_type_id, description, start_date, end_date } =
+        req.body;
 
       if (!employee_id || !leave_type_id || !start_date || !end_date) {
         return res.json({
           success: false,
-          message: "Missing required fields: employee_id, leave_type_id, start_date, end_date",
+          message:
+            "Missing required fields: employee_id, leave_type_id, start_date, end_date",
         });
       }
       const start = new Date(`${start_date}T00:00:00`);
-      const end = new Date(`${end_date}T00:00:00`); 
+      const end = new Date(`${end_date}T00:00:00`);
       const today = new Date();
 
       today.setHours(0, 0, 0, 0);
@@ -210,11 +212,11 @@ class leavesDao {
           holiday_date: {
             [Op.between]: [start, end],
           },
-          active: 'Y',
+          active: "Y",
         },
       });
 
-      const holidayWeekdays = holidayList.filter(h => {
+      const holidayWeekdays = holidayList.filter((h) => {
         const d = new Date(h.holiday_date);
         const day = d.getDay();
         return day !== 0 && day !== 6;
@@ -225,7 +227,8 @@ class leavesDao {
       if (adjustedLeaveDays <= 0) {
         return res.json({
           success: false,
-          message: "All selected days are holidays or weekends. Leave duration must include valid weekdays.",
+          message:
+            "All selected days are holidays or weekends. Leave duration must include valid weekdays.",
         });
       }
 
@@ -352,7 +355,6 @@ class leavesDao {
         },
         message: "Retrieved successfully",
       });
-
     } catch (error) {
       return next(error);
     }
@@ -374,7 +376,7 @@ class leavesDao {
       }
 
       const leave = await leaves.findOne({
-        where: { leave_id, active: 'Y' },
+        where: { leave_id, active: "Y" },
       });
 
       if (!leave || leave.status !== "Pending") {
@@ -400,10 +402,7 @@ class leavesDao {
         });
       }
 
-      await leaves.update(
-        { status: "Approved" },
-        { where: { leave_id } }
-      );
+      await leaves.update({ status: "Approved" }, { where: { leave_id } });
 
       await employees.update(
         { leave_credit: employee.leave_credit - leave.duration },
@@ -414,7 +413,6 @@ class leavesDao {
         success: true,
         message: "Leave request approved successfully",
       });
-
     } catch (error) {
       return next(error);
     }
@@ -434,7 +432,7 @@ class leavesDao {
         });
       }
 
-      const leave = await leaves.findOne({ where: { leave_id, active: 'Y' } });
+      const leave = await leaves.findOne({ where: { leave_id, active: "Y" } });
 
       if (!leave) {
         return res.json({
@@ -462,24 +460,27 @@ class leavesDao {
       params = params && params.length ? JSON.parse(params) : {};
 
       const leave_id = params.leave_id;
-      
+
       const delete_leaves_query = `UPDATE leaves SET active = 'N' WHERE leave_id = :leave_id`;
-      const delete_leaves_data = await leaves.sequelize.query(delete_leaves_query, {
-        replacements: { leave_id: parseInt(leave_id) },
-        type: leaves.sequelize.QueryTypes.UPDATE,
-      });
-      
-      if ( delete_leaves_data.length ) {
+      const delete_leaves_data = await leaves.sequelize.query(
+        delete_leaves_query,
+        {
+          replacements: { leave_id: parseInt(leave_id) },
+          type: leaves.sequelize.QueryTypes.UPDATE,
+        }
+      );
+
+      if (delete_leaves_data.length) {
         return res.status(200).json({
           success: true,
           data: [],
-          message: 'Leave deleted successfully',
+          message: "Leave deleted successfully",
         });
       } else {
         return res.json({
           success: false,
           data: [],
-          message: 'No leave found to delete',
+          message: "No leave found to delete",
         });
       }
     } catch (error) {
@@ -487,6 +488,69 @@ class leavesDao {
     }
   }
 
+  async getLeavesStats(req, res, next) {
+    try {
+      const statsQuery = `SELECT
+          COUNT(*) FILTER (WHERE status = 'Pending') AS pending,
+          COUNT(*) FILTER (WHERE status = 'Approved') AS approved,
+          COUNT(*) FILTER (WHERE status = 'Rejected') AS rejected
+        FROM leaves
+        WHERE active = 'Y'
+      `;
+
+      const statsResult = await leaves.sequelize.query(statsQuery, {
+        type: leaves.sequelize.QueryTypes.SELECT,
+      });
+
+      const stats = statsResult[0] || {};
+
+      res.status(200).json({
+        success: true,
+        stats: {
+          pending: parseInt(stats.pending || 0),
+          approved: parseInt(stats.approved || 0),
+          rejected: parseInt(stats.rejected || 0),
+        },
+        message: "Retrieved successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async resetEmployeeCreditLeave(req, res, next) {
+    try {
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const employee_id = params.employee_id;
+
+      const reset_credit_leave_query = `UPDATE employees SET leave_credit = 0 WHERE employee_id = :employee_id and active = 'Y'`;
+      const reset_credit_leave_data = await leaves.sequelize.query(
+        reset_credit_leave_query,
+        {
+          replacements: { employee_id: parseInt(employee_id) },
+          type: leaves.sequelize.QueryTypes.UPDATE,
+        }
+      );
+
+      if (reset_credit_leave_data.length) {
+        return res.status(200).json({
+          success: true,
+          data: [],
+          message: "Leave credit reset to zero successfully",
+        });
+      } else {
+        return res.json({
+          success: false,
+          data: [],
+          message: "No employee found to reset leave credit",
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+  }
 }
 
 module.exports = leavesDao;
