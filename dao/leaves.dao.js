@@ -85,85 +85,6 @@ class leavesDao {
     return count;
   }
 
-  // async requestLeave(req, res, next) {
-  //   try {
-  //     const { employee_id, leave_type_id, description, start_date, end_date } =
-  //       req.body;
-
-  //     if (!employee_id || !leave_type_id || !start_date || !end_date) {
-  //       return res.json({
-  //         success: false,
-  //         message:"Missing required fields: employee_id, leave_type_id, start_date, end_date",
-  //       });
-  //     }
-
-  //     const start = new Date(start_date);
-  //     const end = new Date(end_date);
-  //     const today = new Date();
-
-  //     today.setHours(0, 0, 0, 0);
-  //     start.setHours(0, 0, 0, 0);
-  //     end.setHours(0, 0, 0, 0);
-
-  //     if (start < today) {
-  //       return res.json({
-  //         success: false,
-  //         message: "Start date cannot be before today",
-  //       });
-  //     }
-
-  //     if (end < start) {
-  //       return res.json({
-  //         success: false,
-  //         message: "End date must be after start date",
-  //       });
-  //     }
-
-  //     const weekdays = this.calculateWeekdaysOnly(start, end);
-
-  //     if (weekdays <= 0) {
-  //       return res.json({
-  //         success: false,
-  //         message: "Leave duration must include at least one weekday",
-  //       });
-  //     }
-
-  //     const employee = await employees.findOne({ where: { employee_id } });
-
-  //     if (!employee) {
-  //       return res.json({
-  //         success: false,
-  //         message: "Employee not found",
-  //       });
-  //     }
-
-  //     if (employee.leave_credit < weekdays) {
-  //       return res.json({
-  //         success: false,
-  //         message: "Insufficient leave credit",
-  //       });
-  //     }
-
-  //     const leave = await leaves.create({
-  //       employee_id,
-  //       leave_type_id,
-  //       description,
-  //       start_date: start,
-  //       end_date: end,
-  //       duration: weekdays,
-  //       status: "Pending",
-  //     });
-
-  //     res.status(200).json({
-  //       success: true,
-  //       data: leave,
-  //       message: "Leave request created successfully",
-  //     });
-  //   } catch (error) {
-  //     return next(error);
-  //   }
-  // }
-
   async requestLeave(req, res, next) {
     try {
       const { employee_id, leave_type_id, description, start_date, end_date } =
@@ -277,6 +198,25 @@ class leavesDao {
       const limit = params.limit || 20;
       const offset = params.offset || 0;
 
+      const employee_leave_credit_query = `SELECT leave_credit
+        FROM employees 
+        WHERE employee_id = :employee_id AND active = 'Y'
+      `;
+      
+      const employee_leave_credit_data = await leaves.sequelize.query(
+        employee_leave_credit_query,
+        {
+          replacements: { employee_id },
+          type: leaves.sequelize.QueryTypes.SELECT,
+        }
+      );
+
+      if ( !employee_leave_credit_data || !employee_leave_credit_data.length ) {
+        var leave_credit = 0;
+      } else {
+        var leave_credit = employee_leave_credit_data[0]?.leave_credit || 0;
+      }
+
       const countQuery = `SELECT COUNT(*) as total 
         FROM leaves 
         WHERE employee_id = :employee_id AND active = 'Y'
@@ -348,7 +288,7 @@ class leavesDao {
           offset,
         },
         stats: {
-          // total,
+          leave_credit: leave_credit,
           pending: parseInt(stats.pending || 0),
           approved: parseInt(stats.approved || 0),
           rejected: parseInt(stats.rejected || 0),
@@ -483,36 +423,6 @@ class leavesDao {
           message: "No leave found to delete",
         });
       }
-    } catch (error) {
-      return next(error);
-    }
-  }
-
-  async getLeavesStats(req, res, next) {
-    try {
-      const statsQuery = `SELECT
-          COUNT(*) FILTER (WHERE status = 'Pending') AS pending,
-          COUNT(*) FILTER (WHERE status = 'Approved') AS approved,
-          COUNT(*) FILTER (WHERE status = 'Rejected') AS rejected
-        FROM leaves
-        WHERE active = 'Y'
-      `;
-
-      const statsResult = await leaves.sequelize.query(statsQuery, {
-        type: leaves.sequelize.QueryTypes.SELECT,
-      });
-
-      const stats = statsResult[0] || {};
-
-      res.status(200).json({
-        success: true,
-        stats: {
-          pending: parseInt(stats.pending || 0),
-          approved: parseInt(stats.approved || 0),
-          rejected: parseInt(stats.rejected || 0),
-        },
-        message: "Retrieved successfully",
-      });
     } catch (error) {
       return next(error);
     }
