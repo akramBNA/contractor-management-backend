@@ -21,4 +21,7 @@ module.exports = {
   deleteLeaves: function (req, res, next) {
     leaves_instance.deleteLeaves(req, res, next);
   },
+  resetEmployeeCreditLeave: function (req, res, next) {
+    leaves_instance.resetEmployeeCreditLeave(req, res, next);
+  }
 };

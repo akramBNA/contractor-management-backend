@@ -1,5 +1,6 @@
 const cron = require("node-cron");
 const employeesControllers = require("../controllers/employees.controlers");
+const leavesControllers = require("../controllers/leaves.controllers");
 
 cron.schedule("0 0 1 * *", async () => {
   try {
@@ -14,7 +15,7 @@ cron.schedule("0 0 1 * *", async () => {
 cron.schedule("0 0 1 1 *", async () => {
   try {
     console.log("-- Cron job started: Resetting leave credits...");
-    await employeesControllers.resetLeaveCreditEveryYear();
+    leavesControllers.resetEmployeeCreditLeave();
     console.log("-- Cron job finished successfully!");
   } catch (error) {
     console.error("-- Failed to run this job!", error);
