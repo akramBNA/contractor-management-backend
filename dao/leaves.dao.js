@@ -198,25 +198,6 @@ class leavesDao {
       const limit = params.limit || 20;
       const offset = params.offset || 0;
 
-      const employee_leave_credit_query = `SELECT leave_credit
-        FROM employees 
-        WHERE employee_id = :employee_id AND active = 'Y'
-      `;
-      
-      const employee_leave_credit_data = await leaves.sequelize.query(
-        employee_leave_credit_query,
-        {
-          replacements: { employee_id },
-          type: leaves.sequelize.QueryTypes.SELECT,
-        }
-      );
-
-      if ( !employee_leave_credit_data || !employee_leave_credit_data.length ) {
-        var leave_credit = 0;
-      } else {
-        var leave_credit = employee_leave_credit_data[0]?.leave_credit || 0;
-      }
-
       const countQuery = `SELECT COUNT(*) as total 
         FROM leaves 
         WHERE employee_id = :employee_id AND active = 'Y'
@@ -288,7 +269,6 @@ class leavesDao {
           offset,
         },
         stats: {
-          leave_credit: leave_credit,
           pending: parseInt(stats.pending || 0),
           approved: parseInt(stats.approved || 0),
           rejected: parseInt(stats.rejected || 0),
