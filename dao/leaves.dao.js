@@ -485,13 +485,13 @@ class leavesDao {
       if ( !employee_leave_credit_data || !employee_leave_credit_data.length ) {
         return res.json({
           success: false,
-          data: { leave_credit: 0 },
+          data: 0,
           message: "Employee not found",
         });
       } else {
         return res.status(200).json({
           success: true,
-          data: { leave_credit: employee_leave_credit_data[0]?.leave_credit || 0 },
+          data: parseFloat(employee_leave_credit_data[0]?.leave_credit) || 0,
           message: "Retrieved successfully",
         });
       }
