@@ -435,7 +435,7 @@ class leavesDao {
 
       const employee_id = params.employee_id;
 
-      const reset_credit_leave_query = `UPDATE employees SET leave_credit = 0 WHERE employee_id = :employee_id and active = 'Y'`;
+      const reset_credit_leave_query = `UPDATE employees SET leave_credit = 0 WHERE active = 'Y'`;
       const reset_credit_leave_data = await leaves.sequelize.query(
         reset_credit_leave_query,
         {
@@ -455,6 +455,44 @@ class leavesDao {
           success: false,
           data: [],
           message: "No employee found to reset leave credit",
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getLeaveBalanceByEmployeeId(req, res, next) {
+    try {
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const employee_id = params.employee_id;
+
+      const employee_leave_credit_query = `SELECT leave_credit
+        FROM employees 
+        WHERE employee_id = :employee_id AND active = 'Y'
+      `;
+      
+      const employee_leave_credit_data = await leaves.sequelize.query(
+        employee_leave_credit_query,
+        {
+          replacements: { employee_id },
+          type: leaves.sequelize.QueryTypes.SELECT,
+        }
+      );
+
+      if ( !employee_leave_credit_data || !employee_leave_credit_data.length ) {
+        return res.json({
+          success: false,
+          data: { leave_credit: 0 },
+          message: "Employee not found",
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          data: { leave_credit: employee_leave_credit_data[0]?.leave_credit || 0 },
+          message: "Retrieved successfully",
         });
       }
     } catch (error) {
