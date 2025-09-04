@@ -23,5 +23,8 @@ module.exports = {
   },
   resetEmployeeCreditLeave: function (req, res, next) {
     leaves_instance.resetEmployeeCreditLeave(req, res, next);
+  },
+  getLeaveBalanceByEmployeeId: function (req, res, next) {
+    leaves_instance.getLeaveBalanceByEmployeeId(req, res, next);
   }
 };
