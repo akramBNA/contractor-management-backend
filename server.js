@@ -28,7 +28,7 @@ sequelize.authenticate()
   app.listen(port, () => {
     console.log(`Server is running on PORT:${port}`);
   });
-  initSocket(server);
+  // initSocket(server);
   })
   .catch(err => {
     console.error('Unable to connect to the DB:', err);
