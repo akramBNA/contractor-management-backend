@@ -22,6 +22,7 @@ const leaves_controller = require("../controllers/leaves.controllers");
 const leave_types_controller = require("../controllers/leave_types.controllers");
 const holidays_controller = require("../controllers/holidays.controllers");
 const company_configs_controller = require('../controllers/company_configs.controllers');
+const vehicles_controller = require("../controllers/vehicles.controllers");
 
 
 // USERS ROUTES.
@@ -107,5 +108,7 @@ router.get("/company_configs/getCompanyConfigs/", authenticateToken, company_con
 // COMPANY ROUTES
 router.get("/company/getCompanyInformations/", authenticateToken, company_controller.getCompanyInformations);
 
+// VEHICLES ROUTES
+router.get("/vehicles/getAllVehicles/:params", authenticateToken, vehicles_controller.getAllVehicles);
 
 module.exports = router;
