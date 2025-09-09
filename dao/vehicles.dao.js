@@ -26,7 +26,11 @@ class vehiclesDao {
           type: vehicles.sequelize.QueryTypes.SELECT,
         }
       );
-      if (!get_all_vehicles_count_data.length) {
+      console.log("-------------------------- get_all_vehicles_count_data", get_all_vehicles_count_data[0].total);
+      console.log("!get_all_vehicles_count_data[0].total", !get_all_vehicles_count_data[0].total);
+      
+      
+      if (get_all_vehicles_count_data[0].total) {
         return res.json({
           success: true,
           data: [],
