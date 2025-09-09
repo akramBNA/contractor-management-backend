@@ -29,7 +29,7 @@ class vehiclesDao {
 
       if (get_all_vehicles_count_data[0].total) {
         return res.json({
-          success: true,
+          success: false,
           data: [],
           message: "No vehicles found",
         });
