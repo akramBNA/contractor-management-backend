@@ -110,5 +110,6 @@ router.get("/company/getCompanyInformations/", authenticateToken, company_contro
 
 // VEHICLES ROUTES
 router.get("/vehicles/getAllVehicles/:params", authenticateToken, vehicles_controller.getAllVehicles);
+router.post("/vehicles/addVehicle/", authenticateToken, vehicles_controller.addVehicle);
 
 module.exports = router;
