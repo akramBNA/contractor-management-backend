@@ -58,7 +58,49 @@ class vehiclesDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
+
+   async addVehicle(req, res, next) {
+    try {
+      const {
+        vehicle_type,
+        brand,
+        model,
+        model_year,
+        licence_plate,
+        circulation_date,
+        vin_number,
+        insurance_number,
+      } = req.body;
+
+      const newVehicle = await vehicles.create({
+        vehicle_type,
+        brand,
+        model,
+        model_year,
+        licence_plate,
+        circulation_date,
+        vin_number,
+        insurance_number
+      });
+
+      if (!newVehicle || !newVehicle.vehicle_id) {
+        return res.status(500).json({
+          success: false,
+          data: [],
+          message: "Failed to add vehicle",
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        data: newVehicle,
+        message: "Vehicle added successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
 }
 
 module.exports = vehiclesDao;
