@@ -9,7 +9,7 @@ class vehiclesDao {
 
       const limit = params.limit ? parseInt(params.limit) : 20;
       const offset = params.offset ? parseInt(params.offset) : 0;
-      const keywords = params.keywords ? params.keywords : "";
+      const keywords = params.keywords ? params.keywords.trim() : "";
 
       let searchCondition = "";
       const replacements = { limit, offset };
@@ -19,22 +19,20 @@ class vehiclesDao {
         replacements.keywords = `%${keywords}%`;
       }
 
-      const get_all_vehicles_count_query = `SELECT COUNT(*) AS total FROM vehicles WHERE active = 'Y'`;
-      const get_all_vehicles_count_data = await vehicles.sequelize.query(
-        get_all_vehicles_count_query,
-        {
-          type: vehicles.sequelize.QueryTypes.SELECT,
-        }
+      const get_all_vehicles_count_query = `SELECT COUNT(*) AS total FROM vehicles WHERE active = 'Y' ${searchCondition}`;
+      const get_all_vehicles_count_data = await vehicles.sequelize.query(get_all_vehicles_count_query,
+        { replacements, type: vehicles.sequelize.QueryTypes.SELECT }
       );
 
-      if (get_all_vehicles_count_data[0].total) {
+      const total = parseInt(get_all_vehicles_count_data[0].total);
+
+      if (total === 0) {
         return res.json({
           success: false,
           data: [],
           message: "No vehicles found",
         });
       }
-      const total = parseInt(get_all_vehicles_count_data[0].total);
 
       const get_all_vehicles_query = `SELECT * FROM vehicles WHERE active = 'Y' ${searchCondition} ORDER BY vehicle_id ASC LIMIT :limit OFFSET :offset`;
       const get_all_vehicles_data = await vehicles.sequelize.query(
@@ -48,11 +46,7 @@ class vehiclesDao {
       res.status(200).json({
         success: true,
         data: get_all_vehicles_data,
-        attributes: {
-          total: total,
-          limit: limit,
-          offset: offset,
-        },
+        attributes: { total, limit, offset },
         message: "Vehicles retrieved successfully",
       });
     } catch (error) {
@@ -60,7 +54,7 @@ class vehiclesDao {
     }
   };
 
-   async addVehicle(req, res, next) {
+  async addVehicle(req, res, next) {
     try {
       const {
         vehicle_type,
