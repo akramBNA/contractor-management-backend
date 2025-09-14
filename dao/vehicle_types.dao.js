@@ -29,7 +29,34 @@ class vehicle_typesDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
+
+  async addVehicleType(req, res, next) {
+    try {
+      const { vehicle_type } = req.body;
+
+      if (!vehicle_type || vehicle_type.trim().length === 0) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "Vehicle type is required",
+        });
+      }
+
+      const new_vehicle_type = await vehicle_types.create({
+        vehicle_type: vehicle_type.trim(),
+      });
+
+      return res.status(201).json({
+        success: true,
+        data: new_vehicle_type,
+        message: "Vehicle type added successfully",
+      });
+      
+    } catch (error) {
+      return next(error);
+    }
+  };
 }
 
 module.exports = vehicle_typesDao;
