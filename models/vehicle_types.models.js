@@ -24,4 +24,4 @@ const vehicle_types = sequelize.define(
   }
 );
 
-module.exports = { vehicles, sequelize };
+module.exports = { vehicle_types, sequelize };
