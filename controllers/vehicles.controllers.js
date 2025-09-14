@@ -8,4 +8,10 @@ module.exports = {
   addVehicle: function (req, res, next) {
     vehicle_instance.addVehicle(req, res, next);
   },
+  updateVehicle: function (req, res, next) {
+    vehicle_instance.updateVehicle(req, res, next);
+  },
+  deleteVehicle: function (req, res, next) {
+    vehicle_instance.deleteVehicle(req, res, next);
+  },
 };
