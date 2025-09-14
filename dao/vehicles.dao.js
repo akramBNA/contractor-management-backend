@@ -9,14 +9,14 @@ class vehiclesDao {
 
       const limit = params.limit ? parseInt(params.limit) : 20;
       const offset = params.offset ? parseInt(params.offset) : 0;
-      const keywords = params.keywords ? params.keywords.trim() : "";
+      const keyword = params.keyword ? params.keyword.trim() : "";
 
       let searchCondition = "";
       const replacements = { limit, offset };
 
-      if (keywords) {
-        searchCondition = ` AND (brand ILIKE :keywords OR model ILIKE :keywords OR licence_plate ILIKE :keywords OR vin_number ILIKE :keywords)`;
-        replacements.keywords = `%${keywords}%`;
+      if (keyword) {
+        searchCondition = ` AND (vehicles.brand ILIKE :keyword OR vehicles.model ILIKE :keyword OR vehicles.licence_plate ILIKE :keyword OR vehicles.vin_number ILIKE :keyword)`;
+        replacements.keyword = `%${keyword}%`;
       }
 
       const get_all_vehicles_count_query = `SELECT COUNT(*) AS total FROM vehicles WHERE active = 'Y' ${searchCondition}`;
@@ -37,7 +37,7 @@ class vehiclesDao {
       const get_all_vehicles_query = `SELECT * FROM vehicles 
                                       LEFT JOIN vehicle_types
                                       ON vehicles.vehicle_type_id = vehicle_types.vehicle_type_id                                
-                                      WHERE vehicles.active = 'Y' AND vehicle_types.active ${searchCondition} 
+                                      WHERE vehicles.active = 'Y' AND vehicle_types.active = 'Y' ${searchCondition} 
                                       ORDER BY vehicle_id ASC 
                                       LIMIT :limit OFFSET :offset`;
       const get_all_vehicles_data = await vehicles.sequelize.query(
