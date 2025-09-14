@@ -62,7 +62,7 @@ class vehiclesDao {
   async addVehicle(req, res, next) {
     try {
       const {
-        vehicle_type,
+        vehicle_type_id,
         brand,
         model,
         model_year,
@@ -73,7 +73,7 @@ class vehiclesDao {
       } = req.body;
 
       const newVehicle = await vehicles.create({
-        vehicle_type,
+        vehicle_type_id,
         brand,
         model,
         model_year,
