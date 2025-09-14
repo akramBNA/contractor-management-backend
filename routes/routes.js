@@ -112,6 +112,8 @@ router.get("/company/getCompanyInformations/", authenticateToken, company_contro
 // VEHICLES ROUTES
 router.get("/vehicles/getAllVehicles/:params", authenticateToken, vehicles_controller.getAllVehicles);
 router.post("/vehicles/addVehicle/", authenticateToken, vehicles_controller.addVehicle);
+router.put("/vehicles/updateVehicle/:id", authenticateToken, vehicles_controller.updateVehicle);
+router.delete("/vehicles/deleteVehicle/:id", authenticateToken, vehicles_controller.deleteVehicle);
 
 // VEHICLE TYPES ROUTES
 router.get("/vehicle_types/getAllVehicleTypes/", authenticateToken, vehicle_types_controller.getAllVehicleTypes);
