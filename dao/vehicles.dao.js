@@ -9,14 +9,14 @@ class vehiclesDao {
 
       const limit = params.limit ? parseInt(params.limit) : 20;
       const offset = params.offset ? parseInt(params.offset) : 0;
-      const keywords = params.keywords ? params.keywords.trim() : "";
+      const keyword = params.keyword ? params.keyword.trim() : "";
 
       let searchCondition = "";
       const replacements = { limit, offset };
 
-      if (keywords) {
-        searchCondition = ` AND (brand ILIKE :keywords OR model ILIKE :keywords OR licence_plate ILIKE :keywords OR vin_number ILIKE :keywords)`;
-        replacements.keywords = `%${keywords}%`;
+      if (keyword) {
+        searchCondition = ` AND (vehicles.brand ILIKE :keyword OR vehicles.model ILIKE :keyword OR vehicles.licence_plate ILIKE :keyword OR vehicles.vin_number ILIKE :keyword)`;
+        replacements.keyword = `${keyword}%`;
       }
 
       const get_all_vehicles_count_query = `SELECT COUNT(*) AS total FROM vehicles WHERE active = 'Y' ${searchCondition}`;
@@ -34,7 +34,12 @@ class vehiclesDao {
         });
       }
 
-      const get_all_vehicles_query = `SELECT * FROM vehicles WHERE active = 'Y' ${searchCondition} ORDER BY vehicle_id ASC LIMIT :limit OFFSET :offset`;
+      const get_all_vehicles_query = `SELECT * FROM vehicles 
+                                      LEFT JOIN vehicle_types
+                                      ON vehicles.vehicle_type_id = vehicle_types.vehicle_type_id                                
+                                      WHERE vehicles.active = 'Y' AND vehicle_types.active = 'Y' ${searchCondition} 
+                                      ORDER BY vehicle_id ASC 
+                                      LIMIT :limit OFFSET :offset`;
       const get_all_vehicles_data = await vehicles.sequelize.query(
         get_all_vehicles_query,
         {
@@ -57,7 +62,7 @@ class vehiclesDao {
   async addVehicle(req, res, next) {
     try {
       const {
-        vehicle_type,
+        vehicle_type_id,
         brand,
         model,
         model_year,
@@ -68,7 +73,7 @@ class vehiclesDao {
       } = req.body;
 
       const newVehicle = await vehicles.create({
-        vehicle_type,
+        vehicle_type_id,
         brand,
         model,
         model_year,
@@ -90,6 +95,79 @@ class vehiclesDao {
         success: true,
         data: newVehicle,
         message: "Vehicle added successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  async updateVehicle(req, res, next) {
+    try {
+      const { vehicle_id } = req.params;
+      const {
+        vehicle_type_id,
+        brand,
+        model,
+        model_year,
+        licence_plate,
+        circulation_date,
+        vin_number,
+        insurance_number,
+        active,
+      } = req.body;
+
+      const vehicle = await vehicles.findByPk(vehicle_id);
+      if (!vehicle) {
+        return res.status(404).json({
+          success: false,
+          data: [],
+          message: "Vehicle not found",
+        });
+      }
+      
+      vehicle.vehicle_type_id = vehicle_type_id || vehicle.vehicle_type_id;
+      vehicle.brand = brand || vehicle.brand;
+      vehicle.model = model || vehicle.model;
+      vehicle.model_year = model_year || vehicle.model_year;
+      vehicle.licence_plate = licence_plate || vehicle.licence_plate;
+      vehicle.circulation_date = circulation_date || vehicle.circulation_date;
+      vehicle.vin_number = vin_number || vehicle.vin_number;
+      vehicle.insurance_number = insurance_number || vehicle.insurance_number;
+      vehicle.active = active || vehicle.active;
+
+      await vehicle.save();
+
+      res.status(200).json({
+        success: true,
+        data: vehicle,
+        message: "Vehicle updated successfully",
+      });
+    }
+    catch (error) {
+      return next(error);
+    }
+  };
+
+  async deleteVehicle(req, res, next) {
+    try {
+      const { vehicle_id } = req.params;
+
+      const vehicle = await vehicles.findByPk(vehicle_id);
+      if (!vehicle) {
+        return res.status(404).json({
+          success: false,
+          data: [],
+          message: "Vehicle not found",
+        });
+      }
+
+      vehicle.active = 'N';
+      await vehicle.save();
+
+      res.status(200).json({
+        success: true,
+        data: [],
+        message: "Vehicle deleted successfully",
       });
     } catch (error) {
       return next(error);

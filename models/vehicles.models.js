@@ -9,18 +9,26 @@ const vehicles = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    vehicle_type: {
-      type: DataTypes.ENUM(
-        "car",
-        "motorcycle",
-        "truck",
-        "bus",
-        "van",
-        "construction vehicle",
-        "other"
-      ),
+    vehicle_type_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: "vehicle_types",
+        key: "vehicle_type_id",
+      },
     },
+    // vehicle_type: {
+    //   type: DataTypes.ENUM(
+    //     "car",
+    //     "motorcycle",
+    //     "truck",
+    //     "bus",
+    //     "van",
+    //     "construction vehicle",
+    //     "other"
+    //   ),
+    //   allowNull: false,
+    // },
     brand: {
       type: DataTypes.STRING,
       allowNull: false,
