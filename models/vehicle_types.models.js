@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const { sequelize } = require("../database/database.js");
 
-const vehicles = sequelize.define(
+const vehicle_types = sequelize.define(
   "vehicle_types",
   {
     vehicle_type_id: {
