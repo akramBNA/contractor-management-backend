@@ -16,7 +16,7 @@ class vehiclesDao {
 
       if (keyword) {
         searchCondition = ` AND (vehicles.brand ILIKE :keyword OR vehicles.model ILIKE :keyword OR vehicles.licence_plate ILIKE :keyword OR vehicles.vin_number ILIKE :keyword)`;
-        replacements.keyword = `%${keyword}%`;
+        replacements.keyword = `${keyword}%`;
       }
 
       const get_all_vehicles_count_query = `SELECT COUNT(*) AS total FROM vehicles WHERE active = 'Y' ${searchCondition}`;
