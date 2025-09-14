@@ -34,7 +34,12 @@ class vehiclesDao {
         });
       }
 
-      const get_all_vehicles_query = `SELECT * FROM vehicles WHERE active = 'Y' ${searchCondition} ORDER BY vehicle_id ASC LIMIT :limit OFFSET :offset`;
+      const get_all_vehicles_query = `SELECT * FROM vehicles 
+                                      LEFT JOIN vehicle_types
+                                      ON vehicles.vehicle_type_id = vehicle_types.vehicle_type_id                                
+                                      WHERE vehicles.active = 'Y' AND vehicle_types.active ${searchCondition} 
+                                      ORDER BY vehicle_id ASC 
+                                      LIMIT :limit OFFSET :offset`;
       const get_all_vehicles_data = await vehicles.sequelize.query(
         get_all_vehicles_query,
         {
