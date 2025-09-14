@@ -115,5 +115,6 @@ router.post("/vehicles/addVehicle/", authenticateToken, vehicles_controller.addV
 
 // VEHICLE TYPES ROUTES
 router.get("/vehicle_types/getAllVehicleTypes/", authenticateToken, vehicle_types_controller.getAllVehicleTypes);
+router.post("/vehicle_types/addVehicleType/", authenticateToken, vehicle_types_controller.addVehicleType);
 
 module.exports = router;
