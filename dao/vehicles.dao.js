@@ -103,7 +103,7 @@ class vehiclesDao {
 
   async getVehicleById(req, res, next) {
     try {
-      const { vehicle_id } = req.params;
+      const { id } = req.params;
 
       const get_vehicle_by_id_query = `SELECT * FROM vehicles 
                                       LEFT JOIN vehicle_types
@@ -111,7 +111,7 @@ class vehiclesDao {
                                       WHERE vehicles.active = 'Y' AND vehicle_types.active = 'Y' AND vehicles.vehicle_id = :vehicle_id`;
       const get_vehicle_by_id_data = await vehicles.sequelize.query(get_vehicle_by_id_query,
         {
-          replacements: { vehicle_id },
+          replacements: { vehicle_id: id },
           type: vehicles.sequelize.QueryTypes.SELECT,
         }
       );
