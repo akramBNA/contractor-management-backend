@@ -154,17 +154,18 @@ class vehiclesDao {
     try {
       const { vehicle_id } = req.params;
 
-      const vehicle = await vehicles.findByPk(vehicle_id);
-      if (!vehicle) {
-        return res.status(404).json({
+      const [deleted] = await vehicles.update(
+        { active: 'N' },
+        { where: { vehicle_id } }
+      );
+
+      if (deleted === 0) {
+        return res.json({
           success: false,
           data: [],
-          message: "Vehicle not found",
+          message: "No vehicle was deleted",
         });
       }
-
-      vehicle.active = 'N';
-      await vehicle.save();
 
       res.status(200).json({
         success: true,
@@ -175,6 +176,7 @@ class vehiclesDao {
       return next(error);
     }
   };
+
 }
 
 module.exports = vehiclesDao;
