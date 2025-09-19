@@ -8,6 +8,9 @@ module.exports = {
   addVehicle: function (req, res, next) {
     vehicle_instance.addVehicle(req, res, next);
   },
+  getVehicleById: function (req, res, next) {
+    vehicle_instance.getVehicleById(req, res, next);
+  },
   updateVehicle: function (req, res, next) {
     vehicle_instance.updateVehicle(req, res, next);
   },

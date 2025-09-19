@@ -101,6 +101,39 @@ class vehiclesDao {
     }
   };
 
+  async getVehicleById(req, res, next) {
+    try {
+      const { id } = req.params;
+
+      const get_vehicle_by_id_query = `SELECT * FROM vehicles 
+                                      LEFT JOIN vehicle_types
+                                      ON vehicles.vehicle_type_id = vehicle_types.vehicle_type_id
+                                      WHERE vehicles.active = 'Y' AND vehicle_types.active = 'Y' AND vehicles.vehicle_id = :vehicle_id`;
+      const get_vehicle_by_id_data = await vehicles.sequelize.query(get_vehicle_by_id_query,
+        {
+          replacements: { vehicle_id: id },
+          type: vehicles.sequelize.QueryTypes.SELECT,
+        }
+      );
+
+      if ( !get_vehicle_by_id_data || get_vehicle_by_id_data.length === 0 ) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "No vehicle found with the provided ID",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: get_vehicle_by_id_data[0],
+        message: "Vehicle retrieved successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
+
   async updateVehicle(req, res, next) {
     try {
       const { vehicle_id } = req.params;
