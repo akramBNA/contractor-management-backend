@@ -104,6 +104,7 @@ class vehiclesDao {
   async updateVehicle(req, res, next) {
     try {
       const { vehicle_id } = req.params;
+
       const {
         vehicle_type_id,
         brand,
@@ -116,34 +117,35 @@ class vehiclesDao {
         active,
       } = req.body;
 
-      const vehicle = await vehicles.findByPk(vehicle_id);
-      if (!vehicle) {
-        return res.status(404).json({
-          success: false,
-          data: [],
-          message: "Vehicle not found",
-        });
-      }
-      
-      vehicle.vehicle_type_id = vehicle_type_id || vehicle.vehicle_type_id;
-      vehicle.brand = brand || vehicle.brand;
-      vehicle.model = model || vehicle.model;
-      vehicle.model_year = model_year || vehicle.model_year;
-      vehicle.licence_plate = licence_plate || vehicle.licence_plate;
-      vehicle.circulation_date = circulation_date || vehicle.circulation_date;
-      vehicle.vin_number = vin_number || vehicle.vin_number;
-      vehicle.insurance_number = insurance_number || vehicle.insurance_number;
-      vehicle.active = active || vehicle.active;
+      const [updated] = await vehicles.update(
+        {
+          vehicle_type_id,
+          brand,
+          model,
+          model_year,
+          licence_plate,
+          circulation_date,
+          vin_number,
+          insurance_number,
+          active,
+        },
+        { where: { vehicle_id } }
+      );
 
-      await vehicle.save();
+        if (updated === 0) {
+          return res.json({
+            success: false,
+            data: [],
+            message: "No changes applied to the vehicle",
+          });
+        }
 
       res.status(200).json({
         success: true,
-        data: vehicle,
+        data: { updated },
         message: "Vehicle updated successfully",
       });
-    }
-    catch (error) {
+    } catch (error) {
       return next(error);
     }
   };
@@ -152,17 +154,18 @@ class vehiclesDao {
     try {
       const { vehicle_id } = req.params;
 
-      const vehicle = await vehicles.findByPk(vehicle_id);
-      if (!vehicle) {
-        return res.status(404).json({
+      const [deleted] = await vehicles.update(
+        { active: 'N' },
+        { where: { vehicle_id } }
+      );
+
+      if (deleted === 0) {
+        return res.json({
           success: false,
           data: [],
-          message: "Vehicle not found",
+          message: "No vehicle was deleted",
         });
       }
-
-      vehicle.active = 'N';
-      await vehicle.save();
 
       res.status(200).json({
         success: true,
@@ -173,6 +176,7 @@ class vehiclesDao {
       return next(error);
     }
   };
+
 }
 
 module.exports = vehiclesDao;

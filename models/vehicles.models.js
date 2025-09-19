@@ -17,18 +17,6 @@ const vehicles = sequelize.define(
         key: "vehicle_type_id",
       },
     },
-    // vehicle_type: {
-    //   type: DataTypes.ENUM(
-    //     "car",
-    //     "motorcycle",
-    //     "truck",
-    //     "bus",
-    //     "van",
-    //     "construction vehicle",
-    //     "other"
-    //   ),
-    //   allowNull: false,
-    // },
     brand: {
       type: DataTypes.STRING,
       allowNull: false,
