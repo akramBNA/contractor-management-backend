@@ -136,7 +136,7 @@ class vehiclesDao {
 
   async updateVehicle(req, res, next) {
     try {
-      const { vehicle_id } = req.params;
+      const { id } = req.params;
 
       const {
         vehicle_type_id,
@@ -162,7 +162,7 @@ class vehiclesDao {
           insurance_number,
           active,
         },
-        { where: { vehicle_id } }
+        { where: { vehicle_id: id } }
       );
 
         if (updated === 0) {
@@ -185,11 +185,11 @@ class vehiclesDao {
 
   async deleteVehicle(req, res, next) {
     try {
-      const { vehicle_id } = req.params;
+      const { id } = req.params;
 
       const [deleted] = await vehicles.update(
         { active: 'N' },
-        { where: { vehicle_id } }
+        { where: { vehicle_id: id } }
       );
 
       if (deleted === 0) {
