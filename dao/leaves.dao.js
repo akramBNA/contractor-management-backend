@@ -93,8 +93,7 @@ class leavesDao {
       if (!employee_id || !leave_type_id || !start_date || !end_date) {
         return res.json({
           success: false,
-          message:
-            "Missing required fields: employee_id, leave_type_id, start_date, end_date",
+          message:"Missing required fields: employee_id, leave_type_id, start_date, end_date",
         });
       }
       const start = new Date(`${start_date}T00:00:00`);
@@ -148,8 +147,7 @@ class leavesDao {
       if (adjustedLeaveDays <= 0) {
         return res.json({
           success: false,
-          message:
-            "All selected days are holidays or weekends. Leave duration must include valid weekdays.",
+          message:"All selected days are holidays or weekends. Leave duration must include valid weekdays.",
         });
       }
 
