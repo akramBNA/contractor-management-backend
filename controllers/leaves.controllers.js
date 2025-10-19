@@ -26,5 +26,8 @@ module.exports = {
   },
   getLeaveBalanceByEmployeeId: function (req, res, next) {
     leaves_instance.getLeaveBalanceByEmployeeId(req, res, next);
-  }
+  },
+  rejectExpiredLeaves: function (req, res, next) {
+    leaves_instance.rejectExpiredLeaves(req, res, next);
+  },
 };
