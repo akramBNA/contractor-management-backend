@@ -22,3 +22,13 @@ cron.schedule("0 0 1 1 *", async () => {
   }
 });
 
+cron.schedule("0 0 * * *", async () => {
+  try {
+    console.log("-- Cron job started: Rejecting expired leaves...");
+    leavesControllers.rejectExpiredLeaves();
+    console.log("-- Cron job finished successfully!");
+  } catch (error) {
+    console.error("-- Failed to run this job!", error);
+  }
+});
+

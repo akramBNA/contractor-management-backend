@@ -185,7 +185,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
 
   async getAllLeavesById(req, res, next) {
     try {
@@ -276,7 +276,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
 
   async acceptLeaves(req, res, next) {
     try {
@@ -334,7 +334,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
 
   async rejectLeaves(req, res, next) {
     try {
@@ -370,7 +370,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
 
   async deleteLeaves(req, res, next) {
     try {
@@ -404,7 +404,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
 
   async resetEmployeeCreditLeave(req, res, next) {
     try {
@@ -438,7 +438,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
 
   async getLeaveBalanceByEmployeeId(req, res, next) {
     try {
@@ -476,7 +476,36 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
+
+  async rejectExpiredLeaves(req, res, next) {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const expiredLeaves = await leaves.findAll({
+        where: {
+          end_date: { [Op.lt]: today },
+          status: 'Pending',
+          active: 'Y',
+        },
+      });
+
+      for (const leave of expiredLeaves) {
+        leave.status = 'Rejected';
+        await leave.save();
+      }
+
+      if (expiredLeaves.length > 0) {
+        const io = getIO();
+        io.emit('leavesUpdated', { message: 'Expired leaves have been rejected.' });
+      }
+
+    } catch (error) {
+      console.error("Error rejecting expired leaves:", error);
+    }
+  };
+
 }
 
 module.exports = leavesDao;
