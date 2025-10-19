@@ -94,6 +94,8 @@ router.put("/leaves/acceptLeaves/:params", authenticateToken, leaves_controller.
 router.put("/leaves/rejectLeaves/:params", authenticateToken, leaves_controller.rejectLeaves);
 router.put("/leaves/deleteLeaves/:params", authenticateToken, leaves_controller.deleteLeaves);
 router.get("/leaves/getLeaveBalanceByEmployeeId/:params", authenticateToken, leaves_controller.getLeaveBalanceByEmployeeId);
+// router.put("/leaves/resetEmployeeCreditLeave/:params", authenticateToken, leaves_controller.resetEmployeeCreditLeave);
+router.put("/leaves/rejectExpiredLeaves/", authenticateToken, leaves_controller.rejectExpiredLeaves);
 
 // LEAVE TYPES ROUTES
 router.get("/leave_types/getAllLeaveTypes/", authenticateToken, leave_types_controller.getAllLeaveTypes);
