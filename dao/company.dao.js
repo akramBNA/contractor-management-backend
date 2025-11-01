@@ -25,7 +25,54 @@ class companyDao {
         }
     };
 
-    async addCompanyInformations(req, res, next) {};
+    async addCompanyInformations(req, res, next) {
+        try {
+            const {
+                company_name,
+                company_activity_field,
+                company_representative_id,
+                company_tax_id,
+                company_ss_id,
+                company_establishment_year,
+                active
+            } = req.body;
+
+            if (
+                !company_name ||
+                !company_activity_field ||
+                !company_representative_id ||
+                !company_tax_id ||
+                !company_ss_id ||
+                !company_establishment_year
+            ) {
+                return res.json({
+                    success: false,
+                    data: [],
+                    message: "All required fields must be provided",
+                });
+            }
+
+            const newCompany = await company.create({
+                company_name,
+                company_activity_field,
+                company_representative_id,
+                company_tax_id,
+                company_ss_id,
+                company_establishment_year,
+            });
+
+            res.status(201).json({
+                success: true,
+                data: newCompany,
+                message: "Company added successfully",
+            });
+
+        } catch (error) {
+            console.error("Error adding company:", error);
+            return next(error);
+        }
+    };
+
 }
 
 module.exports = companyDao;

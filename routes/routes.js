@@ -110,6 +110,7 @@ router.get("/company_configs/getCompanyConfigs/", authenticateToken, company_con
 
 // COMPANY ROUTES
 router.get("/company/getCompanyInformations/", authenticateToken, company_controller.getCompanyInformations);
+router.post("/company/addCompanyInformations/", authenticateToken, company_controller.addCompanyInformations);
 
 // VEHICLES ROUTES
 router.get("/vehicles/getAllVehicles/:params", authenticateToken, vehicles_controller.getAllVehicles);
