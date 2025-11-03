@@ -15,6 +15,28 @@ class leavesDao {
       const limit = params.limit || 20;
       const offset = params.offset || 0;
 
+      const leave_count_query = `select count(*) as total from leaves where active = 'Y'`;
+      const leave_count_data = await leaves.sequelize.query(
+        leave_count_query,
+        {
+          type: leaves.sequelize.QueryTypes.SELECT,
+        }
+      );
+      const total = parseInt(leave_count_data[0]?.total || 0);
+
+      if (total === 0) {
+        return res.json({
+          success: true,
+          data: [],
+          attributes: {
+            total: 0,
+            limit: limit,
+            offset: offset,
+          },
+          message: "No leaves found",
+        });
+      };
+
       const get_all_leaves_query = `select e.employee_id,
                                       l.leave_id,
                                       e.employee_name,
@@ -48,7 +70,7 @@ class leavesDao {
           success: true,
           data: get_all_leaves_data,
           attributes: {
-            total: get_all_leaves_data.length,
+            total: total,
             limit: limit,
             offset: offset,
           },
