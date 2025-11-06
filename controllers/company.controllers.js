@@ -10,4 +10,7 @@ module.exports = {
     addCompanyInformations: function (req, res, next) {
         company_instance.addCompanyInformations(req, res, next);
     },
+    updateCompanyInformations: function (req, res, next) {
+        company_instance.updateCompanyInformations(req, res, next);
+    },
 };
