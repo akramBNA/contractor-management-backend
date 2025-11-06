@@ -1,27 +1,49 @@
-const company  = require("../models/company.models");
+const {company, sequelize: companySequelize }  = require("../models/company.models");
 
 class companyDao {
     async getCompanyInformations(req, res, next) {
         try {
-            const get_company_data = await company.findAll({
-                where: { active: "Y" }
-            });
+        const sql = `
+            SELECT 
+            company.company_id,
+            company.company_name,
+            company.company_activity_field,
+            company.company_representative_id,
+            company.company_tax_id,
+            company.company_ss_id,
+            company.company_establishment_year,
+            company.active,
+            employees.employee_id,
+            employees.employee_name,
+            employees.employee_lastname
+            FROM company
+            LEFT JOIN employees
+            ON company.company_representative_id = employees.employee_id
+            WHERE company.active = 'Y' AND employees.active = 'Y'
+            LIMIT 1;
+        `;
 
-            if (get_company_data && get_company_data.length > 0) {
-                res.status(200).json({
-                    success: true,
-                    data: get_company_data[0],
-                    message: "Data retrieved successfully",
-                });
-            } else {
-                res.json({
-                    success: false,
-                    data: [],
-                    message: "No data found",
-                });
-            }
+        const [result] = await company.sequelize.query(sql, {
+            type: company.sequelize.QueryTypes.SELECT,
+        });
+        
+        if (result) {
+            res.status(200).json({
+            success: true,
+            data: result,
+            message: "Data retrieved successfully",
+            });
+        } else {
+            res.json({
+            success: false,
+            data: [],
+            message: "No data found",
+            });
+        }
+
         } catch (error) {
-            return next(error);
+        console.error("Error retrieving company data:", error);
+        return next(error);
         }
     };
 
@@ -98,7 +120,7 @@ class companyDao {
                     where: { company_id: company_id }
                 }
             );
-
+            
             if (updated)    {
                 const updatedCompany = await company.findOne({ where: { company_id: company_id } });
                 res.status(200).json({

@@ -47,5 +47,5 @@ const company = sequelize.define(
 );
 
 
-module.exports= company
+module.exports= {company, sequelize}
 
