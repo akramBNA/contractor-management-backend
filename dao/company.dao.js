@@ -10,7 +10,7 @@ class companyDao {
             if (get_company_data && get_company_data.length > 0) {
                 res.status(200).json({
                     success: true,
-                    data: get_company_data,
+                    data: get_company_data[0],
                     message: "Data retrieved successfully",
                 });
             } else {
