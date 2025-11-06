@@ -73,6 +73,53 @@ class companyDao {
         }
     };
 
+    async updateCompanyInformations(req, res, next) {
+        try {
+            const {company_id, company_name, company_activity_field, company_representative_id, company_tax_id, company_ss_id, company_establishment_year } = req.body;
+
+            if ( !company_id || !company_name || !company_activity_field || !company_representative_id || !company_tax_id || !company_ss_id || !company_establishment_year) {
+                return res.json({
+                    success: false,
+                    data: [],
+                    message: "All required fields must be provided",
+                });
+            }
+
+            const [updated] = await company.update(
+                {
+                    company_name,
+                    company_activity_field,
+                    company_representative_id,
+                    company_tax_id,
+                    company_ss_id,
+                    company_establishment_year,
+                },
+                {
+                    where: { company_id: company_id }
+                }
+            );
+
+            if (updated)    {
+                const updatedCompany = await company.findOne({ where: { company_id: company_id } });
+                res.status(200).json({
+                    success: true,
+                    data: updatedCompany,
+                    message: "Company updated successfully",
+                });
+            } else {
+                res.json({
+                    success: false,
+                    data: [],
+                    message: "Company not found",
+                });
+            }
+
+        } catch (error) {
+            console.error("Error updating company:", error);
+            return next(error);
+        }
+    };
+
 }
 
 module.exports = companyDao;
