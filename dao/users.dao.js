@@ -22,16 +22,10 @@ class usersDao {
       };
 
       if (keyword) {
-        searchCondition = `AND (
-          LOWER(users.user_name) ILIKE :keyword
-        )`;
+        searchCondition = `AND LOWER(users.user_name) ILIKE :keyword`;
         replacements.keyword = `${keyword}%`;
       }
-      /*
-       OR
-          LOWER(users.user_lastname) ILIKE :keyword OR
-          LOWER(users.user_email) ILIKE :keyword
-      */
+
       const countQuery = `
         SELECT COUNT(*) AS total
         FROM users 
