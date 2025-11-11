@@ -4,6 +4,8 @@ const { holidays } = require("../models/holidays.models");
 const { Op } = require("sequelize");
 const { getIO } = require("../socket");
 
+const notifications = require("../models/notifications.models");
+
 
 
 class leavesDao {
@@ -197,6 +199,21 @@ class leavesDao {
         end_date: end,
         duration: adjustedLeaveDays,
         status: "Pending",
+      });
+
+      const io = getIO();
+
+      await notifications.create({
+        sender_id: employee_id,
+        receiver_id: null,
+        message: `L'employé ${employee.employee_name} a demandé un congé.`,
+        type: "leave_request",
+      });
+
+      io.to("admin").emit("new-notification", {
+        message: `L'employé ${employee.employee_name} a demandé un congé.`,
+        type: "leave_request",
+        created_at: new Date(),
       });
 
       return res.status(200).json({
