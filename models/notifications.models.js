@@ -4,7 +4,7 @@ const { sequelize } = require("../database/database.js");
 const notifications = sequelize.define(
   "notifications",
   {
-    id: {
+    notification_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
