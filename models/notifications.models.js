@@ -11,11 +11,11 @@ const notifications = sequelize.define(
     },
     sender_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
     },
     receiver_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
     },
     message: {
       type: DataTypes.STRING,
