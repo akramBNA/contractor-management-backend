@@ -4,7 +4,7 @@ const { holidays } = require("../models/holidays.models");
 const { Op } = require("sequelize");
 const { getIO } = require("../socket");
 
-const notifications = require("../models/notifications.models");
+const {notifications} = require("../models/notifications.models");
 
 
 
@@ -205,12 +205,12 @@ class leavesDao {
 
       await notifications.create({
         sender_id: employee_id,
-        receiver_id: null,
+        receiver_id: 1,
         message: `L'employé ${employee.employee_name} a demandé un congé.`,
         type: "leave_request",
       });
 
-      io.to("admin").emit("new-notification", {
+      io.to("super_admin").emit("new-notification", {
         message: `L'employé ${employee.employee_name} a demandé un congé.`,
         type: "leave_request",
         created_at: new Date(),
