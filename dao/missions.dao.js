@@ -43,7 +43,7 @@ class missionsDao {
         type: missions.sequelize.QueryTypes.SELECT,
       });
 
-      const get_all_completed_missions_query = `SELECT COUNT(*) FROM missions WHERE end_at <= CURRENT_DATE`;
+      const get_all_completed_missions_query = `SELECT COUNT(*) FROM missions WHERE end_at <= CURRENT_DATE AND active='Y'`;
       const get_all_completed_missions_data = await missions.sequelize.query(get_all_completed_missions_query, {
         type: missions.sequelize.QueryTypes.SELECT,
       });
