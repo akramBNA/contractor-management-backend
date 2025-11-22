@@ -366,6 +366,15 @@ class leavesDao {
         { where: { employee_id } }
       );
 
+      const socketId = onlineUsers[employee_id];
+      if (socketId) {
+        io.to(socketId).emit("leave_status_update", {
+          type: "approved",
+          message: "Votre congé a été approuvé",
+          leave_id,
+        });
+      };
+
       return res.status(200).json({
         success: true,
         message: "Leave request approved successfully",
@@ -400,6 +409,15 @@ class leavesDao {
 
       leave.status = "Rejected";
       await leave.save();
+
+      const socketId = onlineUsers[employee_id];
+      if (socketId) {
+        io.to(socketId).emit("leave_status_update", {
+          type: "rejected",
+          message: "Votre congé a été rejeté",
+          leave_id,
+        });
+      }
 
       res.status(200).json({
         success: true,
