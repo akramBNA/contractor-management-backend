@@ -24,6 +24,7 @@ const holidays_controller = require("../controllers/holidays.controllers");
 const company_configs_controller = require('../controllers/company_configs.controllers');
 const vehicles_controller = require("../controllers/vehicles.controllers");
 const vehicle_types_controller = require("../controllers/vehicle_types.controllers");
+const hr_stats_controller = require("../controllers/hr_stats.controllers");
 
 
 // USERS ROUTES.
@@ -123,5 +124,8 @@ router.get("/vehicles/getVehicleById/:id", authenticateToken, vehicles_controlle
 // VEHICLE TYPES ROUTES
 router.get("/vehicle_types/getAllVehicleTypes/", authenticateToken, vehicle_types_controller.getAllVehicleTypes);
 router.post("/vehicle_types/addVehicleType/", authenticateToken, vehicle_types_controller.addVehicleType);
+
+// HR STATS ROUTES
+router.get("/hr_stats/getAllEmployeesBirthdays/", authenticateToken, hr_stats_controller.getAllEmployeesBirthdays);
 
 module.exports = router;
