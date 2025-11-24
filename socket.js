@@ -1,6 +1,8 @@
 const { Server } = require("socket.io");
 
 let io;
+global.onlineUsers = {};
+
 
 function initSocket(server) {
   io = new Server(server, {
@@ -11,16 +13,21 @@ function initSocket(server) {
   });
 
   io.on("connection", (socket) => {
-    console.log("🔌 New client connected:", socket.id);
+    console.log("client connected:", socket.id);
 
-    socket.on("register", ({ userId, role }) => {
-      socket.join(role);
-      socket.join(`user_${userId}`);
-      console.log(`✅ ${role} registered with ID ${userId}`);
+    socket.on("register", (userId) => {
+      onlineUsers[userId] = socket.id;
+      console.log("user registered:", userId, socket.id);
     });
 
     socket.on("disconnect", () => {
-      console.log("❌ Client disconnected:", socket.id);
+      for (const userId in onlineUsers) {
+        if (onlineUsers[userId] === socket.id) {
+          delete onlineUsers[userId];
+          break;
+        }
+      }
+      console.log("client disconnected:", socket.id);
     });
   });
 }
