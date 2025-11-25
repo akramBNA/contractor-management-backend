@@ -2,7 +2,7 @@ const { employees, sequelize: employeesSequelize } = require("../models/employee
 
 class hr_statsDao {
 
- async getAllEmployeesBirthdaysForThisMonth(req, res, next) {
+ async hrStatistics(req, res, next) {
     try {
       const currentMonth = new Date().getMonth() + 1;
 

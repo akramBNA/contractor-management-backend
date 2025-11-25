@@ -126,6 +126,6 @@ router.get("/vehicle_types/getAllVehicleTypes/", authenticateToken, vehicle_type
 router.post("/vehicle_types/addVehicleType/", authenticateToken, vehicle_types_controller.addVehicleType);
 
 // HR STATS ROUTES
-router.get("/hr_stats/getAllEmployeesBirthdays/", authenticateToken, hr_stats_controller.getAllEmployeesBirthdaysForThisMonth);
+router.get("/hr_stats/getAllEmployeesBirthdays/", authenticateToken, hr_stats_controller.hrStatistics);
 
 module.exports = router;
