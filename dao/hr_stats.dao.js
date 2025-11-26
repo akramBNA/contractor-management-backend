@@ -35,14 +35,40 @@ class hr_statsDao {
         }
       );
 
+      const ongoingLeavesQuery = `
+        SELECT 
+            l.leave_id,
+            l.employee_id,
+            e.employee_name,
+            e.employee_lastname,
+            lt.leave_type_name,
+            l.start_date,
+            l.end_date
+        FROM leaves l
+        JOIN employees e ON e.employee_id = l.employee_id
+        JOIN leave_types lt ON lt.leave_type_id = l.leave_type_id
+        WHERE l.status = 'Approved'
+          AND l.active = 'Y'
+          AND e.active = 'Y'
+          AND l.start_date <= CURRENT_DATE
+          AND l.end_date >= CURRENT_DATE
+        ORDER BY l.start_date ASC`;
+
+      const ongoingLeaves = await employees.sequelize.query(
+        ongoingLeavesQuery,
+        { type: employees.sequelize.QueryTypes.SELECT }
+      );
+
       res.status(200).json({
         success: true,
         data: {
           birthdaysData: birthdaysData,
           genderDistributionData: genderDistributionData[0],
+          ongoingLeaves: ongoingLeaves,
         },
         message: "HR Stats retrieved successfully",
       });
+
     } catch (error) {
       return next(error);
     }
