@@ -73,6 +73,33 @@ class hr_statsDao {
       return next(error);
     }
   };
+
+  async hrMetrics(req, res, next) {
+    try {
+      const totalEmployeesQuery = `SELECT COUNT(*) AS total_employees
+                                   FROM employees
+                                   WHERE active = 'Y'`;
+
+      const totalEmployeesData = await employees.sequelize.query(totalEmployeesQuery,
+        {
+          type: employees.sequelize.QueryTypes.SELECT,
+        }
+      );
+
+      const totalEmployees = totalEmployeesData[0].total_employees;
+
+      res.status(200).json({
+        success: true,
+        data: {
+          totalEmployees: totalEmployees,
+        },
+        message: "HR Metrics retrieved successfully",
+      });
+
+    } catch (error) {
+      return next(error);
+    }
+  };
 }
 
 module.exports = hr_statsDao;
