@@ -100,5 +100,6 @@ class hr_statsDao {
       return next(error);
     }
   };
+}
 
 module.exports = hr_statsDao;
