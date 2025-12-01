@@ -6,4 +6,8 @@ module.exports = {
   hrStatistics: function (req, res, next) {
     hr_stats_instance.hrStatistics(req, res, next);
   },
+
+  hrMetrics: function (req, res, next) {
+    hr_stats_instance.hrMetrics(req, res, next);
+  },
 };
