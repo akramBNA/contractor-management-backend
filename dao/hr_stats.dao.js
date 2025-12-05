@@ -64,7 +64,7 @@ class hr_statsDao {
                                             m.priority,
                                             m.expenses
                                         FROM missions m
-                                        WHERE active='Y' and EXTRACT (MONTH FROM m.end_at ) = 7
+                                        WHERE active='Y' and EXTRACT (MONTH FROM m.end_at ) = :currentMonth
                                         ORDER BY m.mission_id ASC`;
                                           
       const missions_this_month_data = await employees.sequelize.query(
