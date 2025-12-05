@@ -3,7 +3,7 @@ const {
   sequelize: employeesSequelize,
 } = require("../models/employees.models");
 
-const { missions, sequelize} = require("../models/missions.models");
+const { missions } = require("../models/missions.models");
 
 class hr_statsDao {
   async hrStatistics(req, res, next) {
@@ -67,17 +67,21 @@ class hr_statsDao {
                                         WHERE active='Y' and EXTRACT (MONTH FROM m.end_at ) = :currentMonth
                                         ORDER BY m.mission_id ASC`;
                                           
-      const missions_this_month_data = await employees.sequelize.query(
+      const missions_this_month_data = await missions.sequelize.query(
         missions_this_month_query,
-        { type: missions.sequelize.QueryTypes.SELECT }
+        {
+          replacements: { currentMonth },
+          type: missions.sequelize.QueryTypes.SELECT,
+        }
       );
-
+            
       res.status(200).json({
         success: true,
         data: {
           birthdaysData: birthdaysData,
           genderDistributionData: genderDistributionData[0],
           ongoingLeaves: ongoingLeaves,
+          missionsThisMonth: missions_this_month_data,
         },
         message: "HR Stats retrieved successfully",
       });
