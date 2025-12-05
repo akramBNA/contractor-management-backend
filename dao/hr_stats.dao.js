@@ -3,6 +3,8 @@ const {
   sequelize: employeesSequelize,
 } = require("../models/employees.models");
 
+const { missions, sequelize} = require("../models/missions.models");
+
 class hr_statsDao {
   async hrStatistics(req, res, next) {
     try {
@@ -49,13 +51,25 @@ class hr_statsDao {
                                   WHERE l.status = 'Approved'
                                     AND l.active = 'Y'
                                     AND e.active = 'Y'
-                                    AND l.start_date <= CURRENT_DATE
+                                    AND l.start_date <= CURRENT_DATE  
                                     AND l.end_date >= CURRENT_DATE
                                   ORDER BY l.start_date ASC`;
 
       const ongoingLeaves = await employees.sequelize.query(
         ongoingLeavesQuery,
         { type: employees.sequelize.QueryTypes.SELECT }
+      );
+
+      const missions_this_month_query = `SELECT m.mission_name,
+                                            m.priority,
+                                            m.expenses
+                                        FROM missions m
+                                        WHERE active='Y' and EXTRACT (MONTH FROM m.end_at ) = 7
+                                        ORDER BY m.mission_id ASC`;
+                                          
+      const missions_this_month_data = await employees.sequelize.query(
+        missions_this_month_query,
+        { type: missions.sequelize.QueryTypes.SELECT }
       );
 
       res.status(200).json({
