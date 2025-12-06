@@ -88,12 +88,16 @@ class holidaysDao {
 
   async updateHoliday(req, res, next) {
     try {
-      const { holiday_id } = req.params;
-      const { holiday_name, holiday_date } = req.body;
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const  holiday_id  = params.holiday_id;
+      const { holiday_name, holiday_date } = req.body;      
 
       if (!holiday_id || isNaN(holiday_id)) {
-        return res.status(400).json({
+        return res.json({
           success: false,
+          data: [],
           message: "Invalid holiday ID",
         });
       }
