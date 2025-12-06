@@ -58,7 +58,7 @@ class holidaysDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
 
   async addHoliday(req, res, next) {
     try {
@@ -84,7 +84,59 @@ class holidaysDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
+
+  async updateHoliday(req, res, next) {
+    try {
+      const { holiday_id } = req.params;
+      const { holiday_name, holiday_date } = req.body;
+
+      if (!holiday_id || isNaN(holiday_id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid holiday ID",
+        });
+      }
+
+      const updateData = {};
+      if (holiday_name && holiday_name.trim()) updateData.holiday_name = holiday_name.trim();
+      if (holiday_date && holiday_date.trim()) updateData.holiday_date = holiday_date;
+
+      if (Object.keys(updateData).length === 0) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "No valid fields to update",
+        });
+      }
+
+      const [updated] = await holidays.update(updateData, {
+        where: { holiday_id, active: "Y" },
+      });
+
+      if (!updated) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "Holiday not found or no update performed",
+        });
+      }
+
+      const updatedHoliday = await holidays.findOne({
+        where: { holiday_id },
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: updatedHoliday,
+        message: "Holiday updated successfully",
+      });
+
+    } catch (error) {
+      return next(error);
+    }
+  };
+
 }
 
 module.exports = holidaysDao;
