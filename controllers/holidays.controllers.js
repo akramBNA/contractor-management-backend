@@ -12,4 +12,7 @@ module.exports = {
   updateHoliday: function (req, res, next) {   
     holidays_instance.updateHoliday(req, res, next);
   },
+  deleteHoliday: function (req, res, next) {   
+    holidays_instance.deleteHoliday(req, res, next);
+  },
 };
