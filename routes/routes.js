@@ -106,6 +106,7 @@ router.post("/leave_types/addLeaveType/", authenticateToken, leave_types_control
 router.get("/holidays/getAllHolidaysByYear/:params", authenticateToken, holidays_controller.getAllHolidaysByYear);
 router.post("/holidays/addHoliday/", authenticateToken, holidays_controller.addHoliday);
 router.put("/holidays/updateHoliday/:params", authenticateToken, holidays_controller.updateHoliday);
+router.delete("/holidays/deleteHoliday/:params", authenticateToken, holidays_controller.deleteHoliday);
 
 // COMPANY CONFIGS ROUTES
 router.get("/company_configs/getCompanyConfigs/", authenticateToken, company_configs_controller.getCompanyConfigs);
