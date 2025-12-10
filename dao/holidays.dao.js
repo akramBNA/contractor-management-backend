@@ -141,6 +141,44 @@ class holidaysDao {
     }
   };
 
+  async deleteHoliday(req, res, next) {
+    try {
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const holiday_id = params.holiday_id;
+
+      if (!holiday_id || isNaN(holiday_id)) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "Invalid holiday ID",
+        });
+      }
+
+      const [deleted] = await holidays.update(
+        { active: "N" },
+        { where: { holiday_id } }
+      );
+
+      if (!deleted) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "Holiday not found or already deleted",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: [],
+        message: "Holiday deleted successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
+
 }
 
 module.exports = holidaysDao;
