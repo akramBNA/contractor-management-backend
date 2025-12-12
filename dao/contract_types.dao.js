@@ -26,7 +26,35 @@ class contract_typesDao {
     } catch (error) {
       return next(error);
     }
-  }
+  };
+
+  async addContractType(req, res, next) {
+    try {
+      const { contract_type_name, description } = req.body;
+
+      const new_contract_type = await contract_types.create({
+        contract_type_name,
+        description,
+        active: 'Y',
+      });
+
+      if (!new_contract_type || !new_contract_type.contract_type_id) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "Failed to add contract type",
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        data: new_contract_type,
+        message: "Contract type added successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
 }
 
 module.exports = contract_typesDao;
