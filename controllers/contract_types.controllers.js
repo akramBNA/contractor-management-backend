@@ -6,4 +6,8 @@ module.exports = {
     getAllContractTypes: function (req, res, next) {
     contract_types_instance.getAllContractTypes(req, res, next);
   },
+
+  addContractType: function (req, res, next) {
+    contract_types_instance.addContractType(req, res, next);
+  },
 };
