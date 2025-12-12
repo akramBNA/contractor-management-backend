@@ -56,6 +56,7 @@ router.get("/contracts/getAllContracts/", authenticateToken, contracts_controler
 
 // CONTRACT TYPES ROUTES
 router.get("/contract_types/getAllContractTypes/", authenticateToken, contract_types_controller.getAllContractTypes);
+router.post("/contract_types/addContractType/", authenticateToken, contract_types_controller.addContractType);
 
 // EMPLOYEE BANK DETAILS ROUTES
 router.get("/employee_bank_details/getAllEmployeeBankDetails/", authenticateToken, employee_bank_details_controller.getAllEmployeeBankDetails);
