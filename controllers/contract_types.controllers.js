@@ -10,4 +10,8 @@ module.exports = {
   addContractType: function (req, res, next) {
     contract_types_instance.addContractType(req, res, next);
   },
+
+  updateContractType: function (req, res, next) {
+    contract_types_instance.updateContractType(req, res, next);
+  },
 };
