@@ -55,6 +55,36 @@ class contract_typesDao {
       return next(error);
     }
   };
+
+  async updateContractType(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { contract_type_name, description, active } = req.body;
+
+      const contract_type_to_update = await contract_types.findByPk(id);
+      if (!contract_type_to_update) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "Contract type not found",
+        });
+      }
+
+      contract_type_to_update.contract_type_name = contract_type_name;
+      contract_type_to_update.description = description;
+      contract_type_to_update.active = active;
+
+      await contract_type_to_update.save();
+
+      res.status(200).json({
+        success: true,
+        data: contract_type_to_update,
+        message: "Contract type updated successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
 }
 
 module.exports = contract_typesDao;
