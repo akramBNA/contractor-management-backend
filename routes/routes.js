@@ -58,6 +58,7 @@ router.get("/contracts/getAllContracts/", authenticateToken, contracts_controler
 router.get("/contract_types/getAllContractTypes/", authenticateToken, contract_types_controller.getAllContractTypes);
 router.post("/contract_types/addContractType/", authenticateToken, contract_types_controller.addContractType);
 router.put("/contract_types/updateContractType/:params", authenticateToken, contract_types_controller.updateContractType);
+router.delete("/contract_types/deleteContractType/:params", authenticateToken, contract_types_controller.deleteContractType);
 
 // EMPLOYEE BANK DETAILS ROUTES
 router.get("/employee_bank_details/getAllEmployeeBankDetails/", authenticateToken, employee_bank_details_controller.getAllEmployeeBankDetails);
