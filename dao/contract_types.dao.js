@@ -85,6 +85,45 @@ class contract_typesDao {
       return next(error);
     }
   };
+
+  async deleteContractType(req, res, next) {
+    try {
+      const { id } = req.params;
+
+      const contract_type_to_delete = await contract_types.findByPk(id);
+      if (!contract_type_to_delete) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "Contract type not found",
+        });
+      }
+
+      const delete_contract_type_query = `UPDATE active='N' FROM contract_types WHERE contract_type_id = :id`;
+
+      const delete_contract_type_data = await contract_types.sequelize.query(delete_contract_type_query, {
+        replacements: { id: id },
+        type: contract_types.sequelize.QueryTypes.UPDATE,
+      });
+
+      if (!delete_contract_type_data) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "Failed to delete contract type",
+        });
+      } 
+
+      res.status(200).json({
+        success: true,
+        data: [],
+        message: "Contract type deleted successfully",
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
+
 }
 
 module.exports = contract_typesDao;

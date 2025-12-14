@@ -14,4 +14,8 @@ module.exports = {
   updateContractType: function (req, res, next) {
     contract_types_instance.updateContractType(req, res, next);
   },
+  
+  deleteContractType: function (req, res, next) {
+    contract_types_instance.deleteContractType(req, res, next);
+  },
 };
