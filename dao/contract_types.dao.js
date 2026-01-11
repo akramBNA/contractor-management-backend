@@ -57,10 +57,13 @@ class contract_typesDao {
 
   async updateContractType(req, res, next) {
     try {
-      const { id } = req.params;
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
+
+      const contract_type_id = params.contract_type_id;
       const { contract_name, leaves_credit } = req.body;
 
-      const contract_type_to_update = await contract_types.findByPk(id);
+      const contract_type_to_update = await contract_types.findByPk(contract_type_id);
       if (!contract_type_to_update) {
         return res.json({
           success: false,
