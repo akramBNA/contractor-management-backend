@@ -30,12 +30,11 @@ class contract_typesDao {
 
   async addContractType(req, res, next) {
     try {
-      const { contract_type_name, description } = req.body;
+      const { contract_name, leaves_credit } = req.body;
 
       const new_contract_type = await contract_types.create({
-        contract_type_name,
-        description,
-        active: 'Y',
+        contract_name,
+        leaves_credit,
       });
 
       if (!new_contract_type || !new_contract_type.contract_type_id) {
