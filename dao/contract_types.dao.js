@@ -1,4 +1,4 @@
-const contract_types = require("../models/contract_types.models.js");
+const {contract_types} = require("../models/contract_types.models.js");
 
 class contract_typesDao {
   async getAllContractTypes(req, res, next) {
@@ -57,10 +57,13 @@ class contract_typesDao {
 
   async updateContractType(req, res, next) {
     try {
-      const { id } = req.params;
-      const { contract_type_name, description, active } = req.body;
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
 
-      const contract_type_to_update = await contract_types.findByPk(id);
+      const contract_type_id = params.contract_type_id;
+      const { contract_name, leaves_credit } = req.body;
+
+      const contract_type_to_update = await contract_types.findByPk(contract_type_id);
       if (!contract_type_to_update) {
         return res.json({
           success: false,
@@ -69,9 +72,8 @@ class contract_typesDao {
         });
       }
 
-      contract_type_to_update.contract_type_name = contract_type_name;
-      contract_type_to_update.description = description;
-      contract_type_to_update.active = active;
+      contract_type_to_update.contract_name = contract_name;
+      contract_type_to_update.leaves_credit = leaves_credit;
 
       await contract_type_to_update.save();
 
@@ -87,9 +89,12 @@ class contract_typesDao {
 
   async deleteContractType(req, res, next) {
     try {
-      const { id } = req.params;
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
 
-      const contract_type_to_delete = await contract_types.findByPk(id);
+      const contract_type_id = params.contract_type_id;
+
+      const contract_type_to_delete = await contract_types.findByPk(contract_type_id);
       if (!contract_type_to_delete) {
         return res.json({
           success: false,
@@ -98,10 +103,10 @@ class contract_typesDao {
         });
       }
 
-      const delete_contract_type_query = `UPDATE active='N' FROM contract_types WHERE contract_type_id = :id`;
+      const delete_contract_type_query = `UPDATE contract_types SET active='N' WHERE contract_type_id = :contract_type_id`;
 
       const delete_contract_type_data = await contract_types.sequelize.query(delete_contract_type_query, {
-        replacements: { id: id },
+        replacements: { contract_type_id: contract_type_id },
         type: contract_types.sequelize.QueryTypes.UPDATE,
       });
 
