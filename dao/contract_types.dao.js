@@ -89,9 +89,12 @@ class contract_typesDao {
 
   async deleteContractType(req, res, next) {
     try {
-      const { id } = req.params;
+      let params = req.params.params;
+      params = params && params.length ? JSON.parse(params) : {};
 
-      const contract_type_to_delete = await contract_types.findByPk(id);
+      const contract_type_id = params.contract_type_id;
+
+      const contract_type_to_delete = await contract_types.findByPk(contract_type_id);
       if (!contract_type_to_delete) {
         return res.json({
           success: false,
@@ -100,10 +103,10 @@ class contract_typesDao {
         });
       }
 
-      const delete_contract_type_query = `UPDATE active='N' FROM contract_types WHERE contract_type_id = :id`;
+      const delete_contract_type_query = `UPDATE contract_types SET active='N' WHERE contract_type_id = :contract_type_id`;
 
       const delete_contract_type_data = await contract_types.sequelize.query(delete_contract_type_query, {
-        replacements: { id: id },
+        replacements: { contract_type_id: contract_type_id },
         type: contract_types.sequelize.QueryTypes.UPDATE,
       });
 
