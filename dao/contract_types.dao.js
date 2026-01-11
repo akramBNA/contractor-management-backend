@@ -1,4 +1,4 @@
-const contract_types = require("../models/contract_types.models.js");
+const {contract_types} = require("../models/contract_types.models.js");
 
 class contract_typesDao {
   async getAllContractTypes(req, res, next) {
@@ -58,7 +58,7 @@ class contract_typesDao {
   async updateContractType(req, res, next) {
     try {
       const { id } = req.params;
-      const { contract_type_name, description, active } = req.body;
+      const { contract_name, leaves_credit } = req.body;
 
       const contract_type_to_update = await contract_types.findByPk(id);
       if (!contract_type_to_update) {
@@ -69,9 +69,8 @@ class contract_typesDao {
         });
       }
 
-      contract_type_to_update.contract_type_name = contract_type_name;
-      contract_type_to_update.description = description;
-      contract_type_to_update.active = active;
+      contract_type_to_update.contract_name = contract_name;
+      contract_type_to_update.leaves_credit = leaves_credit;
 
       await contract_type_to_update.save();
 
