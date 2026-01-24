@@ -4,7 +4,6 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const { sequelize } = require('./database/database.js');
-// const { sequelize } = require('./database/database_supabase.js');
 
 const Routes = require('./routes/routes.js');
 require('./Cron Jobs/leave_crons.js');
