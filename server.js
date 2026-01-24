@@ -3,9 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
-// const { sequelize } = require('./database/database.js');
-// const { sequelize } = require('./database/database_supabase.js');
-const { sequelize } = require('./database/database_supabase_2.js');
+const { sequelize } = require('./database/database.js');
 
 const Routes = require('./routes/routes.js');
 require('./Cron Jobs/leave_crons.js');
@@ -22,10 +20,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api', Routes);
-
-console.log('DATABASE_URL:', process.env.DATABASE_URL);
-console.log('PGHOST:', process.env.PGHOST);
-console.log('PGDATABASE:', process.env.PGDATABASE);
 
 sequelize.authenticate().then(() => {
     const server = http.createServer(app);
