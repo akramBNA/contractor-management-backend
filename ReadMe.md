@@ -7,5 +7,6 @@
 * NodeJS
 * ExpressJS
 * PostgreSQL
+* CronJobs
 
 ## THE BACKEND IS STILL UNDER DEVELOPMENT !
