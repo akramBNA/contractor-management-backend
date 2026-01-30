@@ -3,10 +3,14 @@ const {contract_types} = require("../models/contract_types.models.js");
 class contract_typesDao {
   async getAllContractTypes(req, res, next) {
     try {
-      const get_all_contract_types_query = "SELECT * FROM contract_types WHERE active='Y' ORDER BY contract_type_id ASC";
+      const { limit = 20, offset = 0, keyword = "" } = req.query;
+      const searchKeyword = keyword ? `${keyword}%` : "%";
+
+      const get_all_contract_types_query = "SELECT * FROM contract_types WHERE active='Y' AND contract_name LIKE :searchKeyword ORDER BY contract_type_id ASC LIMIT :limit OFFSET :offset";
       const get_all_contract_types_data = await contract_types.sequelize.query(
         get_all_contract_types_query,
         {
+          replacements: { searchKeyword, limit, offset },
           type: contract_types.sequelize.QueryTypes.SELECT,
         }
       );
