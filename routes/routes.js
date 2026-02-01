@@ -55,7 +55,7 @@ router.get("/employees/getAllActiveEmployeesNames/", authenticateToken, employee
 router.get("/contracts/getAllContracts/", authenticateToken, contracts_controlers.getAllContracts);
 
 // CONTRACT TYPES ROUTES
-router.get("/contract_types/getAllContractTypes/", authenticateToken, contract_types_controller.getAllContractTypes);
+router.get("/contract_types/getAllContractTypes/:params", authenticateToken, contract_types_controller.getAllContractTypes);
 router.post("/contract_types/addContractType/", authenticateToken, contract_types_controller.addContractType);
 router.put("/contract_types/updateContractType/:params", authenticateToken, contract_types_controller.updateContractType);
 router.delete("/contract_types/deleteContractType/:params", authenticateToken, contract_types_controller.deleteContractType);
