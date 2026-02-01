@@ -10,6 +10,7 @@ class contract_typesDao {
       const offset = params.offset || 0;
       const keyword = params.keyword ? `%${params.keyword}%` : '%%';
       
+      console.log("*********************************** params: ", params);
       
 
       const get_all_contract_types_query = "SELECT * FROM contract_types WHERE active='Y' AND contract_name LIKE :keyword ORDER BY contract_type_id ASC LIMIT :limit OFFSET :offset";
