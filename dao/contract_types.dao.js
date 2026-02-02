@@ -8,10 +8,10 @@ class contract_typesDao {
 
       const limit = params.limit || 20;
       const offset = params.offset || 0;
-      const keyword = params.keyword ? `%${params.keyword}%` : '%%';
+      const keyword = params.keyword ? `${params.keyword}%` : '%';
           
 
-      const get_all_contract_types_query = "SELECT * FROM contract_types WHERE active='Y' AND contract_name LIKE :keyword ORDER BY contract_type_id ASC LIMIT :limit OFFSET :offset";
+      const get_all_contract_types_query = "SELECT * FROM contract_types WHERE active='Y' AND contract_name ILIKE :keyword ORDER BY contract_type_id ASC LIMIT :limit OFFSET :offset";
       const get_all_contract_types_data = await contract_types.sequelize.query(
         get_all_contract_types_query,
         {
