@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const cron = require("node-cron");
 const employeesControllers = require("../controllers/employees.controlers");
 const leavesControllers = require("../controllers/leaves.controllers");
