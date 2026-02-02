@@ -6,7 +6,7 @@ const http = require('http');
 const { sequelize } = require('./database/database.js');
 
 const Routes = require('./routes/routes.js');
-require('./Cron Jobs/leave_crons.js');
+require('./CronJobs/leave_crons.js');
 const { initSocket } = require("./socket");
 
 const app = express();
