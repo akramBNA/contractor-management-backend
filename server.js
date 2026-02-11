@@ -4,11 +4,14 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 // const { sequelize } = require('./database/database.js');
-const { sequelize } = require('./database/database_supa.js');
+// const { sequelize } = require('./database/database_supa.js');
+
+const useSupa = process.env.USE_SUPA === 'true';
+const { sequelize } = useSupa ? require('./database/database_supa') : require('./database/database');
 
 
 const Routes = require('./routes/routes.js');
-// require('./CronJobs/leave_crons.js');
+require('./CronJobs/leave_crons.js');
 const { initSocket } = require("./socket");
 
 const app = express();
