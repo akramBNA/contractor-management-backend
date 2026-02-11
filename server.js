@@ -3,14 +3,16 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
-const { sequelize } = require('./database/database.js');
+// const { sequelize } = require('./database/database.js');
+const { sequelize } = require('./database/database_supa.js');
+
 
 const Routes = require('./routes/routes.js');
-require('./CronJobs/leave_crons.js');
+// require('./CronJobs/leave_crons.js');
 const { initSocket } = require("./socket");
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5443;
 
 app.use(cors());
 app.use(express.json());

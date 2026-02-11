@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
-const { sequelize } = require("../database/database.js");
-
 const { roles } = require("../models/roles.models.js");
+const useSupa = process.env.USE_SUPA === 'true';
+const { sequelize } = useSupa ? require('../database/database_supa') : require('../database/database');
 
 const users = sequelize.define(
   "users",

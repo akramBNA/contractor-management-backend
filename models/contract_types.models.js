@@ -1,5 +1,8 @@
 const { Sequelize, DataTypes } = require("sequelize");
-const { sequelize } = require("../database/database.js");
+// const { sequelize } = require("../database/database.js");
+
+const useSupa = process.env.USE_SUPA === 'true';
+const { sequelize } = useSupa ? require('../database/database_supa') : require('../database/database');
 
 const contract_types = sequelize.define(
   "contract_types",
