@@ -3,7 +3,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
-const { sequelize } = require('./database/database.js');
+// const { sequelize } = require('./database/database.js');
+const { sequelize } = require('./database/database_supa.js');
+
 
 const Routes = require('./routes/routes.js');
 require('./CronJobs/leave_crons.js');
