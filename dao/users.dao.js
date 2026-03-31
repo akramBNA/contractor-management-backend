@@ -110,6 +110,7 @@ class usersDao {
         user_lastname,
         user_email,
         user_password,
+        user_role_id,
       } = req.body;
       
       if (!user_name || !user_lastname || !user_email || !user_password) {
