@@ -112,7 +112,7 @@ class usersDao {
         user_password,
         user_role_id,
       } = req.body;
-
+      
       const existingUser = await users.findOne({
         where: { user_email },
       });
@@ -125,14 +125,6 @@ class usersDao {
       }
 
       const hashedPassword = await bcrypt.hash(user_password, 10);
-
-      console.log("data", {
-        user_name,
-        user_lastname,
-        user_email,
-        user_password: hashedPassword,
-        user_role_id,
-      });
 
       const newUser = await users.create({
         user_name,
