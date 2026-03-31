@@ -110,8 +110,14 @@ class usersDao {
         user_lastname,
         user_email,
         user_password,
-        user_role_id,
       } = req.body;
+      
+      if (!user_name || !user_lastname || !user_email || !user_password) {
+        return res.status(400).json({
+          success: false,
+          message: "All fields are required",
+        });
+      }
       
       const existingUser = await users.findOne({
         where: { user_email },
