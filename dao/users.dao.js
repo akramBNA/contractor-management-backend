@@ -163,6 +163,13 @@ class usersDao {
     try {
       const { user_email, user_password } = req.body;
 
+      if (!user_email || !user_password) {
+        return res.status(400).json({
+          status: false,
+          message: "Email and password are required",
+        });
+      }
+
       const user = await users.findOne({
         where: {
           user_email,
