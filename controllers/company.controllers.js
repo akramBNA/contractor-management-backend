@@ -13,4 +13,7 @@ module.exports = {
     updateCompanyInformations: function (req, res, next) {
         company_instance.updateCompanyInformations(req, res, next);
     },
+    deleteCompanyInformations: function (req, res, next) {
+        company_instance.deleteCompanyInformations(req, res, next);
+    },
 };
