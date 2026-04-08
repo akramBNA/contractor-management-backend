@@ -1,9 +1,12 @@
-const {company, sequelize: companySequelize }  = require("../models/company.models");
+const {
+  company,
+  sequelize: companySequelize,
+} = require("../models/company.models");
 
 class companyDao {
-    async getCompanyInformations(req, res, next) {
-        try {
-        const sql = `
+  async getCompanyInformations(req, res, next) {
+    try {
+      const sql = `
             SELECT 
             company.company_id,
             company.company_name,
@@ -23,125 +26,175 @@ class companyDao {
             LIMIT 1;
         `;
 
-        const [result] = await company.sequelize.query(sql, {
-            type: company.sequelize.QueryTypes.SELECT,
+      const [result] = await company.sequelize.query(sql, {
+        type: company.sequelize.QueryTypes.SELECT,
+      });
+
+      if (result) {
+        res.status(200).json({
+          success: true,
+          data: result,
+          message: "Data retrieved successfully",
         });
-        
-        if (result) {
-            res.status(200).json({
-            success: true,
-            data: result,
-            message: "Data retrieved successfully",
-            });
-        } else {
-            res.json({
-            success: false,
-            data: [],
-            message: "No data found",
-            });
-        }
+      } else {
+        res.json({
+          success: false,
+          data: [],
+          message: "No data found",
+        });
+      }
+    } catch (error) {
+      console.error("Error retrieving company data:", error);
+      return next(error);
+    }
+  }
 
-        } catch (error) {
-        console.error("Error retrieving company data:", error);
-        return next(error);
-        }
-    };
+  async addCompanyInformations(req, res, next) {
+    try {
+      const {
+        company_name,
+        company_activity_field,
+        company_representative_id,
+        company_tax_id,
+        company_ss_id,
+        company_establishment_year,
+        active,
+      } = req.body;
 
-    async addCompanyInformations(req, res, next) {
-        try {
-            const {
-                company_name,
-                company_activity_field,
-                company_representative_id,
-                company_tax_id,
-                company_ss_id,
-                company_establishment_year,
-                active
-            } = req.body;
+      if (
+        !company_name ||
+        !company_activity_field ||
+        !company_representative_id ||
+        !company_tax_id ||
+        !company_ss_id ||
+        !company_establishment_year
+      ) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "All required fields must be provided",
+        });
+      }
 
-            if (
-                !company_name ||
-                !company_activity_field ||
-                !company_representative_id ||
-                !company_tax_id ||
-                !company_ss_id ||
-                !company_establishment_year
-            ) {
-                return res.json({
-                    success: false,
-                    data: [],
-                    message: "All required fields must be provided",
-                });
-            }
+      const newCompany = await company.create({
+        company_name,
+        company_activity_field,
+        company_representative_id,
+        company_tax_id,
+        company_ss_id,
+        company_establishment_year,
+      });
 
-            const newCompany = await company.create({
-                company_name,
-                company_activity_field,
-                company_representative_id,
-                company_tax_id,
-                company_ss_id,
-                company_establishment_year,
-            });
+      res.status(201).json({
+        success: true,
+        data: newCompany,
+        message: "Company added successfully",
+      });
+    } catch (error) {
+      console.error("Error adding company:", error);
+      return next(error);
+    }
+  }
 
-            res.status(201).json({
-                success: true,
-                data: newCompany,
-                message: "Company added successfully",
-            });
+  async updateCompanyInformations(req, res, next) {
+    try {
+      const {
+        company_id,
+        company_name,
+        company_activity_field,
+        company_representative_id,
+        company_tax_id,
+        company_ss_id,
+        company_establishment_year,
+      } = req.body;
 
-        } catch (error) {
-            console.error("Error adding company:", error);
-            return next(error);
-        }
-    };
+      if (
+        !company_id ||
+        !company_name ||
+        !company_activity_field ||
+        !company_representative_id ||
+        !company_tax_id ||
+        !company_ss_id ||
+        !company_establishment_year
+      ) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "All required fields must be provided",
+        });
+      }
 
-    async updateCompanyInformations(req, res, next) {
-        try {
-            const {company_id, company_name, company_activity_field, company_representative_id, company_tax_id, company_ss_id, company_establishment_year } = req.body;
+      const [updated] = await company.update(
+        {
+          company_name,
+          company_activity_field,
+          company_representative_id,
+          company_tax_id,
+          company_ss_id,
+          company_establishment_year,
+        },
+        {
+          where: { company_id: company_id },
+        },
+      );
 
-            if ( !company_id || !company_name || !company_activity_field || !company_representative_id || !company_tax_id || !company_ss_id || !company_establishment_year) {
-                return res.json({
-                    success: false,
-                    data: [],
-                    message: "All required fields must be provided",
-                });
-            }
+      if (updated) {
+        const updatedCompany = await company.findOne({
+          where: { company_id: company_id },
+        });
+        res.status(200).json({
+          success: true,
+          data: updatedCompany,
+          message: "Company updated successfully",
+        });
+      } else {
+        res.json({
+          success: false,
+          data: [],
+          message: "Company not found",
+        });
+      }
+    } catch (error) {
+      console.error("Error updating company:", error);
+      return next(error);
+    }
+  }
 
-            const [updated] = await company.update(
-                {
-                    company_name,
-                    company_activity_field,
-                    company_representative_id,
-                    company_tax_id,
-                    company_ss_id,
-                    company_establishment_year,
-                },
-                {
-                    where: { company_id: company_id }
-                }
-            );
-            
-            if (updated)    {
-                const updatedCompany = await company.findOne({ where: { company_id: company_id } });
-                res.status(200).json({
-                    success: true,
-                    data: updatedCompany,
-                    message: "Company updated successfully",
-                });
-            } else {
-                res.json({
-                    success: false,
-                    data: [],
-                    message: "Company not found",
-                });
-            }
+  async deleteCompanyInformations(req, res, next) {
+    try {
+      const { company_id } = req.body;
 
-        } catch (error) {
-            console.error("Error updating company:", error);
-            return next(error);
-        }
-    };
+      if (!company_id) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "Company ID must be provided",
+        });
+      }
 
+      const [updated] = await company.update(
+        { active: "N" },
+        { where: { company_id: company_id } },
+      );
+
+      if (updated) {
+        res.status(200).json({
+          success: true,
+          data: [],
+          message: "Company deleted successfully",
+        });
+      } else {
+        res.json({
+          success: false,
+          data: [],
+          message: "Company not found",
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting company:", error);
+      return next(error);
+    }
+  }
 }
 
 module.exports = companyDao;
