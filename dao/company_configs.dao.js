@@ -28,7 +28,42 @@ class company_configsDao {
         } catch(error) {
             return next (error);
         }
-    }
+    };
+
+    async addCompanyConfigs (req, res ,next) {
+        try {   
+            const {
+                company_id,
+                payroll_cycle_start_day,
+                leave_accrual_rate
+            } = req.body;
+
+            const add_company_configs_query =`INSERT INTO company_configs (company_id, payroll_cycle_start_day, leave_accrual_rate) VALUES (${company_id}, ${payroll_cycle_start_day}, ${leave_accrual_rate})`;
+
+            const add_company_configs_data = await company_configs.sequelize.query(add_company_configs_query, 
+                {
+                    type: company_configs.sequelize.QueryTypes.INSERT
+                }
+            );
+
+        if(add_company_configs_data){
+            res.status(200).json({
+                success: true,
+                data: add_company_configs_data,
+                message: 'Data added successfully'
+            })
+        } else {
+            res.json({
+                success: false,
+                data: [],
+                message: 'Failed to add data'
+            })
+        }
+            
+        } catch(error) {
+            return next (error);
+        }
+    };
 }
 
 module.exports = company_configsDao;
