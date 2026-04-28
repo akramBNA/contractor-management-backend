@@ -9,5 +9,8 @@ module.exports = {
     },
     createCompanyConfigs: function (req, res, next){
         company_configs_instance.createCompanyConfigs(req, res, next);
-    }
+    },
+    updateCompanyConfigs: function (req, res, next){
+        company_configs_instance.updateCompanyConfigs(req, res, next);
+    },
 };
