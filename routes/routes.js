@@ -113,6 +113,7 @@ router.delete("/holidays/deleteHoliday/:params", authenticateToken, holidays_con
 
 // COMPANY CONFIGS ROUTES
 router.get("/company_configs/getCompanyConfigs/", authenticateToken, company_configs_controller.getCompanyConfigs);
+router.post("/company_configs/addCompanyConfigs/", authenticateToken, company_configs_controller.createCompanyConfigs);
 
 // COMPANY ROUTES
 router.get("/company/getCompanyInformations/", authenticateToken, company_controller.getCompanyInformations);
