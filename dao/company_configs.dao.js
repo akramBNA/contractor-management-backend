@@ -97,6 +97,44 @@ class company_configsDao {
       return next(error);
     }
   }
+
+  async deleteCompanyConfigs(req, res, next) {
+    try {
+      const { company_config_id } = req.body;
+
+      if (!company_config_id) {
+        return res.json({
+          success: false,
+          data: [],
+          message: "Company Config ID must be provided",
+        });
+      }
+
+      const [updated] = await company_configs.update(
+        { active: "N" },
+        {
+          where: { company_config_id: company_config_id },
+        },
+      );
+
+      if (updated) {
+        res.status(200).json({
+          success: true,
+          data: [],
+          message: "Company Config deleted successfully",
+        });
+      } else {
+        res.json({
+          success: false,
+          data: [],
+          message: "Company Config not found",
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting company config:", error);
+      return next(error);
+    }
+  }
 }
 
 module.exports = company_configsDao;
