@@ -3,7 +3,6 @@ const { Server } = require("socket.io");
 let io;
 global.onlineUsers = {};
 
-
 function initSocket(server) {
   io = new Server(server, {
     cors: {
@@ -15,9 +14,13 @@ function initSocket(server) {
   io.on("connection", (socket) => {
     console.log("client connected:", socket.id);
 
-    socket.on("register", (userId) => {
-      onlineUsers[userId] = socket.id;
-      console.log("user registered:", userId, socket.id);
+    socket.on("register", ({ userId, role }) => {
+      if (!userId) return;
+      global.onlineUsers[userId] = socket.id;
+      if (role === "super_admin" || role === "admin") {
+        socket.join("super_admin");
+      }
+      socket.join(`user_${userId}`);
     });
 
     socket.on("disconnect", () => {
