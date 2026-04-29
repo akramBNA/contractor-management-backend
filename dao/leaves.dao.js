@@ -4,9 +4,7 @@ const { holidays } = require("../models/holidays.models");
 const { Op } = require("sequelize");
 const { getIO } = require("../socket");
 
-const {notifications} = require("../models/notifications.models");
-
-
+const { notifications } = require("../models/notifications.models");
 
 class leavesDao {
   async getAllLeaves(req, res, next) {
@@ -18,12 +16,9 @@ class leavesDao {
       const offset = params.offset || 0;
 
       const leave_count_query = `select count(*) as total from leaves where active = 'Y'`;
-      const leave_count_data = await leaves.sequelize.query(
-        leave_count_query,
-        {
-          type: leaves.sequelize.QueryTypes.SELECT,
-        }
-      );
+      const leave_count_data = await leaves.sequelize.query(leave_count_query, {
+        type: leaves.sequelize.QueryTypes.SELECT,
+      });
       const total = parseInt(leave_count_data[0]?.total || 0);
 
       if (total === 0) {
@@ -37,7 +32,7 @@ class leavesDao {
           },
           message: "No leaves found",
         });
-      };
+      }
 
       const get_all_leaves_query = `select e.employee_id,
                                       l.leave_id,
@@ -65,7 +60,7 @@ class leavesDao {
             offset,
           },
           type: leaves.sequelize.QueryTypes.SELECT,
-        }
+        },
       );
       if (get_all_leaves_data) {
         res.status(200).json({
@@ -117,7 +112,8 @@ class leavesDao {
       if (!employee_id || !leave_type_id || !start_date || !end_date) {
         return res.json({
           success: false,
-          message:"Missing required fields: employee_id, leave_type_id, start_date, end_date",
+          message:
+            "Missing required fields: employee_id, leave_type_id, start_date, end_date",
         });
       }
       const start = new Date(`${start_date}T00:00:00`);
@@ -171,7 +167,8 @@ class leavesDao {
       if (adjustedLeaveDays <= 0) {
         return res.json({
           success: false,
-          message:"All selected days are holidays or weekends. Leave duration must include valid weekdays.",
+          message:
+            "All selected days are holidays or weekends. Leave duration must include valid weekdays.",
         });
       }
 
@@ -224,7 +221,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  };
+  }
 
   async getAllLeavesById(req, res, next) {
     try {
@@ -315,7 +312,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  };
+  }
 
   async acceptLeaves(req, res, next) {
     try {
@@ -363,7 +360,7 @@ class leavesDao {
 
       await employees.update(
         { leave_credit: employee.leave_credit - leave.duration },
-        { where: { employee_id } }
+        { where: { employee_id } },
       );
 
       const socketId = onlineUsers[employee_id];
@@ -373,7 +370,7 @@ class leavesDao {
           message: "Votre congé a été approuvé",
           leave_id,
         });
-      };
+      }
 
       return res.status(200).json({
         success: true,
@@ -382,7 +379,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  };
+  }
 
   async rejectLeaves(req, res, next) {
     try {
@@ -427,7 +424,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  };
+  }
 
   async deleteLeaves(req, res, next) {
     try {
@@ -442,7 +439,7 @@ class leavesDao {
         {
           replacements: { leave_id: parseInt(leave_id) },
           type: leaves.sequelize.QueryTypes.UPDATE,
-        }
+        },
       );
 
       if (delete_leaves_data.length) {
@@ -461,7 +458,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  };
+  }
 
   async resetEmployeeCreditLeave(req, res, next) {
     try {
@@ -474,9 +471,8 @@ class leavesDao {
       const reset_credit_leave_data = await leaves.sequelize.query(
         reset_credit_leave_query,
         {
-          replacements: { employee_id: parseInt(employee_id) },
           type: leaves.sequelize.QueryTypes.UPDATE,
-        }
+        },
       );
 
       if (reset_credit_leave_data.length) {
@@ -495,7 +491,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  };
+  }
 
   async getLeaveBalanceByEmployeeId(req, res, next) {
     try {
@@ -508,16 +504,16 @@ class leavesDao {
         FROM employees 
         WHERE employee_id = :employee_id AND active = 'Y'
       `;
-      
+
       const employee_leave_credit_data = await leaves.sequelize.query(
         employee_leave_credit_query,
         {
           replacements: { employee_id },
           type: leaves.sequelize.QueryTypes.SELECT,
-        }
+        },
       );
 
-      if ( !employee_leave_credit_data || !employee_leave_credit_data.length ) {
+      if (!employee_leave_credit_data || !employee_leave_credit_data.length) {
         return res.json({
           success: false,
           data: 0,
@@ -533,7 +529,7 @@ class leavesDao {
     } catch (error) {
       return next(error);
     }
-  };
+  }
 
   async rejectExpiredLeaves(req, res, next) {
     try {
@@ -543,26 +539,26 @@ class leavesDao {
       const expiredLeaves = await leaves.findAll({
         where: {
           end_date: { [Op.lt]: today },
-          status: 'Pending',
-          active: 'Y',
+          status: "Pending",
+          active: "Y",
         },
       });
 
       for (const leave of expiredLeaves) {
-        leave.status = 'Rejected';
+        leave.status = "Rejected";
         await leave.save();
       }
 
       if (expiredLeaves.length > 0) {
         const io = getIO();
-        io.emit('leavesUpdated', { message: 'Expired leaves have been rejected.' });
+        io.emit("leavesUpdated", {
+          message: "Expired leaves have been rejected.",
+        });
       }
-
     } catch (error) {
       console.error("Error rejecting expired leaves:", error);
     }
-  };
-
+  }
 }
 
 module.exports = leavesDao;
