@@ -25,6 +25,7 @@ const company_configs_controller = require('../controllers/company_configs.contr
 const vehicles_controller = require("../controllers/vehicles.controllers");
 const vehicle_types_controller = require("../controllers/vehicle_types.controllers");
 const hr_stats_controller = require("../controllers/hr_stats.controllers");
+const billings_controller = require("../controllers/billings.controllers");
 
 
 // USERS ROUTES.
@@ -136,5 +137,8 @@ router.post("/vehicle_types/addVehicleType/", authenticateToken, vehicle_types_c
 
 // HR STATS ROUTES
 router.get("/hr_stats/getAllEmployeesBirthdays/", authenticateToken, hr_stats_controller.hrStatistics);
+
+// BILLINGS ROUTES
+router.get("/billings/getAllBillings/:params", authenticateToken, billings_controller.getAllBillings);
 
 module.exports = router;
