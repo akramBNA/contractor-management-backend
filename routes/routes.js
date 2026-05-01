@@ -26,6 +26,7 @@ const vehicles_controller = require("../controllers/vehicles.controllers");
 const vehicle_types_controller = require("../controllers/vehicle_types.controllers");
 const hr_stats_controller = require("../controllers/hr_stats.controllers");
 const billings_controller = require("../controllers/billings.controllers");
+const billing_items_controller = require("../controllers/billing_items.controllers");
 
 
 // USERS ROUTES.
@@ -140,5 +141,7 @@ router.get("/hr_stats/getAllEmployeesBirthdays/", authenticateToken, hr_stats_co
 
 // BILLINGS ROUTES
 router.get("/billings/getAllBillings/:params", authenticateToken, billings_controller.getAllBillings);
+
+// BILLING ITEMS ROUTES
 
 module.exports = router;
