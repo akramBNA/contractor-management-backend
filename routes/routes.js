@@ -143,5 +143,7 @@ router.get("/hr_stats/getAllEmployeesBirthdays/", authenticateToken, hr_stats_co
 router.get("/billings/getAllBillings/:params", authenticateToken, billings_controller.getAllBillings);
 
 // BILLING ITEMS ROUTES
+router.get("/billing_items/getAllBillingItems/:params", authenticateToken, billing_items_controller.getAllBillingItems);
+router.get("/billing_items/getBillingItemsByBillingId/:billing_id", authenticateToken, billing_items_controller.getBillingItemsByBillingId);
 
 module.exports = router;
