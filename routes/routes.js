@@ -145,5 +145,6 @@ router.get("/billings/getAllBillings/:params", authenticateToken, billings_contr
 // BILLING ITEMS ROUTES
 router.get("/billing_items/getAllBillingItems/:params", authenticateToken, billing_items_controller.getAllBillingItems);
 router.get("/billing_items/getBillingItemsByBillingId/:billing_id", authenticateToken, billing_items_controller.getBillingItemsByBillingId);
+router.post("/billing_items/addBillingItem/", authenticateToken, billing_items_controller.addBillingItem);
 
 module.exports = router;
