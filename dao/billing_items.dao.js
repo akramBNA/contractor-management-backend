@@ -68,6 +68,47 @@ class billing_itemsDao {
       return next(error);
     }
   }
+
+  async addBillingItem(req, res, next) {
+    try {
+      const {
+        billing_id,
+        billing_item_name,
+        billing_item_description,
+        billing_item_amount,
+      } = req.body;
+
+      const add_billing_item_query =
+        "INSERT INTO billing_items (billing_id, billing_item_name, billing_item_description, billing_item_amount) VALUES (:billing_id, :billing_item_name, :billing_item_description, :billing_item_amount) RETURNING *";
+      const add_billing_item_data = await billing_items.sequelize.query(
+        add_billing_item_query,
+        {
+          type: billing_items.sequelize.QueryTypes.INSERT,
+          replacements: {
+            billing_id,
+            billing_item_name,
+            billing_item_description,
+            billing_item_amount,
+          },
+        },
+      );
+      if (add_billing_item_data) {
+        res.status(201).json({
+          success: true,
+          Data: add_billing_item_data[0],
+          message: "Added successfully",
+        });
+      } else {
+        res.json({
+          success: false,
+          Data: [],
+          message: "Failed to add data",
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+  }
 }
 
 module.exports = billing_itemsDao;
