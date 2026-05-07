@@ -9,4 +9,7 @@ module.exports = {
     getBillingItemsByBillingId: function (req, res, next) {
         billing_items_instance.getBillingItemsByBillingId(req, res, next);
     },
+    addBillingItem: function (req, res, next) {
+        billing_items_instance.addBillingItem(req, res, next);
+    },
 };
