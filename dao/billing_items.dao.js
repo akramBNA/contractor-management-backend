@@ -152,6 +152,37 @@ class billing_itemsDao {
       return next(error);
     }
   }
+
+  async deleteBillingItem(req, res, next) {
+    try {
+      const billing_item_id = req.params.billing_item_id;
+
+      const delete_billing_item_query =
+        "UPDATE billing_items SET active = 'N' WHERE billing_item_id = :billing_item_id RETURNING *";
+      const delete_billing_item_data = await billing_items.sequelize.query(
+        delete_billing_item_query,
+        {
+          type: billing_items.sequelize.QueryTypes.UPDATE,
+          replacements: { billing_item_id },
+        },
+      );
+      if (delete_billing_item_data) {
+        res.status(200).json({
+          success: true,
+          Data: delete_billing_item_data[0],
+          message: "Deleted successfully",
+        });
+      } else {
+        res.json({
+          success: false,
+          Data: [],
+          message: "Failed to delete data",
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+  }
 }
 
 module.exports = billing_itemsDao;

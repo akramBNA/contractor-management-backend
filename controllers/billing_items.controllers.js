@@ -15,4 +15,7 @@ module.exports = {
     updateBillingItem: function (req, res, next) {
         billing_items_instance.updateBillingItem(req, res, next);
     },
+    deleteBillingItem: function (req, res, next) {
+        billing_items_instance.deleteBillingItem(req, res, next);
+    },
 };
