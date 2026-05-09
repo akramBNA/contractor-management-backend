@@ -147,5 +147,6 @@ router.get("/billing_items/getAllBillingItems/:params", authenticateToken, billi
 router.get("/billing_items/getBillingItemsByBillingId/:billing_id", authenticateToken, billing_items_controller.getBillingItemsByBillingId);
 router.post("/billing_items/addBillingItem/", authenticateToken, billing_items_controller.addBillingItem);
 router.put("/billing_items/updateBillingItem/:billing_item_id", authenticateToken, billing_items_controller.updateBillingItem);
+router.delete("/billing_items/deleteBillingItem/:billing_item_id", authenticateToken, billing_items_controller.deleteBillingItem);
 
 module.exports = router;
