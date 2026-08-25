@@ -27,6 +27,7 @@ const vehicle_types_controller = require("../controllers/vehicle_types.controlle
 const hr_stats_controller = require("../controllers/hr_stats.controllers");
 const billings_controller = require("../controllers/billings.controllers");
 const billing_items_controller = require("../controllers/billing_items.controllers");
+const attendances_controller = require("../controllers/attendances.controllers");
 
 
 // USERS ROUTES.
@@ -146,5 +147,8 @@ router.get("/billings/getAllBillings/:params", authenticateToken, billings_contr
 router.get("/billing_items/getAllBillingItems/:params", authenticateToken, billing_items_controller.getAllBillingItems);
 router.get("/billing_items/getBillingItemsByBillingId/:billing_id", authenticateToken, billing_items_controller.getBillingItemsByBillingId);
 router.post("/billing_items/addBillingItem/", authenticateToken, billing_items_controller.addBillingItem);
+
+// ATTENDANCES ROUTES
+router.post("/attendances/receiveRFIDAttendance/", authenticateToken, attendances_controller.receiveRFIDAttendance);
 
 module.exports = router;
