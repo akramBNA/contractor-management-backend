@@ -27,6 +27,7 @@ const vehicle_types_controller = require("../controllers/vehicle_types.controlle
 const hr_stats_controller = require("../controllers/hr_stats.controllers");
 const billings_controller = require("../controllers/billings.controllers");
 const billing_items_controller = require("../controllers/billing_items.controllers");
+const attendances_controller = require("../controllers/attendances.controllers");
 
 
 // USERS ROUTES.
