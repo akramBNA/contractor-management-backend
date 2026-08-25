@@ -148,4 +148,7 @@ router.get("/billing_items/getAllBillingItems/:params", authenticateToken, billi
 router.get("/billing_items/getBillingItemsByBillingId/:billing_id", authenticateToken, billing_items_controller.getBillingItemsByBillingId);
 router.post("/billing_items/addBillingItem/", authenticateToken, billing_items_controller.addBillingItem);
 
+// ATTENDANCES ROUTES
+router.post("/attendances/receiveRFIDAttendance/", authenticateToken, attendances_controller.receiveRFIDAttendance);
+
 module.exports = router;
